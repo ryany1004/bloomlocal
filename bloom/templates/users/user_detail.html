@@ -10,6 +10,7 @@
     <div class="col-sm-12">
 
       <h2>{{ object.username }}</h2>
+      <p>Role: {% if object.role_type == '2' %}Shopper{% elif object.role_type == '1' %}Local Business{% endif %}</p>
       {% if object.name %}
         <p>{{ object.name }}</p>
       {% endif %}

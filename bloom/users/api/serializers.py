@@ -1,4 +1,5 @@
 from allauth.account.utils import send_email_confirmation
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
@@ -27,8 +28,10 @@ class ShopperSerializer(serializers.ModelSerializer):
         del validated_data['confirm_password']
         user = super().create(validated_data)
         user.set_password(validated_data['password'])
+        user.role_type = '2'
         user.save()
-        send_email_confirmation(self.context['request'], user, signup=True, email=validated_data['email'])
+        if settings.ACCOUNT_EMAIL_VERIFICATION:
+            send_email_confirmation(self.context['request'], user, signup=True, email=validated_data['email'])
         return user
 
     def validate_email(self, val):
@@ -59,6 +62,7 @@ class VendorSerializer(serializers.ModelSerializer):
         validated_data['username'] = validated_data['email']
         user = super().create(validated_data)
         user.set_password(validated_data['password'])
+        user.role_type = '1'
         user.save()
         send_email_confirmation(self.context['request'], user, signup=True, email=validated_data['email'])
         return user

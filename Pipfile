@@ -3,6 +3,9 @@ name = "pypi"
 url = "https://pypi.org/simple"
 verify_ssl = true
 
+[scripts]
+runserver = "python manage.py runserver 0.0.0.0:8000"
+
 [dev-packages]
 
 [packages]
@@ -51,8 +54,8 @@ Django = "==3.0.11"
 Werkzeug = "==1.0.1"
 Sphinx = "==3.3.1"
 gunicorn = "==20.0.4"
-django-storages = {extras = ["boto3"],version = "==1.10.1"}
-django-anymail = {extras = ["sendgrid"],version = "==8.1"}
+django-storages = {extras = ["google"],version = "*"}
+django-anymail = {extras = ["mailgun"],version = "*"}
 
 [requires]
 python_version = "3.9"

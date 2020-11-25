@@ -65,3 +65,11 @@ $icon-color: #4f4f4f;
     }
   }
 }
+.Password.is-invalid ~ .invalid-feedback {
+  display: block;
+}
+.autocomplete-field.form-group {
+  .form-group.input-field {
+    margin-bottom: 0;
+  }
+}

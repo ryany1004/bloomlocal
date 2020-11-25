@@ -70,7 +70,6 @@ CELERY_TASK_EAGER_PROPAGATES = True
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 ALLOWED_HOSTS = [
-    '127.0.0.1:8000',
     'localhost',
     'localhost:8000',
     '20dc4e16a64a.ngrok.io'

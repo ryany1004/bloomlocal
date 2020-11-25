@@ -10,9 +10,9 @@
   <div class="col-md-6" id="sign-up-form">
     <div class="col-md-10">
       <h2>{% trans "Sign Up" %}</h2>
-
       <form class="signup" id="signup_form" method="post" @submit="handleSubmit" v-cloak>
         {% csrf_token %}
+
         <div class="form-group mt-3">
           <div class="form-check form-check-inline mr-4">
             <input class="form-check-input" type="radio" v-model="role_type" name="role_name" id="inlineRadio1" value="2">
@@ -20,7 +20,7 @@
           </div>
           <div class="form-check form-check-inline">
             <input class="form-check-input" type="radio" v-model="role_type" name="role_name" id="inlineRadio2" value="1">
-            <label class="form-check-label" for="inlineRadio2">Vendor</label>
+            <label class="form-check-label" for="inlineRadio2">Local Business</label>
           </div>
         </div>
         <div id="shopper" v-if="role_type == '2'">
@@ -65,13 +65,13 @@
           </div>
           <div class="form-row">
             <div class="form-group col">
-              <input :class="{'is-invalid': errors.password}" type="password" class="form-control" required id="password" v-model="shopper.password"  placeholder="Password">
+              <password-meter :class="{'is-invalid': errors.password}" default-class="form-control" v-model="shopper.password" placeholder="Password" :badge="false"></password-meter>
               <div class="invalid-feedback" v-if="errors.password">
                 [{ errors.password.join(", ") }]
               </div>
             </div>
             <div class="form-group col">
-              <input type="password" :class="{'is-invalid': errors.confirm_password}" class="form-control" required id="confirm_password" v-model="shopper.confirm_password" name="confirm_password" placeholder="Password">
+              <input type="password" :class="{'is-invalid': errors.confirm_password || shopper_password_invalid, 'is-valid': shopper_password_valid}" class="form-control" required id="confirm_password" v-model="shopper.confirm_password" name="confirm_password" placeholder="Confirm password">
               <div class="invalid-feedback" v-if="errors.confirm_password">
                 [{ errors.confirm_password.join(", ") }]
               </div>
@@ -110,13 +110,19 @@
             </div>
           </div>
           <div class="form-row">
+            <place-autocomplete-field
+                    v-model="vendor.business_address" placeholder="Business Address" :group="true" class="form-group col"
+                    name="business_address" api-key="{{ GOOGLE_MAPS_API_KEY }}"></place-autocomplete-field>
+
             <div class="form-group col">
-              <input type="text" :class="{'is-invalid': errors1.business_address}" class="form-control" required id="business_address" v-model="vendor.business_address" name="business_address" placeholder="Business Address">
-              <div class="invalid-feedback" v-if="errors1.business_address">
-                [{ errors1.business_address.join(", ") }]
+              <input type="text" :class="{'is-invalid': errors1.second_address}" class="form-control" required id="second_address" v-model="vendor.second_address" name="second_address" placeholder="Apartment/Suite">
+              <div class="invalid-feedback" v-if="errors1.second_address">
+                [{ errors1.second_address.join(", ") }]
               </div>
             </div>
-            <div class="form-group col">
+          </div>
+          <div class="form-row">
+            <div class="form-group col-6">
               <input type="text" :class="{'is-invalid': errors1.business_phone}" class="form-control" required id="business_phone" v-model="vendor.business_phone" name="business_phone" placeholder="Business Phone">
               <div class="invalid-feedback" v-if="errors1.business_phone">
                 [{ errors1.business_phone.join(", ") }]
@@ -125,13 +131,13 @@
           </div>
           <div class="form-row">
             <div class="form-group col">
-              <input type="password" :class="{'is-invalid': errors1.password}" class="form-control" required id="password" v-model="vendor.password" name="password" placeholder="Password">
+              <password-meter :class="{'is-invalid': errors.password}" default-class="form-control" v-model="vendor.password" placeholder="Password" :badge="false"></password-meter>
               <div class="invalid-feedback" v-if="errors1.password">
                 [{ errors1.password.join(", ") }]
               </div>
             </div>
             <div class="form-group col">
-              <input type="password" :class="{'is-invalid': errors1.confirm_password}" class="form-control" required id="confirm_password" v-model="vendor.confirm_password" name="confirm_password" placeholder="Password">
+              <input type="password" :class="{'is-invalid': errors1.confirm_password || vendor_password_invalid, 'is-valid': vendor_password_valid}" class="form-control" required id="confirm_password" v-model="vendor.confirm_password" name="confirm_password" placeholder="Confirm password">
               <div class="invalid-feedback" v-if="errors1.confirm_password">
                 [{ errors1.confirm_password.join(", ") }]
               </div>
@@ -208,6 +214,7 @@
         password: "",
         confirm_password: "",
         business_address: "",
+        second_address: "",
         business_phone: "",
         store_type: "",
       },
@@ -227,6 +234,18 @@
       }
     },
     computed: {
+      shopper_password_valid: function () {
+        return this.shopper.password === this.shopper.confirm_password && this.shopper.confirm_password !== '' && this.shopper.password !== '';
+      },
+      shopper_password_invalid: function () {
+        return this.shopper.password !== this.shopper.confirm_password && this.shopper.confirm_password !== '' && this.shopper.password !== '';
+      },
+      vendor_password_valid: function () {
+        return this.vendor.password === this.vendor.confirm_password && this.vendor.confirm_password !== '' && this.vendor.password !== '';
+      },
+      vendor_password_invalid: function () {
+        return this.vendor.password !== this.vendor.confirm_password && this.vendor.confirm_password !== '' && this.vendor.password !== '';
+      },
     },
     created: function () {
       this.initRole(this.role_type);

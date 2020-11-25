@@ -287,7 +287,7 @@ ACCOUNT_AUTHENTICATION_METHOD = "username"
 # https://django-allauth.readthedocs.io/en/latest/configuration.html
 ACCOUNT_EMAIL_REQUIRED = True
 # https://django-allauth.readthedocs.io/en/latest/configuration.html
-ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_EMAIL_VERIFICATION = env.bool("ACCOUNT_EMAIL_VERIFICATION", 'mandatory')
 # https://django-allauth.readthedocs.io/en/latest/configuration.html
 ACCOUNT_ADAPTER = "bloom.users.adapters.AccountAdapter"
 # https://django-allauth.readthedocs.io/en/latest/configuration.html
@@ -330,31 +330,39 @@ SOCIALACCOUNT_PROVIDERS = {
         # (``socialaccount`` app) containing the required client
         # credentials, or list them here:
         'APP': {
-            'client_id': '736915700044-kkdc3qro7pcs4c5lmffjmh72i342e77t.apps.googleusercontent.com',
-            'secret': 'iOwBzxkIi6RZMogK0UVWGFub',
+            'client_id': '512260630417-kl1drv9d18csoabaooo6pd6atre01iii.apps.googleusercontent.com',
+            'secret': '_DGMWl4dAeFmP9VBbRtOXo8L',
             'key': ''
         }
     },
     "apple": {
         "APP": {
             # Your service identifier.
-            "client_id": "com.bloom.webapp",
+            "client_id": "com.blooms.webapp",
 
             # The Key ID (visible in the "View Key Details" page).
-            "secret": "MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgxH7lVEhTGVLlZl+4aQh4/gTRSAqXUfUIKVBO5tIGGf+gCgYIKoZIzj0DAQehRANCAAT3KxF3rpecmAJRIjJmuka0zUU6jNGqhluj7WuRbfLhpaXpetOmNoGh5QNw6EP9zGLNhEYkZU37cIqkHjfOT6qE",
+            "secret": "UNZ6D6RL62",
 
              # Member ID/App ID Prefix -- you can find it below your name
              # at the top right corner of the page, or it’s your App ID
              # Prefix in your App ID.
-            "key": "S5YHUL6C4G",
+            "key": "3W3GAVC73Y",
 
             # The certificate you downloaded when generating the key.
             "certificate_key": """-----BEGIN PRIVATE KEY-----
-s3cr3ts3cr3ts3cr3ts3cr3ts3cr3ts3cr3ts3cr3ts3cr3ts3cr3ts3cr3ts3cr
-3ts3cr3ts3cr3ts3cr3ts3cr3ts3cr3ts3cr3ts3cr3ts3cr3ts3cr3ts3cr3ts3
-c3ts3cr3t
------END PRIVATE KEY-----
-"""
+MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgpEpZsQk2cBnfslTm
+LGx8icIvKylzSPANifQVXdA/9ISgCgYIKoZIzj0DAQehRANCAAT8GZSdmp7b/8wL
+1EJv5TCNepBx5USo/OnFSvtaXU2JBkrwHYkX7ftD1i8JhruMl9mNoYDOBzgzurbg
+MCvfSGuE
+-----END PRIVATE KEY-----"""
         }
     }
 }
+
+GOOGLE_MAPS_API_KEY = 'AIzaSyAhSv9zWvisiTXRPRw6K8AE0DCmrRMpQcU'
+
+from google.oauth2 import service_account
+
+GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
+    str(ROOT_DIR / "config/credentials.json")
+)

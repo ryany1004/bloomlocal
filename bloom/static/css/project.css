@@ -14934,3 +14934,9 @@ a.text-dark:hover, a.text-dark:focus {
       .socialaccount_providers li a i {
         line-height: 58px;
         color: #4f4f4f; }
+
+.Password.is-invalid ~ .invalid-feedback {
+  display: block; }
+
+.autocomplete-field.form-group .form-group.input-field {
+  margin-bottom: 0; }

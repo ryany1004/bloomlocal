@@ -10,8 +10,26 @@
 <div class="col-md-6">
   {% get_providers as socialaccount_providers %}
   <div class="col-md-10">
-    <h2 class="mb-5">{% trans "Login to your account" %}</h2>
+    <h2 class="mb-5 text-center">{% trans "Login to your account" %}</h2>
     <form class="login" method="POST" action="{% url 'account_login' %}">
+      <div class="mt-4 mb-4">
+        {% if socialaccount_providers %}
+          <div class="socialaccount_ballot">
+
+            <ul class="socialaccount_providers d-flex justify-content-center">
+              {% include "socialaccount/snippets/provider_list.html" with process="login" %}
+              <li>
+                <a class="socialaccount_provider d-flex justify-content-center"
+                   href="javascript:void(0)">
+                  <i class="fa fa-plus fa-1x-half"></i>
+                </a>
+              </li>
+            </ul>
+          </div>
+        {% endif %}
+        <p class="text-center mt-4">Or</p>
+      </div>
+
       {% csrf_token %}
       {% for err in form.non_field_errors %}
           <p class="text-danger">{{ err }}</p>
@@ -36,24 +54,6 @@
       {% if redirect_field_value %}
       <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
       {% endif %}
-
-      <div class="mt-4 mb-5">
-        <p class="text-center">Or</p>
-        {% if socialaccount_providers %}
-          <div class="socialaccount_ballot">
-
-            <ul class="socialaccount_providers d-flex justify-content-center">
-              {% include "socialaccount/snippets/provider_list.html" with process="login" %}
-              <li>
-                <a class="socialaccount_provider d-flex justify-content-center"
-                   href="javascript:void(0)">
-                  <i class="fa fa-plus fa-1x-half"></i>
-                </a>
-              </li>
-            </ul>
-          </div>
-        {% endif %}
-      </div>
 
       <div class="">
         <button class="primaryAction btn btn-primary btn-block btn-lg" type="submit">{% trans "Login" %}</button>
