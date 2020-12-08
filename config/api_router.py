@@ -3,6 +3,7 @@ from django.urls import path
 from rest_framework.routers import DefaultRouter, SimpleRouter
 
 from bloom.users.api import views
+from bloom.shop.api import views as shop_views
 
 if settings.DEBUG:
     router = DefaultRouter()
@@ -18,4 +19,5 @@ urlpatterns += [
     path('accounts/shopper/signup/', views.ShopperSignUpAPIView.as_view(), name="shopper-signup"),
     path('accounts/vendor/signup/', views.VendorSignUpAPIView.as_view(), name="vendor-signup"),
     path('accounts/signup/initial/', views.SignUpInitialAPIView.as_view(), name="signup-initial"),
+    path('product/attribute/<code>/', shop_views.AttributeValueAPIView.as_view(), name="attribute-values"),
 ]

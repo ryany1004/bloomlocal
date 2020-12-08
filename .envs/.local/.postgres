@@ -1,0 +1,7 @@
+# PostgreSQL
+# ------------------------------------------------------------------------------
+POSTGRES_HOST=postgres
+POSTGRES_PORT=5432
+POSTGRES_DB=bloom
+POSTGRES_USER=KhcyURqfmIwpRwgTHYYXbslZYLKoIgkQ
+POSTGRES_PASSWORD=E37Nsrs66ULWRugRrtZbL41KKYkBFrf5rojEcmKHSoAGtjLMbR0C9HFpXuSGcQdV

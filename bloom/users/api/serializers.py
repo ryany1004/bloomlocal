@@ -9,14 +9,10 @@ User = get_user_model()
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["username", "email", "name", "url"]
-
-        extra_kwargs = {
-            "url": {"view_name": "api:user-detail", "lookup_field": "username"}
-        }
+        fields = ["username", "email", "name", ]
 
 
-class ShopperSerializer(serializers.ModelSerializer):
+class ShopperSignUpSerializer(serializers.ModelSerializer):
     confirm_password = serializers.CharField(write_only=True)
 
     class Meta:
@@ -48,7 +44,7 @@ class ShopperSerializer(serializers.ModelSerializer):
         return val
 
 
-class VendorSerializer(serializers.ModelSerializer):
+class BusinessSignUpSerializer(serializers.ModelSerializer):
     confirm_password = serializers.CharField(write_only=True)
 
     class Meta:
@@ -81,4 +77,14 @@ class VendorSerializer(serializers.ModelSerializer):
         return val
 
 
+class ShopperSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'phone_number', 'email']
 
+
+class BusinessSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'phone_number', 'email', 'business_phone', 'business_address',
+                  'store_type', ]

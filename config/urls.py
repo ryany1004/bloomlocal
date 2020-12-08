@@ -7,8 +7,13 @@ from django.views import defaults as default_views
 from django.views.generic import TemplateView
 from rest_framework.authtoken.views import obtain_auth_token
 
+from bloom.shop.views import HomePage
+
 urlpatterns = [
-    path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
+    path("", HomePage.as_view(), name="home"),
+    path("business/inventory/", TemplateView.as_view(template_name="pages/business/inventory.html"), name="inventory_page"),
+    path("business/my-orders/", TemplateView.as_view(template_name="pages/business/my_orders.html", ), name="orders_page"),
+    path("business/product/upload/", TemplateView.as_view(template_name="pages/business/product_add.html", ), name="product_add_page"),
     path(
         "about/", TemplateView.as_view(template_name="pages/about.html"), name="about"
     ),

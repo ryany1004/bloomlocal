@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content2 %}
+  {% include 'pages/includes/bis_menu.html' %}
+
+  <div class="container">
+    My Orders
+  </div>
+{% endblock %}
+
+{% block main_vue %}
+  <script>
+  let main = new Vue({
+    el: '#app',
+    delimiters: ["[{", "}]"],
+  });
+  </script>
+{% endblock %}

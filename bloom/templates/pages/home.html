@@ -1,1 +1,14 @@
 {% extends "base.html" %}
+
+{% block content2 %}
+
+{% endblock %}
+
+{% block main_vue %}
+  <script>
+  let main = new Vue({
+    el: '#app',
+    delimiters: ["[{", "}]"],
+  });
+  </script>
+{% endblock %}

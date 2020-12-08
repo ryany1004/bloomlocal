@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content2 %}
+  {% include 'pages/includes/bis_menu.html' %}
+
+  <div class="container">
+    <div class="d-flex justify-content-between">
+      <div><h4>Inventory</h4></div>
+      <div class="d-flex align-items-center">
+        <a class="mr-4" href="{% url 'product_add_page' %}"><i class="fas fa-plus fa-1x-half"></i></a>
+        <div class="dropdown">
+          <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Sort by View All
+          </button>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <a class="dropdown-item" href="#">Action</a>
+            <a class="dropdown-item" href="#">Another action</a>
+            <a class="dropdown-item" href="#">Something else here</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block main_vue %}
+  <script>
+  let main = new Vue({
+    el: '#app',
+    delimiters: ["[{", "}]"],
+  });
+  </script>
+{% endblock %}

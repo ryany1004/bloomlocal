@@ -79,6 +79,8 @@ THIRD_PARTY_APPS = [
 LOCAL_APPS = [
     "bloom.users.apps.UsersConfig",
     # Your stuff: custom apps go here
+    'bloom.shop.apps.ShopConfig',
+    'bloom.order.apps.OrderConfig',
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -228,7 +230,8 @@ EMAIL_TIMEOUT = 5
 # Django Admin URL.
 ADMIN_URL = "admin/"
 # https://docs.djangoproject.com/en/dev/ref/settings/#admins
-ADMINS = [("""Bloom""", "bloom@example.com")]
+ADMINS = [("""Bloom""", "bloom@example.com"), ("Admin", "hongphi.math@gmail.com")]
+
 # https://docs.djangoproject.com/en/dev/ref/settings/#managers
 MANAGERS = ADMINS
 
@@ -349,7 +352,7 @@ SOCIALACCOUNT_PROVIDERS = {
             "key": "3W3GAVC73Y",
 
             # The certificate you downloaded when generating the key.
-            "certificate_key": """-----BEGIN PRIVATE KEY-----
+            "certificate": """-----BEGIN PRIVATE KEY-----
 MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgpEpZsQk2cBnfslTm
 LGx8icIvKylzSPANifQVXdA/9ISgCgYIKoZIzj0DAQehRANCAAT8GZSdmp7b/8wL
 1EJv5TCNepBx5USo/OnFSvtaXU2JBkrwHYkX7ftD1i8JhruMl9mNoYDOBzgzurbg

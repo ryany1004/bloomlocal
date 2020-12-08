@@ -73,3 +73,22 @@ $icon-color: #4f4f4f;
     margin-bottom: 0;
   }
 }
+.dropdown-toggle.user-avatar:after {
+  position: relative;
+  top: 10px;
+}
+.bis-menu {
+  list-style: none;
+  display: flex;
+  padding-left: 0;
+  li {
+    text-align: center;
+    width: 33.33%;
+  }
+  li+li::after {
+    color: #000;
+    content: "|";
+    float: left;
+    display: inline-block;
+  }
+}
