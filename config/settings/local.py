@@ -72,5 +72,14 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 ALLOWED_HOSTS = [
     'localhost',
     'localhost:8000',
-    '20dc4e16a64a.ngrok.io'
+    'storage.googleapis.com'
 ]
+
+INSTALLED_APPS += ["storages"]  # noqa F405
+GS_BUCKET_NAME = env("DJANGO_GCP_STORAGE_BUCKET_NAME")
+GS_DEFAULT_ACL = "publicRead"
+
+# MEDIA
+# ------------------------------------------------------------------------------
+DEFAULT_FILE_STORAGE = "bloom.utils.storages.MediaRootGoogleCloudStorage"
+MEDIA_URL = f"https://storage.googleapis.com/{GS_BUCKET_NAME}/media/"

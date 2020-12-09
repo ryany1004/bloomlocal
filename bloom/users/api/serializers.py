@@ -50,7 +50,7 @@ class BusinessSignUpSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'phone_number', 'email', 'password', 'confirm_password',
-                  'business_phone', 'business_address', 'store_type',]
+                  'business_phone', 'business_address',]
         write_only_fields = ('password',)
 
     def create(self, validated_data):
@@ -60,7 +60,8 @@ class BusinessSignUpSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
         user.role_type = '1'
         user.save()
-        send_email_confirmation(self.context['request'], user, signup=True, email=validated_data['email'])
+        if settings.ACCOUNT_EMAIL_VERIFICATION:
+            send_email_confirmation(self.context['request'], user, signup=True, email=validated_data['email'])
         return user
 
     def validate_email(self, val):

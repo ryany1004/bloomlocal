@@ -1,57 +1,68 @@
 <template>
-  <div class="product-upload">
+  <product-cofirm-upload v-if="uploaded"></product-cofirm-upload>
+  <div v-else class="product-upload">
     <form>
       <div class="row">
         <div class="col-4">
           <el-upload
             class="product-uploader"
-            action="https://jsonplaceholder.typicode.com/posts/"
+            action=""
             :show-file-list="false"
+            :http-request="handleThumbnailUpload"
             :on-success="handleAvatarSuccess"
             :before-upload="beforeAvatarUpload">
-            <img v-if="product.thumbnail" :src="product.thumbnail" class="product-thumbnail">
+            <div v-if="product.thumbnail" :style="{backgroundImage: `url(${mediaUrl}${product.thumbnail}`}" class="product-thumbnail"></div>
             <div class="" v-else>
               <i  class="el-icon-plus avatar-uploader-icon">
                 <span class="uploader-circle"></span>
               </i>
             </div>
-
+            <div class="progress" style="height: 1px;">
+              <div class="progress-bar" role="progressbar" :style="{width: percent + '%'}" style="width: 0%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
           </el-upload>
+          <p class="error" v-if="errors.thumbnail">Thumbnail is required</p>
           <p class="text-center">Upload Image</p>
 
           <div class="clearfix">
-            <el-upload action="#" list-type="picture-card" :auto-upload="false" class="product-images">
+            <el-upload action="" list-type="picture-card" :file-list="product_imgs" class="product-images"
+              :http-request="handleImgsUpload" :auto-upload="true"
+              :on-success="handleImgsSuccess">
                 <i slot="default" class="el-icon-plus"></i>
                 <div slot="file" slot-scope="{file}">
-                  <img
+                  <img v-if="!file.url.startsWith('blob')"
                     class="el-upload-list__item-thumbnail"
-                    :src="file.url" alt=""
+                    :src="file.url.startsWith('blob') ? file.url: mediaUrl + file.url" alt=""
                   >
-                  <span class="el-upload-list__item-actions">
+                  <div v-else class="progress" style="height: 1px;">
+                    <div class="progress-bar" role="progressbar" :style="{width: percent2 + '%'}" style="width: 0%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                  </div>
+                  <span v-if="!file.url.startsWith('blob')" class="el-upload-list__item-actions">
                     <span v-if="!disabled" class="el-upload-list__item-delete" @click="handleRemove(file)">
                       <i class="el-icon-delete"></i>
                     </span>
                   </span>
                 </div>
             </el-upload>
+            <p class="error" v-if="errors.images">Images are required</p>
           </div>
-          <button class="btn btn-primary btn-block mt-3"><i class="fas fa-upload"></i> Upload Product</button>
+          <button type="button" class="btn btn-primary btn-block mt-3" @click="uploadProduct"><i class="fas fa-upload"></i> Upload Product</button>
         </div>
         <div class="col-8">
           <div class="form-row">
             <div class="form-group col-md-8">
               <label for="product_tile">Product Title</label>
-              <input type="text" maxlength="500" class="form-control w-75" id="product_tile" placeholder="">
+              <input :class="{'is-invalid': errors.title}" type="text" maxlength="500" class="form-control w-75" id="product_tile" placeholder="" v-model="product.title">
             </div>
             <div class="form-group col-md-4">
               <label for="product_price">Set Price</label>
-              <input type="number" class="form-control" id="product_price" placeholder="">
+              <input type="number" :class="{'is-invalid': errors.price}" class="form-control" id="product_price" placeholder="" v-model="product.price">
             </div>
           </div>
           <div class="form-row">
             <div class="form-group col">
               <label for="product_description">Description</label>
-              <textarea class="form-control" id="product_description"></textarea>
+              <textarea :class="{'is-invalid': errors.description}" class="form-control" id="product_description" v-model="product.description"></textarea>
             </div>
           </div>
           <div class="form-row">
@@ -61,8 +72,8 @@
                 <el-switch v-model="product.enable_color"></el-switch>
               </div>
               <div>
-                <span class="c-circle" :style="{backgroundColor: color.value}" v-for="color in colors" :key="color.value"
-                      :class="{ active: color.value == active_color}" @click="set_active_color(color)"></span>
+                <span @click="changeColor(color)" class="c-circle" :style="{backgroundColor: color.value}" v-for="color in colors" :key="color.value"
+                      :class="{ active: color.value == active_color}"></span>
               </div>
             </div>
             <div class="form-group col-md-7">
@@ -71,7 +82,8 @@
                 <el-switch v-model="product.enable_size"></el-switch>
               </div>
               <div>
-                <span class="badge badge-primary mr-1" v-for="size in sizes" :key="size.value">{{size.text}}</span>
+                <span @click="toggleSize(size)" :class="{'badge-secondary': active_sizes.indexOf(size.value) == -1, 'badge-primary': active_sizes.indexOf(size.value) != -1}" class="badge mr-1 product-size"
+                      v-for="size in sizes" :key="size.value">{{size.text}}</span>
               </div>
             </div>
           </div>
@@ -79,11 +91,8 @@
             <div class="form-group col-md-5">
               <label for="product_category">Category</label>
               <select class="form-control form-control-sm w-50" id="product_category" v-model="product.category">
-                <option>1</option>
-                <option>2</option>
-                <option>3</option>
-                <option>4</option>
-                <option>5</option>
+                <option disabled value="">--</option>
+                <option v-for="category in categories" :value="category.id" :key="category.id">{{category.name}}</option>
               </select>
             </div>
             <div class="form-group col-md-7">
@@ -99,9 +108,9 @@
             <div class="form-group col">
               <label for="product_category">Product Dimensions</label>
               <div class="form-inline">
-                <input type="number" class="form-control form-control-sm input-w50" v-model="product.length" placeholder="length"/> x
-                <input type="number" class="form-control form-control-sm input-w50" v-model="product.width" placeholder="width"/> x
-                <input type="number" class="form-control form-control-sm input-w50" v-model="product.height" placeholder="height"/>
+                <input :class="{'is-invalid': errors.length}" type="number" class="form-control form-control-sm input-w50" v-model="product.length" placeholder="length"/><span class="px-1" style="font-size: 80%">x</span>
+                <input :class="{'is-invalid': errors.width}" type="number" class="form-control form-control-sm input-w50" v-model="product.width" placeholder="width"/><span class="px-1" style="font-size: 80%">x</span>
+                <input :class="{'is-invalid': errors.height}" type="number" class="form-control form-control-sm input-w50 mr-1" v-model="product.height" placeholder="height"/>
                 <select class="form-control form-control-sm input-w50" v-model="product.dimension_unit">
                   <option value="cm">cm</option>
                   <option value="in">inch</option>
@@ -113,7 +122,7 @@
             <div class="form-group col-5">
               <label for="product_category">Product Weight</label>
               <div class="form-inline">
-                <input type="number" class="form-control input-w50 form-control-sm mr-1" v-model="product.weight"/>
+                <input :class="{'is-invalid': errors.weight}" type="number" class="form-control input-w50 form-control-sm mr-1" v-model="product.weight"/>
                 <select class="form-control form-control-sm input-w50" v-model="product.weight_unit">
                   <option value="lb">lb</option>
                 </select>
@@ -121,7 +130,7 @@
             </div>
             <div class="form-group col-3">
               <label for="product_category">Stock</label>
-              <input type="number" v-model="product.stock" class="form-control form-control-sm input-w50"/>
+              <input type="number" :class="{'is-invalid': errors.stock}" v-model="product.stock" class="form-control form-control-sm input-w50"/>
             </div>
           </div>
         </div>
@@ -132,56 +141,207 @@
 
 <script>
 import {mapState} from 'vuex';
+import $ from 'jquery'
+import axios from "axios";
+import _ from "lodash";
 
 export default {
   name: "ProductAdd",
+  props: {
+    mediaUrl: {
+      type: String,
+      default: ""
+    },
+    shop: {
+      required: true
+    }
+  },
   data: function () {
     return {
       product: {
+        title:"",
+        price: "",
         enable_color: true,
         enable_size: true,
         thumbnail: null,
         delivery_type: 'pickup',
-        category: null,
+        category: "",
         dimension_unit: 'cm',
         length: null,
         width: null,
         height: null,
         weight_unit: 'lb',
         weight: null,
-        stock: null
+        stock: null,
+        description: ""
       },
+      percent: 0,
+      percent2: 0,
+      product_imgs: [],
       delivery_types: [
         {value: 'pickup', text: "Pickup"},
         {value: 'delivery', text: "Delivery"},
         {value: 'both', text: "Both"},
       ],
-      active_color: null
+      active_color: null,
+      active_sizes: [],
+      variants: [],
+      uploaded: false,
+      errors: {}
     }
   },
   created() {
     this.$store.dispatch('get_colors');
     this.$store.dispatch('get_sizes');
+    this.$store.dispatch('get_categories');
   },
   computed: {
     ...mapState(
-            ['colors', 'sizes']
+            ['colors', 'sizes', 'categories']
         ),
   },
   methods: {
-    set_active_color(color) {
-      this.active_color = color.value;
+    handleThumbnailUpload(data) {
+      let that = this;
+      let params = {
+        filename: data.file.name,
+        content_type: data.file.type,
+        prefix: "product/thumb/"
+      }
+      this.axios.post('/api/shop/upload/generate-url/',params, ).then(function (res) {
+        $.ajax({
+            url: res.data.url,
+            type: 'PUT',
+            data: data.file,
+            contentType: data.file.type,
+            xhr: function () {
+              let myXhr = $.ajaxSettings.xhr();
+              if (myXhr.upload) {
+                  myXhr.upload.addEventListener('progress', that.progressHandling, false);
+              }
+              return myXhr;
+            },
+            success: function () {
+              that.product.thumbnail = res.data.path;
+              data.onSuccess(res.data.path)
+            },
+            error: function (result) {
+                console.log(result);
+                alert("Error while uploading.");
+            },
+            processData: false
+        });
+      });
+    },
+    handleImgsUpload(data) {
+      let that = this;
+      let params = {
+        filename: data.file.name,
+        content_type: data.file.type,
+        prefix: "product/imgs/"
+      }
+      this.axios.post('/api/shop/upload/generate-url/',params, ).then(function (res) {
+        $.ajax({
+            url: res.data.url,
+            type: 'PUT',
+            data: data.file,
+            contentType: data.file.type,
+            xhr: function () {
+              let myXhr = $.ajaxSettings.xhr();
+              if (myXhr.upload) {
+                  myXhr.upload.addEventListener('progress', that.progressHandling2, false);
+              }
+              return myXhr;
+            },
+            success: function () {
+              that.product_imgs.push({name: data.file.name, url: res.data.path});
+              data.onSuccess(res.data.path)
+            },
+            error: function (result) {
+                console.log(result);
+                alert("Error while uploading.");
+            },
+            processData: false
+        });
+      });
+    },
+    progressHandling(event) {
+      let percent = 0;
+      let position = event.loaded || event.position;
+      let total = event.total;
+      if (event.lengthComputable) {
+        percent = Math.ceil(position / total * 100);
+        this.percent = percent;
+      }
+    },
+    progressHandling2(event) {
+      let percent = 0;
+      let position = event.loaded || event.position;
+      let total = event.total;
+      if (event.lengthComputable) {
+        percent = Math.ceil(position / total * 100);
+        this.percent2 = percent;
+      }
     },
     beforeAvatarUpload: function () {
 
     },
-    handleAvatarSuccess: function () {
-
+    handleAvatarSuccess: function (file) {
+      this.percent = 0
+      console.log(file)
+    },
+    handleImgsSuccess(file) {
+      this.percent2 = 0
+      console.log(file)
     },
     handleRemove: function(file) {
-      console.log(file);
+      let index = this.product_imgs.indexOf(file);
+      if (index != -1) {
+        this.$delete(this.product_imgs, index);
+      }
     },
-
+    uploadProduct() {
+      let data = this.product, that=this;
+      data.shop = this.shop;
+      data.variants = this.variants;
+      data.images = this.product_imgs;
+      if (data.category) {
+        data.categories = [data.category];
+      }
+      that.errors = {};
+      axios.post('/api/product/upload/', data).then(function () {
+        that.errors = {}
+        that.uploaded = true
+      }).catch(function (err) {
+        if(err.response.data) {
+          that.errors = err.response.data;
+        }
+        console.log(err);
+      })
+    },
+    changeColor(color) {
+      let active_color_variant_group = _.groupBy(this.variants, 'color')[color.value] || [];
+      let active_sizes = [];
+      active_color_variant_group.forEach(function (item) {
+        active_sizes.push(item.size)
+      })
+      this.active_sizes = active_sizes
+      this.active_color = color.value;
+      console.log(this.variants)
+    },
+    toggleSize(size) {
+      let index = this.active_sizes.indexOf(size.value);
+      if ( index != -1) {
+        this.$delete(this.active_sizes, index);
+        let i = _.findIndex(this.variants, {size: size.value, color: this.active_color});
+        if (i != -1) {
+          this.$delete(this.variants, i);
+        }
+      } else {
+        this.active_sizes.push(size.value);
+        this.variants.push({color: this.active_color, size: size.value})
+      }
+    }
   }
 }
 </script>
@@ -189,7 +349,8 @@ export default {
 <style lang="scss">
   .product-upload {
     .form-inline .form-control.input-w50 {
-      width: 80px;
+      width: 60px;
+      padding: 0.25rem 0.1rem;
     }
     .c-circle {
       width: 25px;
@@ -220,7 +381,7 @@ export default {
       border-color: #409EFF;
     }
     .avatar-uploader-icon {
-      font-size: 28px;
+      font-size: 16px;
       color: #8c939d;
       width: 100%;
       height: 100%;
@@ -238,19 +399,39 @@ export default {
       border-radius: 50%;
     }
     .product-thumbnail {
-      width: 178px;
+      width: 100%;
       height: 178px;
       display: block;
+      background-position: center;
+      background-size: cover;
+      background-repeat: no-repeat;
     }
-    .product-images .el-upload-list--picture-card .el-upload-list__item {
-      width: 60px;
-      height: 60px;
+    .product-images {
+      .el-upload-list--picture-card .el-upload-list__item {
+        width: 60px;
+        height: 60px;
+      }
+
+      .el-upload--picture-card {
+        width: 60px;
+        height: 60px;
+        line-height: 60px;
+        float: left;
+        margin-right: 5px;
+        i {
+          font-size: 16px;
+        }
+      }
+      .el-upload-list__item {
+        transition: none;
+      }
     }
-    .product-images .el-upload--picture-card {
-      width: 60px;
-      height: 60px;
-      line-height: 60px;
-      float: left;
+    .product-size {
+      cursor: pointer;
+    }
+    .error {
+      font-size: 11px;
+      color: red;
     }
   }
 </style>

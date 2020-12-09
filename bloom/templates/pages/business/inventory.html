@@ -20,14 +20,23 @@
         </div>
       </div>
     </div>
+    <storefront></storefront>
   </div>
 {% endblock %}
 
 {% block main_vue %}
+  {{ block.super }}
   <script>
-  let main = new Vue({
-    el: '#app',
+  let main1 = new Vue({
+    el: '#app2',
     delimiters: ["[{", "}]"],
+    data: function () {
+      return {
+      }
+    },
+    methods: {
+
+    }
   });
   </script>
 {% endblock %}

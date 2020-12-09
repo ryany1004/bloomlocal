@@ -14959,3 +14959,6 @@ a.text-dark:hover, a.text-dark:focus {
     content: "|";
     float: left;
     display: inline-block; }
+
+.breadcrumb-item + .breadcrumb-item::before {
+  content: ">"; }

@@ -42,6 +42,13 @@ class User(AbstractUser):
     def __str__(self):
         return self.get_full_name()
 
+    def get_shop(self):
+        from bloom.shop.models import Shop
+        shop = self.shop_set.first()
+        if not shop:
+            shop = Shop.objects.create(owner=self, name='My Shop')
+        return shop
+
 
 class MyCollection(BaseModelMixin, models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

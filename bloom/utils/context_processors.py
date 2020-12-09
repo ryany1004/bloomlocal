@@ -7,5 +7,6 @@ def settings_context(_request):
     # to prevent accidental leaking of sensitive information
     return {
         "DEBUG": settings.DEBUG,
-        "GOOGLE_MAPS_API_KEY": settings.GOOGLE_MAPS_API_KEY
+        "GOOGLE_MAPS_API_KEY": settings.GOOGLE_MAPS_API_KEY,
+        "MEDIA_URL": settings.MEDIA_URL
     }

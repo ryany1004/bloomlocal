@@ -92,3 +92,6 @@ $icon-color: #4f4f4f;
     display: inline-block;
   }
 }
+.breadcrumb-item + .breadcrumb-item::before {
+  content: ">";
+}

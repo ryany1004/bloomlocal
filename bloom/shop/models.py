@@ -23,7 +23,7 @@ class Shop(BaseModelMixin, models.Model):
     )
 
     name = models.CharField(max_length=255)
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='shop_set')
     business_address = models.CharField(max_length=255, blank=True)
     business_phone = models.CharField(max_length=20, blank=True)
     store_type = models.CharField(max_length=20, blank=True, choices=STORE_TYPES)
@@ -90,8 +90,8 @@ class Product(BaseModelMixin, models.Model):
 
 
 class ProductImage(models.Model):
-    product = models.ForeignKey(Product, related_name='images', on_delete=models.CASCADE)
-    image = models.ImageField(upload_to=get_photo_path)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    images = JSONField(default=list, blank=True)
 
     def get_image_url(self):
         if not self.image:
@@ -129,4 +129,4 @@ class ProductVariant(models.Model):
         data: {
         }
     }"""
-    values = JSONField(default=dict)
+    values = JSONField(default=list)

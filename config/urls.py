@@ -7,13 +7,13 @@ from django.views import defaults as default_views
 from django.views.generic import TemplateView
 from rest_framework.authtoken.views import obtain_auth_token
 
-from bloom.shop.views import HomePage
+from bloom.shop.views import HomePage, ProductUpload
 
 urlpatterns = [
     path("", HomePage.as_view(), name="home"),
     path("business/inventory/", TemplateView.as_view(template_name="pages/business/inventory.html"), name="inventory_page"),
     path("business/my-orders/", TemplateView.as_view(template_name="pages/business/my_orders.html", ), name="orders_page"),
-    path("business/product/upload/", TemplateView.as_view(template_name="pages/business/product_add.html", ), name="product_add_page"),
+    path("business/product/upload/", ProductUpload.as_view(), name="product_add_page"),
     path(
         "about/", TemplateView.as_view(template_name="pages/about.html"), name="about"
     ),
@@ -22,6 +22,7 @@ urlpatterns = [
     # User management
     path("users/", include("bloom.users.urls", namespace="users")),
     path("accounts/", include("allauth.urls")),
+    path("shop/", include("shop.urls"), name='shop'),
     # Your stuff: custom urls includes go here
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 if settings.DEBUG:

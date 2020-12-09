@@ -9,9 +9,10 @@
 {% endblock %}
 
 {% block main_vue %}
+  {{ block.super }}
   <script>
   let main = new Vue({
-    el: '#app',
+    el: '#app2',
     delimiters: ["[{", "}]"],
   });
   </script>

@@ -1,3 +1,4 @@
+from django import forms
 from django.contrib import admin
 
 from bloom.shop import models
@@ -15,6 +16,16 @@ class AttributeAdmin(admin.ModelAdmin):
     ]
 
 
+@admin.register(models.Shop)
+class ShopAdmin(admin.ModelAdmin):
+    list_display = ('name', 'owner', 'business_address', 'business_phone')
+
+
 @admin.register(models.Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = ('title', 'price', 'status', 'shop')
+
+
+@admin.register(models.Category)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ['name', 'parent']

@@ -6,7 +6,7 @@
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-8">
-        <product-add></product-add>
+        <product-add :media-url="media_url" :shop="shop"></product-add>
       </div>
 
     </div>
@@ -14,13 +14,16 @@
 {% endblock %}
 
 {% block main_vue %}
+  {{ block.super }}
   <script>
-  let main = new Vue({
+  let main1 = new Vue({
     el: '#app2',
     delimiters: ["[{", "}]"],
     data: function () {
       return {
-        product: {}
+        product: {},
+        media_url: "{{ MEDIA_URL }}",
+        shop: "{{ shop.id }}"
       }
     },
     methods: {

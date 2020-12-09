@@ -7,7 +7,8 @@ Vue.use(Vuex)
 const vStore = new Vuex.Store({
   state: {
     colors: [],
-    sizes: []
+    sizes: [],
+    categories: []
   },
   getters: {
     colors: state => {
@@ -23,6 +24,9 @@ const vStore = new Vuex.Store({
     },
     setSizes(state, sizes) {
       state.sizes = sizes
+    },
+    setCategories(state, categories) {
+      state.categories = categories;
     }
   },
   actions: {
@@ -34,6 +38,11 @@ const vStore = new Vuex.Store({
     get_sizes(context) {
       axios.get('/api/product/attribute/size/').then((res) => {
         context.commit('setSizes', res.data);
+      })
+    },
+    get_categories(context) {
+      axios.get('/api/product/categories/').then((res) => {
+        context.commit('setCategories', res.data);
       })
     }
   },

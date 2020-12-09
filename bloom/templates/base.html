@@ -29,7 +29,7 @@
 
   <body >
     <div id="app">
-      <div class="mb-1">
+      <div class="">
         <nav class="navbar navbar-expand-md navbar-light bg-light">
           <div class="container">
             <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,9 +41,6 @@
               <ul class="navbar-nav mr-auto">
                 <li class="nav-item active">
                   <a class="nav-link" href="{% url 'home' %}">Home <span class="sr-only">(current)</span></a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="{% url 'about' %}">About</a>
                 </li>
                 {% if request.user.is_authenticated %}
                   <li class="nav-item">
@@ -71,7 +68,7 @@
                 <li class="nav-item dropdown">
                   <a class="nav-link dropdown-toggle user-avatar d-flex" href="javascript:void(0)" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <avatar username="{{ user.username }}" :size="25"></avatar>
-                    <span style="font-size: 9px; margin: 0 10px">{{ user.first_name }}<br/> {{ user.last_name }}</span>
+                    <span style="font-size: 10px; margin: 0 10px;line-height: 10px">{{ user.first_name }}<br/> {{ user.last_name }}</span>
                   </a>
                   <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
                     <a class="dropdown-item" href="#">Account</a>
@@ -106,7 +103,7 @@
       {% endblock %}
     </div>
 
-
+    {% csrf_token %}
     <!-- Le javascript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
@@ -130,8 +127,8 @@
     {% endblock javascript %}
 
     {% block main_vue %}
-    <script>
-      let main = new Vue({
+      <script>
+      let main_app = new Vue({
         el: '#app',
         delimiters: ["[{", "}]"],
       });

@@ -1,20 +1,26 @@
-<div>
-  <div class="container">
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-          <li class="breadcrumb-item"><a href="#">Home</a></li>
-          <li class="breadcrumb-item active" aria-current="page">Library</li>
-        </ol>
-    </nav>
+<div class="mb-4" >
+  <div style="border-bottom: 1px solid #e0e0e0;border-top: 1px solid #e0e0e0">
+    <div class="container">
+      <nav aria-label="breadcrumb">
+          <ol class="breadcrumb" style="background-color: transparent;margin-bottom: 0">
+            <li class="breadcrumb-item"><a href="/">Local Business</a></li>
+            {% if page == 'upload' %}
+            <li class="breadcrumb-item active" aria-current="page">Upload Product</li>
+            {% endif %}
+          </ol>
+      </nav>
+    </div>
   </div>
-</div>
 
-<div>
-  <div class="container">
-    <ul class="bis-menu">
-      <li class="flex-fill"><a href="{% url 'home' %}">My Dashboard</a></li>
-      <li class="flex-fill"><a href="{% url 'inventory_page' %}">My Storefront/Inventory</a></li>
-      <li class="flex-fill"><a href="{% url 'orders_page' %}">My Orders</a></li>
-    </ul>
+  {% if page != 'upload' %}
+  <div style="padding: 15px 0;border-bottom: 1px solid #e0e0e0;">
+    <div class="container">
+      <ul class="bis-menu" style="margin-bottom: 0">
+        <li class="flex-fill"><a href="{% url 'home' %}">My Dashboard</a></li>
+        <li class="flex-fill"><a href="{% url 'inventory_page' %}">My Storefront/Inventory</a></li>
+        <li class="flex-fill"><a href="{% url 'orders_page' %}">My Orders</a></li>
+      </ul>
+    </div>
   </div>
+  {% endif %}
 </div>
