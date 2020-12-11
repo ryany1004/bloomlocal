@@ -18,12 +18,13 @@ class CategorySerializer(serializers.ModelSerializer):
 class ProductModelSerializer(serializers.ModelSerializer):
     variants = serializers.SerializerMethodField()
     images = serializers.SerializerMethodField()
+    category_names = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
-        fields = ['id', 'title', 'thumbnail', 'price', 'description', 'length', 'width', 'height', 'dimension_unit',
+        fields = ['id', 'uuid', 'title', 'thumbnail', 'price', 'description', 'length', 'width', 'height',
                   'weight', 'weight_unit', 'stock', 'delivery_type', 'enable_color', 'enable_size', 'shop_id',
-                  'variants', 'images']
+                  'variants', 'images', 'created_at', 'updated_at', 'categories', 'category_names', 'dimension_unit',]
 
     def to_representation(self, instance):
         response = super(ProductModelSerializer, self).to_representation(instance)
@@ -45,19 +46,22 @@ class ProductModelSerializer(serializers.ModelSerializer):
         else:
             return []
 
+    def get_category_names(self, obj):
+        return [c.name for c in obj.categories.all()]
+
 
 class ProductSerializer(serializers.Serializer):
-    title = serializers.CharField()
-    price = serializers.FloatField()
-    thumbnail = serializers.CharField()
+    title = serializers.CharField(max_length=500)
+    price = serializers.FloatField(min_value=0)
+    thumbnail = serializers.CharField(max_length=500)
     description = serializers.CharField()
-    length = serializers.FloatField()
-    width = serializers.FloatField()
-    height = serializers.FloatField()
+    length = serializers.FloatField(min_value=0)
+    width = serializers.FloatField(min_value=0)
+    height = serializers.FloatField(min_value=0)
     dimension_unit = serializers.CharField()
-    weight = serializers.FloatField()
+    weight = serializers.FloatField(min_value=0)
     weight_unit = serializers.CharField()
-    stock = serializers.FloatField()
+    stock = serializers.FloatField(min_value=0)
     delivery_type = serializers.CharField()
     enable_color = serializers.BooleanField(default=True)
     enable_size = serializers.BooleanField(default=True)
@@ -101,3 +105,30 @@ class ProductSerializer(serializers.Serializer):
             product_images.save()
 
         return p
+
+    def update(self, instance, validated_data):
+        if "thumbnail" in validated_data:
+            instance.thumbnail = validated_data['thumbnail']
+            instance.save()
+
+        if 'enable_color' in validated_data:
+            instance.enable_color = validated_data['enable_color']
+            instance.save()
+
+        if 'enable_size' in validated_data:
+            instance.enable_size = validated_data['enable_size']
+            instance.save()
+
+        if 'images' in validated_data:
+            product_imgs = instance.productimage_set.first()
+            if product_imgs:
+                product_imgs.images = validated_data['images']
+                product_imgs.save()
+
+        if 'variants' in validated_data:
+            product_variants = instance.productvariant_set.first()
+            if product_variants:
+                product_variants.values = validated_data['variants']
+                product_variants.save()
+
+        return instance

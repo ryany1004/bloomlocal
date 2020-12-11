@@ -1,3 +1,4 @@
+import uuid as uuid
 from autoslug import AutoSlugField
 from django.contrib.auth import get_user_model
 from django.contrib.postgres import fields
@@ -21,7 +22,7 @@ class Shop(BaseModelMixin, models.Model):
         ('clothes', 'Clothes'),
         ('electronics', 'Electronics'),
     )
-
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     name = models.CharField(max_length=255)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='shop_set')
     business_address = models.CharField(max_length=255, blank=True)
@@ -53,10 +54,11 @@ class Product(BaseModelMixin, models.Model):
         (0, "Active"),
         (1, "Deactivate"),
     )
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     title = models.CharField(max_length=500)
-    slug = AutoSlugField(populate_from='title', unique=True, always_update=True, db_index=True)
+    slug = AutoSlugField(populate_from='title', unique=True, always_update=True, db_index=True, max_length=700)
     price = models.FloatField()
-    thumbnail = models.ImageField(upload_to=get_photo_path)
+    thumbnail = models.ImageField(upload_to=get_photo_path, max_length=500)
     description = models.TextField(blank=True)
     length = models.FloatField(blank=True, null=True)
     width = models.FloatField(blank=True, null=True)

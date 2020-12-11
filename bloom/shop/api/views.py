@@ -1,11 +1,13 @@
 import django
 from django.conf import settings
+from django.core.cache import cache
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from google.cloud.storage import Bucket, Blob
 from rest_framework import status
-from rest_framework.generics import ListAPIView, CreateAPIView
+from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveAPIView, get_object_or_404, \
+    RetrieveUpdateAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -35,14 +37,22 @@ class AttributeValueAPIView(ListAPIView):
     serializer_class = AttributeValueSerializer
 
     def get_queryset(self):
-        return AttributeValue.objects.filter(attribute__attribute_code=self.kwargs['code'])
+        attributes = cache.get('attribute_{}'.format(self.kwargs['code']))
+        if not attributes:
+            attributes = AttributeValue.objects.filter(attribute__attribute_code=self.kwargs['code'])
+            cache.set('attribute_{}'.format(self.kwargs['code']), attributes)
+        return attributes
 
 
 class CategoryAPIView(ListAPIView):
     serializer_class = CategorySerializer
 
     def get_queryset(self):
-        return Category.objects.filter(parent=None)
+        categories = cache.get('product_categories')
+        if not categories:
+            categories = Category.objects.filter(parent=None)
+            cache.set('product_categories', categories)
+        return categories
 
 
 class UploadURLAPI(BaseAPIView):
@@ -61,6 +71,8 @@ class UploadURLAPI(BaseAPIView):
 
         filename: str = request.data['filename']
         content_type: str = request.data['content_type']
+        if len(filename) > 200:
+            filename = filename[len(filename) - 200:]
 
         timestring: str = "{0:%Y-%m-%d_%H-%M-%S/}".format(timezone.now())
         randomstring: str = "".join(random.choices(URLSAFE_CHARACTERS, k=24))
@@ -89,9 +101,27 @@ class UploadProductAPI(APIView):
         return Response(status=status.HTTP_201_CREATED)
 
 
+class UpdateAttributeProductAPI(APIView):
+    def patch(self, request, *args, **kwargs):
+        product = get_object_or_404(Product, uuid=kwargs['uuid'], shop__owner=request.user)
+        data = ProductSerializer(data=request.data, partial=True, instance=product)
+        if data.is_valid():
+            data.save()
+        else:
+            return Response(data=data.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_200_OK, data=ProductModelSerializer(instance=product).data)
+
+
 class ShopProductListAPI(ListAPIView):
     serializer_class = ProductModelSerializer
 
     def get_queryset(self):
         return Product.objects.select_related('shop').prefetch_related('productimage_set', 'productvariant_set') \
             .filter(shop=self.request.user.get_shop())
+
+
+class ProductDetails(RetrieveUpdateAPIView):
+    serializer_class = ProductModelSerializer
+
+    def get_object(self):
+        return get_object_or_404(Product, uuid=self.kwargs['uuid'], shop__owner=self.request.user)

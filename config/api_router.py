@@ -22,8 +22,10 @@ urlpatterns += [
     path('accounts/signup/initial/', views.SignUpInitialAPIView.as_view(), name="signup-initial"),
     path('product/attribute/<code>/', shop_views.AttributeValueAPIView.as_view(), name="attribute-values"),
     path('product/categories/', shop_views.CategoryAPIView.as_view(), name="product-categories"),
-    path('product/upload/', shop_views.UploadProductAPI.as_view(), name="product-upload"),
     path('shop/products/', shop_views.ShopProductListAPI.as_view(), name="shop-product-list"),
+    path('shop/product/upload/', shop_views.UploadProductAPI.as_view(), name="product-upload"),
+    path('shop/product/<uuid>/', shop_views.ProductDetails.as_view(), name="product-details"),
+    path('shop/product/attribute/<uuid>/', shop_views.UpdateAttributeProductAPI.as_view(), name="update-attribute-product"),
 
     path('shop/upload/generate-url/', shop_views.UploadURLAPI.as_view(), name="upload-url"),
 ]

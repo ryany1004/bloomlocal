@@ -7,12 +7,15 @@
             {% if page == 'upload' %}
             <li class="breadcrumb-item active" aria-current="page">Upload Product</li>
             {% endif %}
+            {% if page == 'update' %}
+            <li class="breadcrumb-item active" aria-current="page">Product Details</li>
+            {% endif %}
           </ol>
       </nav>
     </div>
   </div>
 
-  {% if page != 'upload' %}
+  {% if page != 'upload' and page != 'update' %}
   <div style="padding: 15px 0;border-bottom: 1px solid #e0e0e0;">
     <div class="container">
       <ul class="bis-menu" style="margin-bottom: 0">

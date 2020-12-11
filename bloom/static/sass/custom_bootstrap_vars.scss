@@ -1,1 +1,9 @@
 $body-bg: #fefcff;
+$body-color: #000;
+$font-family-sans-serif: Comfortaa, cursive !default;
+$font-family-serif:      Comfortaa, cursive, serif !default;
+$font-family-monospace:  Comfortaa, cursive, monospace !default;
+$font-family-base:       $font-family-sans-serif !default;
+$theme-colors: (
+  "primary": #4FC5E9,
+);

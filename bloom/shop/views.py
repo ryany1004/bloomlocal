@@ -1,12 +1,12 @@
 import django
 from django.conf import settings
 from django.http.response import HttpResponseBadRequest, HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.utils import baseconv, timezone
 from django.views.generic.base import View
 from google.cloud.storage import Bucket, Blob
 
-from bloom.shop.models import Shop
+from bloom.shop.models import Shop, Product
 from bloom.users.models import UserRole
 
 
@@ -27,3 +27,14 @@ class ProductUpload(View):
 
         return render(request, 'pages/business/product_add.html', context={'shop': shop, 'page':'upload'})
 
+
+class ProductUpdate(View):
+    def get(self, request, *args, **kwargs):
+        product = get_object_or_404(Product, uuid=kwargs['uuid'])
+        shop = product.shop
+        context = {
+            'shop': shop,
+            'page': 'update',
+            'product': product,
+        }
+        return render(request, 'pages/business/product_update.html', context=context)

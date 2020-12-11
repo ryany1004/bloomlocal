@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content2 %}
+  {% include 'pages/includes/bis_menu.html' %}
+
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-8">
+        <product-update :media-url="media_url" :product-id="product_id"></product-update>
+      </div>
+
+    </div>
+  </div>
+{% endblock %}
+
+{% block main_vue %}
+  {{ block.super }}
+  <script>
+  let main1 = new Vue({
+    el: '#app2',
+    delimiters: ["[{", "}]"],
+    data: function () {
+      return {
+        product_id: "{{ product.uuid }}",
+        media_url: "{{ MEDIA_URL }}",
+        shop: "{{ shop.id }}"
+      }
+    },
+    methods: {
+
+    }
+  });
+  </script>
+{% endblock %}

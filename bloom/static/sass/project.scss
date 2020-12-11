@@ -1,11 +1,10 @@
-
 @import "custom_bootstrap_vars";
 @import "bootstrap";
 @import "fontawesome";
 @import "solid";
 @import "brands";
 
-
+@import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&display=swap');
 
 
 // project specific CSS goes here
@@ -95,3 +94,19 @@ $icon-color: #4f4f4f;
 .breadcrumb-item + .breadcrumb-item::before {
   content: ">";
 }
+.color-1 {
+  color: #4FC5E9;
+}
+.white {
+  color: #fff
+}
+.bg-1 {
+  background-color: #4FC5E9;
+}
+.text-1 {
+  font-size: 36px;
+}
+.text-2 {
+  font-size: 24px;
+}
+
