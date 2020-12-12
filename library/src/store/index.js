@@ -8,7 +8,8 @@ const vStore = new Vuex.Store({
   state: {
     colors: [],
     sizes: [],
-    categories: []
+    categories: [],
+    product: {}
   },
   getters: {
     colors: state => {
@@ -27,6 +28,9 @@ const vStore = new Vuex.Store({
     },
     setCategories(state, categories) {
       state.categories = categories;
+    },
+    setProduct(state, product) {
+      state.product = product;
     }
   },
   actions: {
@@ -43,6 +47,11 @@ const vStore = new Vuex.Store({
     get_categories(context) {
       axios.get('/api/product/categories/').then((res) => {
         context.commit('setCategories', res.data);
+      })
+    },
+    get_product(context, uuid) {
+      return axios.get(`/api/shop/product/${uuid}/`).then((res) => {
+        context.commit('setProduct', res.data);
       })
     }
   },

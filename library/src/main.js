@@ -7,20 +7,26 @@ import 'vue-phone-number-input/dist/vue-phone-number-input.css';
 import Avatar from 'vue-avatar';
 import Switches from 'vue-switches';
 import ElementUI from 'element-ui';
+import locale from 'element-ui/lib/locale/lang/en';
 import 'element-ui/lib/theme-chalk/index.css';
 import VueCookies from 'vue-cookies'
 import axios from "axios";
 import VueAxios from "vue-axios";
+import moment from "vue-moment";
 
 axios.defaults.headers.common['X-CSRFToken'] = document.querySelector('[name=csrfmiddlewaretoken]').value;
-Vue.use(VueCookies)
-Vue.use(ElementUI);
-Vue.use(VueAxios, axios)
+
+Vue.use(VueCookies);
+Vue.use(ElementUI, {locale});
+Vue.use(VueAxios, axios);
+Vue.use(moment);
+
 // import App from './App.vue'
 import './store';
 import ProductAdd from "./components/business/ProductAdd";
 import Storefront from "./components/business/Storefront";
-import ProductCofirmUpload from "./components/business/ProductCofirmUpload";
+import ProductConfirmUpload from "./components/business/ProductConfirmUpload";
+import ProductUpdate from "./components/business/ProductUpdate";
 
 Vue.config.productionTip = false
 
@@ -33,7 +39,8 @@ const Components = {
     Switches,
     ProductAdd,
     Storefront,
-    ProductCofirmUpload
+    ProductConfirmUpload,
+    ProductUpdate
 }
 Object.keys(Components).forEach(name => {
     console.info('name: '+ name);

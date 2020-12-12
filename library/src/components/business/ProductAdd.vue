@@ -1,5 +1,5 @@
 <template>
-  <product-cofirm-upload v-if="uploaded"></product-cofirm-upload>
+  <product-confirm-upload v-if="uploaded"></product-confirm-upload>
   <div v-else class="product-upload">
     <form>
       <div class="row">
@@ -10,8 +10,8 @@
             :show-file-list="false"
             :http-request="handleThumbnailUpload"
             :on-success="handleAvatarSuccess"
-            :before-upload="beforeAvatarUpload">
-            <div v-if="product.thumbnail" :style="{backgroundImage: `url(${mediaUrl}${product.thumbnail}`}" class="product-thumbnail"></div>
+            :before-upload="beforeUpload">
+            <div v-if="product.thumbnail" :style="{backgroundImage: `url('${mediaUrl}${product.thumbnail}'`}" class="product-thumbnail"></div>
             <div class="" v-else>
               <i  class="el-icon-plus avatar-uploader-icon">
                 <span class="uploader-circle"></span>
@@ -26,14 +26,11 @@
 
           <div class="clearfix">
             <el-upload action="" list-type="picture-card" :file-list="product_imgs" class="product-images"
-              :http-request="handleImgsUpload" :auto-upload="true"
+              :http-request="handleImgsUpload" :auto-upload="true" :before-upload="beforeUpload"
               :on-success="handleImgsSuccess">
                 <i slot="default" class="el-icon-plus"></i>
                 <div slot="file" slot-scope="{file}">
-                  <img v-if="!file.url.startsWith('blob')"
-                    class="el-upload-list__item-thumbnail"
-                    :src="file.url.startsWith('blob') ? file.url: mediaUrl + file.url" alt=""
-                  >
+                  <div v-if="!file.url.startsWith('blob')" :style="{backgroundImage: `url('${file.url.startsWith('blob') ? file.url: mediaUrl + file.url}'`}" class="el-upload-list__item-thumbnail"></div>
                   <div v-else class="progress" style="height: 1px;">
                     <div class="progress-bar" role="progressbar" :style="{width: percent2 + '%'}" style="width: 0%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
                   </div>
@@ -52,11 +49,12 @@
           <div class="form-row">
             <div class="form-group col-md-8">
               <label for="product_tile">Product Title</label>
-              <input :class="{'is-invalid': errors.title}" type="text" maxlength="500" class="form-control w-75" id="product_tile" placeholder="" v-model="product.title">
+              <input :class="{'is-invalid': errors.title}" type="text" maxlength="500"
+                     class="form-control w-75" id="product_tile" placeholder="" v-model="product.title">
             </div>
             <div class="form-group col-md-4">
               <label for="product_price">Set Price</label>
-              <input type="number" :class="{'is-invalid': errors.price}" class="form-control" id="product_price" placeholder="" v-model="product.price">
+              <input min="0" type="number" :class="{'is-invalid': errors.price}" class="form-control" id="product_price" placeholder="" v-model="product.price">
             </div>
           </div>
           <div class="form-row">
@@ -69,19 +67,19 @@
             <div class="form-group col-md-5">
               <div class="d-flex">
                 <label for="product_tile" class="mr-4">Color</label>
-                <el-switch v-model="product.enable_color"></el-switch>
+                <el-switch v-model="product.enable_color" @change="reset_variants()"></el-switch>
               </div>
-              <div>
+              <div :class="{disabled: !product.enable_color}">
                 <span @click="changeColor(color)" class="c-circle" :style="{backgroundColor: color.value}" v-for="color in colors" :key="color.value"
-                      :class="{ active: color.value == active_color}"></span>
+                      :class="{ active: color.value == active_color || (active_colors.indexOf(color.value) != -1 && product.enable_color && !product.enable_size)}"></span>
               </div>
             </div>
             <div class="form-group col-md-7">
               <div class="d-flex">
                 <label for="product_tile" class="mr-4">Size</label>
-                <el-switch v-model="product.enable_size"></el-switch>
+                <el-switch v-model="product.enable_size" @change="reset_variants()"></el-switch>
               </div>
-              <div>
+              <div :class="{disabled: !product.enable_size}">
                 <span @click="toggleSize(size)" :class="{'badge-secondary': active_sizes.indexOf(size.value) == -1, 'badge-primary': active_sizes.indexOf(size.value) != -1}" class="badge mr-1 product-size"
                       v-for="size in sizes" :key="size.value">{{size.text}}</span>
               </div>
@@ -108,9 +106,9 @@
             <div class="form-group col">
               <label for="product_category">Product Dimensions</label>
               <div class="form-inline">
-                <input :class="{'is-invalid': errors.length}" type="number" class="form-control form-control-sm input-w50" v-model="product.length" placeholder="length"/><span class="px-1" style="font-size: 80%">x</span>
-                <input :class="{'is-invalid': errors.width}" type="number" class="form-control form-control-sm input-w50" v-model="product.width" placeholder="width"/><span class="px-1" style="font-size: 80%">x</span>
-                <input :class="{'is-invalid': errors.height}" type="number" class="form-control form-control-sm input-w50 mr-1" v-model="product.height" placeholder="height"/>
+                <input min="0" :class="{'is-invalid': errors.length}" type="number" class="form-control form-control-sm input-w50" v-model="product.length" placeholder="length"/><span class="px-1" style="font-size: 80%">x</span>
+                <input min="0" :class="{'is-invalid': errors.width}" type="number" class="form-control form-control-sm input-w50" v-model="product.width" placeholder="width"/><span class="px-1" style="font-size: 80%">x</span>
+                <input min="0" :class="{'is-invalid': errors.height}" type="number" class="form-control form-control-sm input-w50 mr-1" v-model="product.height" placeholder="height"/>
                 <select class="form-control form-control-sm input-w50" v-model="product.dimension_unit">
                   <option value="cm">cm</option>
                   <option value="in">inch</option>
@@ -122,7 +120,7 @@
             <div class="form-group col-5">
               <label for="product_category">Product Weight</label>
               <div class="form-inline">
-                <input :class="{'is-invalid': errors.weight}" type="number" class="form-control input-w50 form-control-sm mr-1" v-model="product.weight"/>
+                <input min="0" :class="{'is-invalid': errors.weight}" type="number" class="form-control input-w50 form-control-sm mr-1" v-model="product.weight"/>
                 <select class="form-control form-control-sm input-w50" v-model="product.weight_unit">
                   <option value="lb">lb</option>
                 </select>
@@ -130,7 +128,7 @@
             </div>
             <div class="form-group col-3">
               <label for="product_category">Stock</label>
-              <input type="number" :class="{'is-invalid': errors.stock}" v-model="product.stock" class="form-control form-control-sm input-w50"/>
+              <input min="0" type="number" :class="{'is-invalid': errors.stock}" v-model="product.stock" class="form-control form-control-sm input-w50"/>
             </div>
           </div>
         </div>
@@ -185,6 +183,7 @@ export default {
       ],
       active_color: null,
       active_sizes: [],
+      active_colors: [],
       variants: [],
       uploaded: false,
       errors: {}
@@ -201,6 +200,12 @@ export default {
         ),
   },
   methods: {
+    reset_variants() {
+      this.variants = [];
+      this.active_colors = [];
+      this.active_color = [];
+      this.active_sizes = [];
+    },
     handleThumbnailUpload(data) {
       let that = this;
       let params = {
@@ -283,8 +288,17 @@ export default {
         this.percent2 = percent;
       }
     },
-    beforeAvatarUpload: function () {
+    beforeUpload: function (file) {
+      const isJPG = ['image/jpeg', "image/png", "image/webp"].indexOf(file.type) != -1;
+      const isLt2M = file.size / 1024 / 1024 < 2;
 
+      if (!isJPG) {
+        this.$message.error('Image must be JPG, PNG format!');
+      }
+      if (!isLt2M) {
+        this.$message.error('Image size can not exceed 2MB!');
+      }
+      return isJPG && isLt2M;
     },
     handleAvatarSuccess: function (file) {
       this.percent = 0
@@ -301,53 +315,98 @@ export default {
       }
     },
     uploadProduct() {
-      let data = this.product, that=this;
-      data.shop = this.shop;
-      data.variants = this.variants;
-      data.images = this.product_imgs;
-      if (data.category) {
-        data.categories = [data.category];
-      }
-      that.errors = {};
-      axios.post('/api/product/upload/', data).then(function () {
-        that.errors = {}
-        that.uploaded = true
-      }).catch(function (err) {
-        if(err.response.data) {
-          that.errors = err.response.data;
+      if (confirm("Are you sure?")) {
+        let data = this.product, that=this;
+        data.shop = this.shop;
+        data.variants = this.variants;
+        data.images = this.product_imgs;
+        if (data.category) {
+          data.categories = [data.category];
         }
-        console.log(err);
-      })
+        that.errors = {};
+        axios.post('/api/shop/product/upload/', data).then(function () {
+          that.errors = {}
+          that.uploaded = true
+        }).catch(function (err) {
+          if(err.response.data) {
+            that.errors = err.response.data;
+          }
+          console.log(err);
+        })
+      }
     },
     changeColor(color) {
-      let active_color_variant_group = _.groupBy(this.variants, 'color')[color.value] || [];
-      let active_sizes = [];
-      active_color_variant_group.forEach(function (item) {
-        active_sizes.push(item.size)
-      })
-      this.active_sizes = active_sizes
-      this.active_color = color.value;
+      let that = this;
+      if (this.product.enable_size && this.product.enable_color) {
+        let active_color_variant_group = _.groupBy(this.variants, 'color')[color.value] || [];
+        let active_sizes = [];
+        active_color_variant_group.forEach(function (item) {
+          active_sizes.push(item.size)
+        })
+        this.active_sizes = active_sizes
+        this.active_color = color.value;
+        this.active_colors = [];
+      } else if (!this.product.enable_size && this.product.enable_color) {
+        this.active_color = null;
+        let index = this.active_colors.indexOf(color.value)
+        if (index != -1) {
+          this.$delete(this.active_colors, index);
+        } else {
+          this.active_colors.push(color.value)
+        }
+        this.variants = [];
+        this.active_colors.forEach(function (color) {
+          that.variants.push({color: color});
+        })
+      }
       console.log(this.variants)
     },
     toggleSize(size) {
-      let index = this.active_sizes.indexOf(size.value);
-      if ( index != -1) {
-        this.$delete(this.active_sizes, index);
-        let i = _.findIndex(this.variants, {size: size.value, color: this.active_color});
-        if (i != -1) {
-          this.$delete(this.variants, i);
+      let that= this;
+      if (this.product.enable_size && this.product.enable_color) {
+        let index = this.active_sizes.indexOf(size.value);
+        if ( index != -1) {
+          this.$delete(this.active_sizes, index);
+          let i = _.findIndex(this.variants, {size: size.value, color: this.active_color});
+          if (i != -1) {
+            this.$delete(this.variants, i);
+          }
+        } else {
+          this.active_sizes.push(size.value);
+          if (this.active_color) {
+            this.variants.push({color: this.active_color, size: size.value})
+          }
         }
-      } else {
-        this.active_sizes.push(size.value);
-        this.variants.push({color: this.active_color, size: size.value})
+      } else if (this.product.enable_size && !this.product.enable_color) {
+        let index = this.active_sizes.indexOf(size.value);
+        if ( index != -1) {
+          this.$delete(this.active_sizes, index);
+        } else {
+          this.active_sizes.push(size.value);
+        }
+        this.variants = [];
+        this.active_sizes.forEach(function (size) {
+          that.variants.push({size: size});
+        })
       }
+      console.log(this.variants)
     }
   }
 }
 </script>
 
 <style lang="scss">
+  .disabled {
+    pointer-events: none;
+    opacity: 0.5;
+  }
   .product-upload {
+    .el-upload-list__item-thumbnail {
+      height: 60px;
+      width: 60px;
+      background-position: center;
+      background-size: cover;
+    }
     .form-inline .form-control.input-w50 {
       width: 60px;
       padding: 0.25rem 0.1rem;
@@ -428,6 +487,7 @@ export default {
     }
     .product-size {
       cursor: pointer;
+      padding: 0.4em 0.5em;
     }
     .error {
       font-size: 11px;
