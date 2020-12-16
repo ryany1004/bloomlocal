@@ -9,18 +9,32 @@
   {% get_providers as socialaccount_providers %}
   <div class="col-md-6" id="sign-up-form">
     <div class="col-md-10">
-      <h2>{% trans "Sign Up" %}</h2>
+      <h3 class="color-1">{% trans "Sign Up" %}</h3>
       <form class="signup" id="signup_form" method="post" @submit="handleSubmit" v-cloak>
         {% csrf_token %}
 
-        <div class="form-group mt-3">
+        <div class="mt-4 mb-2">
+          {% if socialaccount_providers %}
+            <div class="socialaccount_ballot">
+              <ul class="socialaccount_providers row">
+                {% include "socialaccount/snippets/provider_list.html" with process="login" %}
+              </ul>
+            </div>
+          {% endif %}
+          <div class="text-center position-relative" style="margin-top: 2rem;">
+            <hr style="margin: 0; padding: 0">
+            <span class="text-center mt-4 color-1 or-cls">Or</span>
+          </div>
+        </div>
+
+        <div class="form-group">
           <div class="form-check form-check-inline mr-4">
             <input class="form-check-input" type="radio" v-model="role_type" name="role_name" id="inlineRadio1" value="2">
-            <label class="form-check-label" for="inlineRadio1">Shopper</label>
+            <label class="form-check-label" for="inlineRadio1" :class="{'color-1': role_type == '2'}">Shopper</label>
           </div>
           <div class="form-check form-check-inline">
             <input class="form-check-input" type="radio" v-model="role_type" name="role_name" id="inlineRadio2" value="1">
-            <label class="form-check-label" for="inlineRadio2">Local Business</label>
+            <label class="form-check-label" for="inlineRadio2" :class="{'color-1': role_type == '1'}">Local Business</label>
           </div>
         </div>
         <div id="shopper" v-if="role_type == '2'">
@@ -40,12 +54,12 @@
           </div>
           <div class="form-row">
             <div class="form-group col">
-{#              <input :class="{'is-invalid': errors.phone_number}" type="text" class="form-control" required v-model="shopper.phone_number"  id="phone_number" placeholder="Phone number">#}
-              <vue-phone-number-input v-model="shopper.phone_number" :required="true" :class="{'is-invalid': errors.phone_number}"/>
-              <div class="invalid-feedback" v-if="errors.phone_number">
-                [{ errors.phone_number.join(", ") }]
+              <input :class="{'is-invalid': errors.username}" type="text" class="form-control" required id="username" v-model="shopper.username"  name="username" placeholder="Username">
+              <div class="invalid-feedback" v-if="errors.username">
+                [{ errors.username.join(", ") }]
               </div>
             </div>
+
           </div>
           <div class="form-row">
             <div class="form-group col">
@@ -55,14 +69,15 @@
               </div>
             </div>
           </div>
+
           <div class="form-row">
-            <div class="form-group col-6">
-              <input :class="{'is-invalid': errors.username}" type="text" class="form-control" required id="username" v-model="shopper.username"  name="username" placeholder="Username">
-              <div class="invalid-feedback" v-if="errors.username">
-                [{ errors.username.join(", ") }]
+            <div class="form-group col">
+{#              <input :class="{'is-invalid': errors.phone_number}" type="text" class="form-control" required v-model="shopper.phone_number"  id="phone_number" placeholder="Phone number">#}
+              <vue-phone-number-input v-model="shopper.phone_number" :required="true" :class="{'is-invalid': errors.phone_number}"/>
+              <div class="invalid-feedback" v-if="errors.phone_number">
+                [{ errors.phone_number.join(", ") }]
               </div>
             </div>
-
           </div>
           <div class="form-row">
             <div class="form-group col">
@@ -117,9 +132,9 @@
                     name="business_address" api-key="{{ GOOGLE_MAPS_API_KEY }}"></place-autocomplete-field>
 
             <div class="form-group col">
-              <input type="text" :class="{'is-invalid': errors1.second_address}" class="form-control" required id="second_address" v-model="vendor.second_address" name="second_address" placeholder="Apartment/Suite">
-              <div class="invalid-feedback" v-if="errors1.second_address">
-                [{ errors1.second_address.join(", ") }]
+              <input type="text" :class="{'is-invalid': errors1.apartment}" class="form-control" required id="apartment" v-model="vendor.apartment" name="apartment" placeholder="Apartment/Suite">
+              <div class="invalid-feedback" v-if="errors1.apartment">
+                [{ errors1.apartment.join(", ") }]
               </div>
             </div>
           </div>
@@ -147,10 +162,10 @@
           </div>
           <div class="form-row">
             <div class="form-group col-6">
-              <select id="store_type" :class="{'is-invalid': errors1.store_type}" class="form-control" v-model="vendor.store_type">
+              <select id="store_type" :class="{'is-invalid': errors1.store_type}" class="form-control" v-model="vendor.category">
                 <option value="" disabled selected>Store Type</option>
-                <option v-for="option in store_types" :value="option.value">
-                  [{ option.text }]
+                <option v-for="c in categories" :value="c.id">
+                  [{ c.name }]
                 </option>
               </select>
               <div class="invalid-feedback" v-if="errors1.store_type">
@@ -160,30 +175,12 @@
           </div>
         </div>
 
-        <div class="mt-3 mb-4">
-          <p class="text-center">Or <br> Sign up with</p>
-          {% if socialaccount_providers %}
-            <div class="socialaccount_ballot">
-
-              <ul class="socialaccount_providers d-flex justify-content-center">
-                {% include "socialaccount/snippets/provider_list.html" with process="login" %}
-                <li>
-                  <a class="socialaccount_provider d-flex justify-content-center"
-                     href="javascript:void(0)">
-                    <i class="fa fa-plus fa-1x-half"></i>
-                  </a>
-                </li>
-              </ul>
-            </div>
-          {% endif %}
-        </div>
-
         {% if redirect_field_value %}
         <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
         {% endif %}
         <div class="">
-          <button :disabled="loading" class="primaryAction btn btn-primary btn-block btn-lg" type="submit">{% trans "Sign Up" %}</button>
-          <p class="text-center mt-2">Already have an account? <a href="{{ login_url }}">Log in</a></p>
+          <button :disabled="loading" class="primaryAction btn btn-primary btn-block btn-lg white" type="submit">{% trans "Sign Up" %}</button>
+          <p class="text-center mt-2 color-1">Already have an account? <a href="{{ login_url }}">Log in</a></p>
         </div>
       </form>
     </div>
@@ -216,9 +213,9 @@
         password: "",
         confirm_password: "",
         business_address: "",
-        second_address: "",
+        apartment: "",
         business_phone: "",
-        store_type: "",
+        category: ""
       },
       role_type: "2",
       store_types: [
@@ -236,6 +233,9 @@
       }
     },
     computed: {
+      categories() {
+        return this.$store.getters.shopCategories;
+      },
       shopper_password_valid: function () {
         return this.shopper.password === this.shopper.confirm_password && this.shopper.confirm_password !== '' && this.shopper.password !== '';
       },
@@ -251,6 +251,7 @@
     },
     created: function () {
       this.initRole(this.role_type);
+      this.$store.dispatch('get_shop_categories');
     },
     methods: {
       initRole: function (val) {
@@ -273,6 +274,7 @@
           })
         } else {
           this.errors1 = {};
+          this.vendor.categories = [this.vendor.category];
           axios.post("{% url 'api:vendor-signup' %}", this.vendor).then(function (res) {
             that.loading = false;
             alert("Your account created successfully.")

@@ -1,8 +1,8 @@
 <template>
-  <div v-loading.fullscreen="loading" class="product-upload" >
+  <div v-loading.fullscreen="loading" class="product-update" >
     <form v-if="product.id">
       <div class="row">
-        <div class="col-4">
+        <div class="col-md-4 col-12">
           <el-upload
             class="product-uploader"
             action=""
@@ -27,10 +27,7 @@
               :on-success="handleImgsSuccess">
                 <i slot="default" class="el-icon-plus"></i>
                 <div slot="file" slot-scope="{file}">
-                  <img v-if="!file.url.startsWith('blob')"
-                    class="el-upload-list__item-thumbnail"
-                    :src="file.url.startsWith('blob') ? file.url: mediaUrl + file.url" alt=""
-                  >
+                  <div v-if="!file.url.startsWith('blob')" :style="{backgroundImage: `url('${file.url.startsWith('blob') ? file.url: mediaUrl + file.url}'`}" class="el-upload-list__item-thumbnail"></div>
                   <div v-else class="progress" style="height: 1px;">
                     <div class="progress-bar" role="progressbar" :style="{width: percent2 + '%'}" style="width: 0%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
                   </div>
@@ -41,18 +38,18 @@
                   </span>
                 </div>
             </el-upload>
-            <p class="error" v-if="errors.images">Images are required</p>
+            <p class="error" v-if="errs.images">Images are required</p>
           </div>
           <div class="d-flex mt-2" v-if="edit.images">
             <button class="btn btn-primary btn-sm" type="button" :disabled="saving.description" @click="saveProductImages()"><i class="fas fa-check"></i></button>
             <button class="btn btn-secondary btn-sm ml-3" type="button" @click="hide_edit_images()"><i class="fas fa-times"></i></button>
           </div>
         </div>
-        <div class="col-8">
+        <div class="col-md-8 col-12">
           <div>
             <div class="form-group mb-4">
               <div v-if="edit.title" class="form-inline">
-                <input  :class="{'is-invalid': errors.title}" type="text" maxlength="500" class="form-control w-75" id="product_tile" placeholder="" v-model="product.title">
+                <input  :class="{'is-invalid': errs.title}" type="text" maxlength="500" class="form-control w-75" id="product_tile" placeholder="" v-model="product.title">
                 <button class="btn btn-primary btn-sm mx-3" type="button" :disabled="saving.title" @click="saveProduct('title')"><i class="fas fa-check"></i></button>
                 <button class="btn btn-secondary btn-sm" type="button" @click="hide_edit('title')"><i class="fas fa-times"></i></button>
               </div>
@@ -63,7 +60,9 @@
             </div>
             <div class="form-group mb-4">
               <div v-if="edit.price" class="form-inline">
-                <input type="number" :class="{'is-invalid': errors.price}" class="form-control" id="product_price" placeholder="" v-model="product.price">
+                <ValidationProvider rules="positive" v-slot="{ errors }">
+                <input type="number" min="0" :class="{'is-invalid': errors.length > 0 || errs.price}" class="form-control" id="product_price" placeholder="" v-model="product.price">
+                </ValidationProvider>
                 <button class="btn btn-primary btn-sm mx-3" type="button" :disabled="saving.price" @click="saveProduct('price')"><i class="fas fa-check"></i></button>
                 <button class="btn btn-secondary btn-sm" type="button" @click="hide_edit('price')"><i class="fas fa-times"></i></button>
               </div>
@@ -72,7 +71,7 @@
             <div class="form-group">
               <h5 class="text-2">Product Description <a href="javascript:void(0)" @click="enable_edit('description')"><i class="fas fa-edit edit-icon"></i></a></h5>
               <div v-if="edit.description">
-                <textarea :class="{'is-invalid': errors.description}" class="form-control" id="product_description" v-model="product.description"></textarea>
+                <textarea :class="{'is-invalid': errs.description}" class="form-control" id="product_description" v-model="product.description"></textarea>
                 <div class="d-flex mt-2">
                   <button class="btn btn-primary btn-sm" type="button" :disabled="saving.description" @click="saveProduct('description')"><i class="fas fa-check"></i></button>
                   <button class="btn btn-secondary btn-sm ml-3" type="button" @click="hide_edit('description')"><i class="fas fa-times"></i></button>
@@ -84,7 +83,7 @@
             </div>
             <div class="form-group d-flex justify-content-between">
               <div class="d-flex align-items-center">
-                <label class="mr-1 mb-0">Color:</label>
+                <label class="mr-3 mb-0">Color:</label>
                 <div v-if="edit.color" class="form-inline">
                   <span :class="{disabled: !product.enable_color}">
                     <span class="c-circle" :style="{backgroundColor: color.value}" v-for="color in colors" :key="color.value"
@@ -103,9 +102,9 @@
               </div>
             </div>
             <div class="form-group d-flex align-items-center">
-              <label class="mr-1 mb-0">Categories:</label>
+              <label class="mr-2 mb-0">Categories:</label>
               <div v-if="edit.categories" class="form-inline">
-                <el-select v-model="product.categories" collapse-tags multiple placeholder="Categories" :class="{'is-invalid': errors.categories}">
+                <el-select v-model="product.categories" collapse-tags multiple placeholder="Categories" :class="{'is-invalid': errs.categories}">
                   <el-option
                     v-for="item in categories"
                     :key="item.id"
@@ -120,7 +119,7 @@
             </div>
             <div class="form-group d-flex justify-content-between">
               <div class="d-flex align-items-center">
-                <label class="mr-1 mb-0">Size:</label>
+                <label class="mr-3 mb-0">Size:</label>
                 <div v-if="edit.size">
                   <span :class="{disabled: !product.enable_size}">
                     <span @click="toggleSize(size)" :class="{'badge-secondary': active_sizes.indexOf(size.value) == -1, 'badge-primary': active_sizes.indexOf(size.value) != -1}" class="badge mr-1 product-size"
@@ -141,9 +140,11 @@
               </div>
             </div>
             <div class="form-group d-flex align-items-center">
-              <label class="mr-1 mb-0">Stock:</label>
+              <label class="mr-3 mb-0">Stock:</label>
               <div v-if="edit.stock" class="form-inline">
-                <input type="number" :class="{'is-invalid': errors.stock}" v-model="product.stock" class="form-control form-control-sm input-w50"/>
+                <ValidationProvider rules="positive" v-slot="{ errors }">
+                <input type="number" min="0" :class="{'is-invalid': errors.length > 0 || errs.stock }" v-model="product.stock" class="form-control form-control-sm input-w50"/>
+                </ValidationProvider>
                 <button class="btn btn-primary btn-sm mx-3" type="button" :disabled="saving.stock" @click="saveProduct('stock')"><i class="fas fa-check"></i></button>
                 <button class="btn btn-secondary btn-sm" type="button" @click="hide_edit('stock')"><i class="fas fa-times"></i></button>
               </div>
@@ -176,6 +177,11 @@ import {mapState} from 'vuex';
 import $ from 'jquery'
 import axios from "axios";
 import _ from "lodash";
+import { ValidationProvider, extend } from 'vee-validate';
+
+extend('positive', value => {
+  return value >= 0;
+});
 
 export default {
   name: "ProductUpdate",
@@ -187,6 +193,9 @@ export default {
     productId: {
       required: true
     }
+  },
+  components: {
+    ValidationProvider
   },
   data: function () {
     return {
@@ -205,7 +214,7 @@ export default {
       active_colors: [],
       variants: [],
       uploaded: false,
-      errors: {},
+      errs: {},
       loading: false,
       saving: {},
       edit: {}
@@ -383,11 +392,11 @@ export default {
     },
     saveProduct(field) {
       let data = {}, that=this;
-      that.errors = {};
+      that.errs = {};
       if (field == 'categories') {
         data = new FormData();
         if (that.product.categories.length == 0) {
-          that.$set(that.errors, field, true);
+          that.$set(that.errs, field, true);
           return;
         }
         that.product.categories.forEach(function (item) {
@@ -398,7 +407,7 @@ export default {
       }
       that.$set(that.saving, field, true);
       axios.patch(`/api/shop/product/${this.product.uuid}/`, data).then(function (res) {
-        that.errors = {}
+        that.errs = {}
         that.$set(that.saving, field, false);
         that.edit[field] = false;
         if (field == 'categories') {
@@ -409,7 +418,7 @@ export default {
       }).catch(function (err) {
         that.$set(that.saving, field, false);
         if(err.response.data) {
-          that.errors = err.response.data;
+          that.errs = err.response.data;
         }
         console.log(err);
       })
@@ -430,7 +439,7 @@ export default {
       }).catch(function (err) {
         that.$set(that.saving, 'images', false);
         if(err.response.data) {
-          that.errors = err.response.data;
+          that.errs = err.response.data;
         }
         console.log(err);
       })
@@ -538,7 +547,7 @@ export default {
     pointer-events: none;
     opacity: 0.5;
   }
-  .product-upload {
+  .product-update {
     .edit-icon {
       font-size: 14px;
     }
@@ -547,13 +556,16 @@ export default {
       padding: 0.25rem 0.1rem;
     }
     .c-circle {
-      width: 25px;
-      height: 25px;
+      width: 24px;
+      height: 24px;
       display: inline-block;
       border-radius: 50%;
       border: 1px solid #00d1b2;
-      margin-right: 2px;
+      margin-right: 14px;
       cursor: pointer;
+    }
+    .c-circle:last-child {
+      margin-right: 0;
     }
     .c-circle.active, .c-circle:hover {
       border: 2px solid yellowgreen;
@@ -605,7 +617,12 @@ export default {
         width: 60px;
         height: 60px;
       }
-
+      .el-upload-list__item-thumbnail {
+        height: 60px;
+        width: 60px;
+        background-position: center;
+        background-size: cover;
+      }
       .el-upload--picture-card {
         width: 60px;
         height: 60px;

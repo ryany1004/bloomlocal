@@ -29,3 +29,8 @@ class ProductAdmin(admin.ModelAdmin):
 @admin.register(models.Category)
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ['name', 'parent']
+
+
+@admin.register(models.ShopCategory)
+class ShopCategoryAdmin(admin.ModelAdmin):
+    list_display = ['name', 'parent']

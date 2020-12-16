@@ -11,9 +11,10 @@ from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveAPIView,
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from bloom.shop.api.pagination import StandardResultsSetPagination
 from bloom.shop.api.serializers import AttributeValueSerializer, CategorySerializer, ProductSerializer, \
-    ProductModelSerializer
-from bloom.shop.models import AttributeValue, Category, Product
+    ProductModelSerializer, ShopSerializer, ShopCategorySerializer
+from bloom.shop.models import AttributeValue, Category, Product, Shop, ShopCategory
 import datetime
 import json
 import random
@@ -114,10 +115,18 @@ class UpdateAttributeProductAPI(APIView):
 
 class ShopProductListAPI(ListAPIView):
     serializer_class = ProductModelSerializer
+    # pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
-        return Product.objects.select_related('shop').prefetch_related('productimage_set', 'productvariant_set') \
-            .filter(shop=self.request.user.get_shop())
+        if self.request.GET.get('view') == 'recent_added':
+            return Product.objects.select_related('shop') \
+                .prefetch_related('productimage_set', 'productvariant_set', 'categories') \
+                .filter(shop=self.request.user.get_shop(), archived=False).order_by('-created_at')[:20]
+        elif self.request.GET.get('view') == 'best_selling':
+            return []
+        return Product.objects.select_related('shop') \
+            .prefetch_related('productimage_set', 'productvariant_set','categories') \
+            .filter(shop=self.request.user.get_shop(), archived=False)
 
 
 class ProductDetails(RetrieveUpdateAPIView):
@@ -125,3 +134,30 @@ class ProductDetails(RetrieveUpdateAPIView):
 
     def get_object(self):
         return get_object_or_404(Product, uuid=self.kwargs['uuid'], shop__owner=self.request.user)
+
+
+class ShopListAPI(ListAPIView):
+    serializer_class = ShopSerializer
+    permission_classes = []
+    # pagination_class = StandardResultsSetPagination
+
+    def get_queryset(self):
+        if self.request.GET.get('view') == 'recent_added':
+            return Shop.objects.select_related('owner') \
+                       .prefetch_related('categories').order_by('-created_at')[:20]
+        elif self.request.GET.get('view') == 'best_selling':
+            return []
+        return Shop.objects.select_related('owner') \
+            .prefetch_related('categories')
+
+
+class ShopCategoryAPIView(ListAPIView):
+    serializer_class = ShopCategorySerializer
+    permission_classes = []
+
+    def get_queryset(self):
+        categories = cache.get('shop_categories')
+        if not categories:
+            categories = ShopCategory.objects.filter(parent=None)
+            cache.set('shop_categories', categories)
+        return categories

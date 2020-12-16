@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content2 %}
+  {% include 'pages/includes/bis_menu.html' %}
+
+  <div class="container">
+    <products :media-url="media_url"></products>
+  </div>
+{% endblock %}
+
+{% block main_vue %}
+  {{ block.super }}
+  <script>
+  let main1 = new Vue({
+    el: '#app2',
+    delimiters: ["[{", "}]"],
+    data: function () {
+      return {
+        media_url: "{{ MEDIA_URL }}",
+      }
+    },
+    methods: {
+
+    }
+  });
+  </script>
+{% endblock %}

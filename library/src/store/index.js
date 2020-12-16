@@ -9,7 +9,10 @@ const vStore = new Vuex.Store({
     colors: [],
     sizes: [],
     categories: [],
-    product: {}
+    product: {},
+    shop_categories: [],
+    user: {},
+    isLoggedIn: false
   },
   getters: {
     colors: state => {
@@ -17,6 +20,9 @@ const vStore = new Vuex.Store({
     },
     sizes:state => {
       return state.sizes
+    },
+    shopCategories: state => {
+      return state.shop_categories;
     }
   },
   mutations: {
@@ -29,8 +35,17 @@ const vStore = new Vuex.Store({
     setCategories(state, categories) {
       state.categories = categories;
     },
+    setShopCategories(state, categories) {
+      state.shop_categories = categories;
+    },
     setProduct(state, product) {
       state.product = product;
+    },
+    setUser(state, user) {
+      state.user = user;
+      if (user.id) {
+        state.isLoggedIn = true;
+      }
     }
   },
   actions: {
@@ -49,10 +64,26 @@ const vStore = new Vuex.Store({
         context.commit('setCategories', res.data);
       })
     },
+    get_shop_categories(context) {
+      axios.get('/api/shop/categories/').then((res) => {
+        context.commit('setShopCategories', res.data);
+      })
+    },
     get_product(context, uuid) {
       return axios.get(`/api/shop/product/${uuid}/`).then((res) => {
         context.commit('setProduct', res.data);
       })
+    },
+    get_user(context) {
+      axios.get('/api/users/me/').then((res) => {
+        context.commit('setUser', res.data);
+      }).catch((err) => {
+        console.log(err)
+        context.commit('setUser', {});
+      })
+    },
+    set_user(context, user) {
+      context.commit("setUser", user);
     }
   },
   modules: {

@@ -2,7 +2,7 @@
   <div style="border-bottom: 1px solid #e0e0e0;border-top: 1px solid #e0e0e0">
     <div class="container">
       <nav aria-label="breadcrumb">
-          <ol class="breadcrumb" style="background-color: transparent;margin-bottom: 0">
+          <ol class="breadcrumb" style="background-color: transparent;margin-bottom: 0;padding-left: 0">
             <li class="breadcrumb-item"><a href="/">Local Business</a></li>
             {% if page == 'upload' %}
             <li class="breadcrumb-item active" aria-current="page">Upload Product</li>
@@ -10,18 +10,24 @@
             {% if page == 'update' %}
             <li class="breadcrumb-item active" aria-current="page">Product Details</li>
             {% endif %}
+            {% if page == 'inventory' %}
+            <li class="breadcrumb-item active" aria-current="page">Storefront/Inventory</li>
+            {% endif %}
+            {% if page == 'my_order' %}
+            <li class="breadcrumb-item active" aria-current="page">My Orders</li>
+            {% endif %}
           </ol>
       </nav>
     </div>
   </div>
 
   {% if page != 'upload' and page != 'update' %}
-  <div style="padding: 15px 0;border-bottom: 1px solid #e0e0e0;">
+  <div style="padding: 13px 0;border-bottom: 1px solid #e0e0e0;">
     <div class="container">
       <ul class="bis-menu" style="margin-bottom: 0">
-        <li class="flex-fill"><a href="{% url 'home' %}">My Dashboard</a></li>
-        <li class="flex-fill"><a href="{% url 'inventory_page' %}">My Storefront/Inventory</a></li>
-        <li class="flex-fill"><a href="{% url 'orders_page' %}">My Orders</a></li>
+        <li class="flex-fill {% if page == 'dashboard' %}active{% endif %}"><a href="{% url 'home' %}">My Dashboard</a></li>
+        <li class="flex-fill {% if page == 'inventory' %}active{% endif %}"><a href="{% url 'inventory_page' %}">My Storefront/Inventory</a></li>
+        <li class="flex-fill {% if page == 'my_order' %}active{% endif %}"><a href="{% url 'orders_page' %}">My Orders</a></li>
       </ul>
     </div>
   </div>

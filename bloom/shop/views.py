@@ -13,9 +13,19 @@ from bloom.users.models import UserRole
 class HomePage(View):
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated and request.user.role_type == UserRole.BUSINESS:
-            return render(request, 'pages/business_dashboard.html')
+            return render(request, 'pages/business_dashboard.html', {"page": 'dashboard'})
 
         return render(request, 'pages/home.html')
+
+
+class InventoryPage(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'pages/business/products.html', {"page": 'inventory'})
+
+
+class MyOrderPage(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'pages/business/my_orders.html', {"page": 'my_order'})
 
 
 class ProductUpload(View):

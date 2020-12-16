@@ -24,9 +24,21 @@ Vue.use(moment);
 // import App from './App.vue'
 import './store';
 import ProductAdd from "./components/business/ProductAdd";
-import Storefront from "./components/business/Storefront";
+import Products from "./components/business/Products";
 import ProductConfirmUpload from "./components/business/ProductConfirmUpload";
 import ProductUpdate from "./components/business/ProductUpdate";
+import ProductInventory from "./components/business/ProductInventory";
+import MyStorefront from "./components/business/MyStorefront";
+import RecentAdded from "./components/business/storefront/RecentAdded";
+import BestSelling from "./components/business/storefront/BestSelling";
+import ViewAll from "./components/business/storefront/ViewAll";
+import StorefrontCategory from "./components/business/storefront/StorefrontCategory";
+import MyShops from "./components/shopper/MyShops";
+import ViewAllShop from "./components/shopper/shops/ViewAllShop";
+import RecentAddedShop from "./components/shopper/shops/RecentAddedShop";
+import CategoryShop from "./components/shopper/shops/CategoryShop";
+import BestSellingShop from "./components/shopper/shops/BestSellingShop";
+import FollowingLove from "./components/shopper/shops/FollowingLove";
 
 Vue.config.productionTip = false
 
@@ -38,9 +50,21 @@ const Components = {
     Avatar,
     Switches,
     ProductAdd,
-    Storefront,
+    Products,
     ProductConfirmUpload,
-    ProductUpdate
+    ProductUpdate,
+    ProductInventory,
+    MyStorefront,
+    RecentAdded,
+    BestSelling,
+    ViewAll,
+    StorefrontCategory,
+    MyShops,
+    BestSellingShop,
+    CategoryShop,
+    RecentAddedShop,
+    ViewAllShop,
+    FollowingLove
 }
 Object.keys(Components).forEach(name => {
     console.info('name: '+ name);

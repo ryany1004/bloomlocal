@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from bloom.shop.models import AttributeValue, Category, Product, ProductVariant, ProductImage
+from bloom.shop.models import AttributeValue, Category, Product, ProductVariant, ProductImage, Shop, ShopCategory
 
 
 class AttributeValueSerializer(serializers.ModelSerializer):
@@ -22,8 +22,8 @@ class ProductModelSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['id', 'uuid', 'title', 'thumbnail', 'price', 'description', 'length', 'width', 'height',
-                  'weight', 'weight_unit', 'stock', 'delivery_type', 'enable_color', 'enable_size', 'shop_id',
+        fields = ['id', 'uuid', 'title', 'thumbnail', 'price', 'description', 'length', 'width', 'height', 'status',
+                  'weight', 'weight_unit', 'stock', 'delivery_type', 'enable_color', 'enable_size', 'shop_id', 'archived',
                   'variants', 'images', 'created_at', 'updated_at', 'categories', 'category_names', 'dimension_unit',]
 
     def to_representation(self, instance):
@@ -132,3 +132,27 @@ class ProductSerializer(serializers.Serializer):
                 product_variants.save()
 
         return instance
+
+
+class ShopSerializer(serializers.ModelSerializer):
+    category_names = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Shop
+        fields = ['id', 'uuid', 'name', 'slug', 'logo', 'owner', 'business_address', 'business_phone',
+                  'categories', 'locality', 'category_names']
+
+    def to_representation(self, instance):
+        response = super(ShopSerializer, self).to_representation(instance)
+        if instance.logo:
+            response['logo'] = str(instance.logo)
+        return response
+
+    def get_category_names(self, obj):
+        return [{"name": c.name, 'id': c.id} for c in obj.categories.all()]
+
+
+class ShopCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ShopCategory
+        fields = ['id', 'name']

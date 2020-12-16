@@ -29,6 +29,8 @@ class User(AbstractUser):
     business_phone = models.CharField(max_length=20, blank=True)
     locality = models.CharField(max_length=20, blank=True)
     role_type = models.CharField(max_length=10, choices=ROLE_TYPES, blank=True)
+    following_shops = JSONField(default=list, blank=True)
+    love_shops = JSONField(default=list, blank=True)
 
     def get_absolute_url(self):
         """Get url for user's detail view.

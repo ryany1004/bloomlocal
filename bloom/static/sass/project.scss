@@ -1,11 +1,9 @@
 @import "custom_bootstrap_vars";
 @import "bootstrap";
 @import "fontawesome";
+@import "regular";
 @import "solid";
 @import "brands";
-
-@import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&display=swap');
-
 
 // project specific CSS goes here
 
@@ -45,24 +43,18 @@ $icon-color: #4f4f4f;
 }
 .socialaccount_providers {
   list-style: none;
-  display: inline-block;
-  padding: 0;
-  margin: 0 auto;
-
+  padding-left: 0;
   li {
-    width: 58px;
-    height: 58px;
-    background-color: #e3e3e3;
-    display: inline-block;
-    margin-right: 30px;
     a {
-      text-decoration: none;
-      i {
-        line-height: 58px;
-        color: $icon-color;
-      }
+      font-size: 90%;
     }
   }
+}
+.or-cls {
+  padding: 5px 10px;
+  background-color: #fefcff;
+  top: -12px;
+  position: relative;
 }
 .Password.is-invalid ~ .invalid-feedback {
   display: block;
@@ -109,4 +101,30 @@ $icon-color: #4f4f4f;
 .text-2 {
   font-size: 24px;
 }
+.bis-menu {
+  li {
+    a {
+      color: #000;
+    }
+  }
+  li.active {
+    a {
+      color: #7bd2ee;
+    }
+  }
+}
+.shopper-menu {
+  list-style: none;
+  margin-bottom: 0;
+  padding-left: 0;
+  li {
+    display: inline-block;
+    margin-right: 15px;
+    a {
+      img {
+        margin-right: 5px;
+      }
+    }
+  }
 
+}

@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build --target lib --watch --name bloomLib src/main.js",
+    "dev": "vue-cli-service build --target lib --watch --name bloomLib src/main.js",
+    "build": "vue-cli-service build --target lib --name bloomLib src/main.js",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
@@ -13,10 +14,12 @@
     "element-ui": "^2.14.1",
     "jquery": "^3.5.1",
     "lodash": "^4.17.20",
+    "vee-validate": "3.x",
     "vue": "^2.6.11",
     "vue-avatar": "^2.3.3",
     "vue-axios": "^3.2.0",
     "vue-cookies": "^1.7.4",
+    "vue-horizontal-list": "^1.2.1",
     "vue-moment": "^4.1.0",
     "vue-password-strength-meter": "^1.7.2",
     "vue-phone-number-input": "^1.1.10",

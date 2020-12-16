@@ -26,6 +26,9 @@ urlpatterns += [
     path('shop/product/upload/', shop_views.UploadProductAPI.as_view(), name="product-upload"),
     path('shop/product/<uuid>/', shop_views.ProductDetails.as_view(), name="product-details"),
     path('shop/product/attribute/<uuid>/', shop_views.UpdateAttributeProductAPI.as_view(), name="update-attribute-product"),
-
+    path('shops/', shop_views.ShopListAPI.as_view(), name="shop-list"),
+    path('shop/categories/', shop_views.ShopCategoryAPIView.as_view(), name="shop-categories"),
     path('shop/upload/generate-url/', shop_views.UploadURLAPI.as_view(), name="upload-url"),
+    path('user/shop/<int:shop_id>/following/', views.FollowingShopAPI.as_view(), name="following-shop"),
+    path('user/shop/<int:shop_id>/love/', views.LoveShopAPI.as_view(), name="love-shop"),
 ]
