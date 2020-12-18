@@ -18,7 +18,7 @@ class AttributeAdmin(admin.ModelAdmin):
 
 @admin.register(models.Shop)
 class ShopAdmin(admin.ModelAdmin):
-    list_display = ('name', 'owner', 'business_address', 'business_phone')
+    list_display = ('name', 'owner', 'business_address', 'business_phone', 'store_name')
 
 
 @admin.register(models.Product)
