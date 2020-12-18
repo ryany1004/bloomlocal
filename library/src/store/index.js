@@ -75,7 +75,7 @@ const vStore = new Vuex.Store({
       })
     },
     get_user(context) {
-      axios.get('/api/users/me/').then((res) => {
+      return axios.get('/api/users/me/').then((res) => {
         context.commit('setUser', res.data);
       }).catch((err) => {
         console.log(err)
@@ -84,6 +84,12 @@ const vStore = new Vuex.Store({
     },
     set_user(context, user) {
       context.commit("setUser", user);
+    },
+    add_recent_viewed_shop(context, shop_id) {
+      axios.post(`/api/user/shop/${shop_id}/recent-viewed/`).then(() => {
+      }).catch((err) => {
+        console.log(err)
+      })
     }
   },
   modules: {

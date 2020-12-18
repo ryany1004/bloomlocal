@@ -2242,39 +2242,39 @@ a[data-v-469af010] {
 .font-8 {
   font-size: 8px;
 }
-.my-shops .shop-filter {
+.multi-shops .shop-filter {
   list-style: none;
 }
-.my-shops .shop-filter li {
+.multi-shops .shop-filter li {
     display: inline-block;
     padding: 5px 15px;
     font-size: 18px;
 }
-.my-shops .shop-filter li a {
+.multi-shops .shop-filter li a {
       color: #4F4F4F;
 }
-.my-shops .shop-filter li.active {
+.multi-shops .shop-filter li.active {
     font-size: 26px;
 }
-.my-shops .btn-light {
+.multi-shops .btn-light {
   border-color: #bdbdbd;
 }
 @media (min-width: 992px) {
-.my-shops .shop-cards .col-lg-2 {
+.multi-shops .shop-cards .col-lg-2 {
     max-width: 20%;
     flex: 0 0 20%;
 }
 }
-.my-shops .shop-cards .category-title {
+.multi-shops .shop-cards .category-title {
   font-size: 20px;
   margin-bottom: 0px;
 }
-.my-shops .shop-cards .shop-card {
+.multi-shops .shop-cards .shop-card {
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.12);
   border-radius: 10px;
   background-color: #fff;
 }
-.my-shops .shop-cards .shop-card .card-image {
+.multi-shops .shop-cards .shop-card .card-image {
     height: 153px;
     width: 100%;
     background-size: cover;
@@ -2284,43 +2284,43 @@ a[data-v-469af010] {
     border-top-right-radius: 10px;
     border-top-left-radius: 10px;
 }
-.my-shops .shop-cards .shop-card h2 {
+.multi-shops .shop-cards .shop-card h2 {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     font-size: 18px;
     margin-bottom: 0;
 }
-.my-shops .shop-cards .shop-card h2 a {
+.multi-shops .shop-cards .shop-card h2 a {
       font-size: 14px;
       color: #4F4F4F;
 }
-.my-shops .shop-cards .shop-card .list-categories {
+.multi-shops .shop-cards .shop-card .list-categories {
     margin-bottom: 0;
     padding-left: 0;
     height: 24px;
 }
-.my-shops .shop-cards .shop-card .list-categories li {
+.multi-shops .shop-cards .shop-card .list-categories li {
       display: inline-block;
       margin-right: 8px;
       font-size: 8px;
       color: #0C242E;
 }
-.my-shops .shop-cards .shop-card .list-categories li + li::before {
+.multi-shops .shop-cards .shop-card .list-categories li + li::before {
       content: "•";
       padding-right: 8px;
 }
-.my-shops .shop-cards .shop-card footer .shop-feature {
+.multi-shops .shop-cards .shop-card footer .shop-feature {
     margin-bottom: 0;
     padding-left: 0;
 }
-.my-shops .shop-cards .shop-card footer .shop-feature li {
+.multi-shops .shop-cards .shop-card footer .shop-feature li {
       display: inline-block;
       margin-right: 3px;
       font-size: 8px;
       color: #828282;
 }
-.my-shops .shop-cards .shop-card footer .shop-feature li:last-child {
+.multi-shops .shop-cards .shop-card footer .shop-feature li:last-child {
       margin-right: 0px;
 }
 
@@ -2333,5 +2333,80 @@ a[data-v-469af010] {
   border-radius: 3px;
   padding: 2px 4px;
   color: #F2F2F2;
+}
+
+.shop-details .font14 {
+  font-size: 14px;
+}
+.shop-details .color-red {
+  color: #ED6B5E;
+}
+.shop-details .product-filter {
+  list-style: none;
+}
+.shop-details .product-filter li {
+    display: inline-block;
+    padding: 5px 15px;
+    font-size: 18px;
+}
+.shop-details .product-filter li a {
+      color: #4F4F4F;
+}
+.shop-details .product-filter li.active {
+    font-size: 26px;
+}
+.shop-details .btn-light {
+  border-color: #bdbdbd;
+}
+@media (min-width: 992px) {
+.shop-details .product-cards .col-lg-2 {
+    max-width: 20%;
+    flex: 0 0 20%;
+}
+}
+.shop-details .product-cards .category-title {
+  font-size: 20px;
+  margin-bottom: 0px;
+}
+.shop-details .product-cards .product-card {
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.12);
+  border-radius: 10px;
+  padding: 6px;
+  background-color: #fff;
+}
+.shop-details .product-cards .product-card .card-image {
+    height: 153px;
+    width: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border: 1px solid #f8f8f8;
+    border-top-right-radius: 10px;
+    border-top-left-radius: 10px;
+}
+.shop-details .product-cards .product-card h2 {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.shop-details .product-cards .product-card h2 a {
+      font-size: 14px;
+      color: #0C242E;
+}
+.shop-details .product-cards .product-card p {
+    font-size: 11px;
+    height: 43px;
+    line-height: 14px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    margin-bottom: 0.5rem;
+}
+.shop-details .product-cards .product-card footer {
+    font-size: 11px;
+}
+.shop-details .product-cards .product-card footer a {
+      font-size: 11px;
 }
 

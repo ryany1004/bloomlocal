@@ -13,20 +13,7 @@
         }">
         <template v-slot:default="{item}">
           <div class="item">
-            <section class="product-card">
-              <a :href="`/business/product/${item.uuid}/update/`">
-                <div class="card-image" :style="{backgroundImage: `url('${mediaUrl}${item.thumbnail}')`}">
-                </div>
-              </a>
-              <article>
-                <h2 :title="item.title" class="mt-2"><a :href="`/business/product/${item.uuid}/update/`">{{item.title}}</a></h2>
-                <p>{{item.description}}</p>
-              </article>
-              <footer class="d-flex justify-content-between align-items-center">
-                <span>Price: ${{item.price}}</span>
-                <a href="javascript:void(0)" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Add to cart</a>
-              </footer>
-            </section>
+            <business-product-card :product="item" :media-url="mediaUrl"></business-product-card>
           </div>
         </template>
       </vue-horizontal-list>
@@ -109,10 +96,10 @@ export default {
       } else {
         return this.groupedCategory
       }
-    }
+    },
+
   },
   methods: {
-
   }
 }
 </script>

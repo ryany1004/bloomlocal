@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block content2 %}
+{% block content %}
   {% include 'pages/includes/bis_menu.html' %}
 
   <div class="container">
@@ -9,10 +9,9 @@
 {% endblock %}
 
 {% block main_vue %}
-  {{ block.super }}
   <script>
   let main = new Vue({
-    el: '#app2',
+    el: '#app',
     delimiters: ["[{", "}]"],
   });
   </script>

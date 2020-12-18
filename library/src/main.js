@@ -33,12 +33,21 @@ import RecentAdded from "./components/business/storefront/RecentAdded";
 import BestSelling from "./components/business/storefront/BestSelling";
 import ViewAll from "./components/business/storefront/ViewAll";
 import StorefrontCategory from "./components/business/storefront/StorefrontCategory";
-import MyShops from "./components/shopper/MyShops";
+import MultiShops from "./components/shopper/MultiShops";
 import ViewAllShop from "./components/shopper/shops/ViewAllShop";
 import RecentAddedShop from "./components/shopper/shops/RecentAddedShop";
 import CategoryShop from "./components/shopper/shops/CategoryShop";
 import BestSellingShop from "./components/shopper/shops/BestSellingShop";
 import FollowingLove from "./components/shopper/shops/FollowingLove";
+import BestSellingProduct from "./components/shopper/shop/BestSellingProduct";
+import CategoryProduct from "./components/shopper/shop/CategoryProduct";
+import RecentAddedProduct from "./components/shopper/shop/RecentAddedProduct";
+import ViewAllProduct from "./components/shopper/shop/ViewAllProduct";
+import ShopCard from "./components/shopper/shops/ShopCard";
+import BusinessProductCard from "./components/business/storefront/BusinessProductCard";
+import ProductCard from "./components/shopper/shop/ProductCard";
+import ShopDetails from "./components/shopper/shop/ShopDetails";
+import MyShops from "./components/shopper/MyShops";
 
 Vue.config.productionTip = false
 
@@ -55,16 +64,25 @@ const Components = {
     ProductUpdate,
     ProductInventory,
     MyStorefront,
+    BusinessProductCard,
     RecentAdded,
     BestSelling,
     ViewAll,
     StorefrontCategory,
-    MyShops,
+    MultiShops,
+    ShopCard,
     BestSellingShop,
     CategoryShop,
     RecentAddedShop,
     ViewAllShop,
-    FollowingLove
+    FollowingLove,
+    ShopDetails,
+    BestSellingProduct,
+    CategoryProduct,
+    RecentAddedProduct,
+    ViewAllProduct,
+    ProductCard,
+    MyShops
 }
 Object.keys(Components).forEach(name => {
     console.info('name: '+ name);

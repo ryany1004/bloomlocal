@@ -1,17 +1,17 @@
 {% extends "base.html" %}
 
-{% block content2 %}
+{% block content %}
   {% include "pages/includes/shopper_menu.html" %}
+
   <div class="container">
-    <my-shops :media-url="media_url"></my-shops>
+    <multi-shops :media-url="media_url"></multi-shops>
   </div>
 {% endblock %}
 
 {% block main_vue %}
-  {{ block.super }}
   <script>
   let main = new Vue({
-    el: '#app2',
+    el: '#app',
     delimiters: ["[{", "}]"],
     data: function () {
       return {

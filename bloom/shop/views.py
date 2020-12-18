@@ -4,6 +4,7 @@ from django.http.response import HttpResponseBadRequest, HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.utils import baseconv, timezone
 from django.views.generic.base import View
+from django.views.generic.detail import DetailView
 from google.cloud.storage import Bucket, Blob
 
 from bloom.shop.models import Shop, Product
@@ -48,3 +49,11 @@ class ProductUpdate(View):
             'product': product,
         }
         return render(request, 'pages/business/product_update.html', context=context)
+
+
+class ShopDetails(DetailView):
+    template_name = 'pages/shop/shop-details.html'
+    context_object_name = 'shop'
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(Shop, slug=self.kwargs['slug'])

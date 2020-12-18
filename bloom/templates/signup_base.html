@@ -1,0 +1,40 @@
+{% extends "master_base.html" %}
+{% load static i18n %}
+
+{% block title %}{% block head_title %}{% endblock head_title %}{% endblock title %}
+
+{% block signup %}
+  <div id="app">
+    <div class="">
+      <nav class="navbar navbar-expand-md navbar-light bg-light">
+        <div class="container">
+          <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <a class="navbar-brand" href="{% url 'home' %}"><img src="{% static 'images/logo.png' %}" style="max-height: 30px"></a>
+
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+              <li class="nav-item">
+                {# URL provided by django-allauth/account/urls.py #}
+                <a id="sign-up-link" class="nav-link" href="{% url 'account_signup' %}">{% trans "Sign Up" %}</a>
+              </li>
+              <li class="nav-item">
+                {# URL provided by django-allauth/account/urls.py #}
+                <a id="log-in-link" class="nav-link" href="{% url 'account_login' %}">{% trans "Sign In" %}</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </div>
+
+    <div class="container">
+      {% block content %}
+      {% endblock content %}
+    </div> <!-- /container -->
+
+    {% block modal %}{% endblock modal %}
+  </div>
+{% endblock %}
+

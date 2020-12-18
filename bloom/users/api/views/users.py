@@ -8,6 +8,7 @@ from rest_framework.views import APIView
 from rest_framework.viewsets import GenericViewSet
 
 from bloom.users.api.serializers import UserSerializer, ShopperSignUpSerializer
+from bloom.users.models import RecentViewedShop
 
 User = get_user_model()
 
@@ -53,3 +54,17 @@ class LoveShopAPI(APIView):
 
         serializer = UserSerializer(user, context={"request": request})
         return Response(status=status.HTTP_200_OK, data=serializer.data)
+
+
+class RecentViewdShopAPI(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        shop_id = kwargs['shop_id']
+
+        instance, created = RecentViewedShop.objects.get_or_create(user=user, shop_id=shop_id)
+        if not created:
+            instance.save()
+        return Response(status=status.HTTP_200_OK)
+

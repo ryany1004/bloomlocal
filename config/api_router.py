@@ -23,6 +23,7 @@ urlpatterns += [
     path('product/attribute/<code>/', shop_views.AttributeValueAPIView.as_view(), name="attribute-values"),
     path('product/categories/', shop_views.CategoryAPIView.as_view(), name="product-categories"),
     path('shop/products/', shop_views.ShopProductListAPI.as_view(), name="shop-product-list"),
+    path('shop/<int:shop_id>/products/', shop_views.PublishShopProductList.as_view(), name="publish-shop-product-list"),
     path('shop/product/upload/', shop_views.UploadProductAPI.as_view(), name="product-upload"),
     path('shop/product/<uuid>/', shop_views.ProductDetails.as_view(), name="product-details"),
     path('shop/product/attribute/<uuid>/', shop_views.UpdateAttributeProductAPI.as_view(), name="update-attribute-product"),
@@ -31,4 +32,5 @@ urlpatterns += [
     path('shop/upload/generate-url/', shop_views.UploadURLAPI.as_view(), name="upload-url"),
     path('user/shop/<int:shop_id>/following/', views.FollowingShopAPI.as_view(), name="following-shop"),
     path('user/shop/<int:shop_id>/love/', views.LoveShopAPI.as_view(), name="love-shop"),
+    path('user/shop/<int:shop_id>/recent-viewed/', views.RecentViewdShopAPI.as_view(), name="recent-viewed-shop"),
 ]

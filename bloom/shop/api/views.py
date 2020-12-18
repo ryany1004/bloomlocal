@@ -47,6 +47,7 @@ class AttributeValueAPIView(ListAPIView):
 
 class CategoryAPIView(ListAPIView):
     serializer_class = CategorySerializer
+    permission_classes = []
 
     def get_queryset(self):
         categories = cache.get('product_categories')
@@ -127,6 +128,21 @@ class ShopProductListAPI(ListAPIView):
         return Product.objects.select_related('shop') \
             .prefetch_related('productimage_set', 'productvariant_set','categories') \
             .filter(shop=self.request.user.get_shop(), archived=False)
+
+
+class PublishShopProductList(ShopProductListAPI):
+    permission_classes = []
+
+    def get_queryset(self):
+        if self.request.GET.get('view') == 'recent_added':
+            return Product.objects.select_related('shop') \
+                       .prefetch_related('productimage_set', 'productvariant_set', 'categories') \
+                       .filter(shop_id=self.kwargs['shop_id'], archived=False).order_by('-created_at')[:20]
+        elif self.request.GET.get('view') == 'best_selling':
+            return []
+        return Product.objects.select_related('shop') \
+            .prefetch_related('productimage_set', 'productvariant_set', 'categories') \
+            .filter(shop=self.kwargs['shop_id'], archived=False)
 
 
 class ProductDetails(RetrieveUpdateAPIView):

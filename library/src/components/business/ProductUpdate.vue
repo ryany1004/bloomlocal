@@ -41,7 +41,7 @@
             <p class="error" v-if="errs.images">Images are required</p>
           </div>
           <div class="d-flex mt-2" v-if="edit.images">
-            <button class="btn btn-primary btn-sm" type="button" :disabled="saving.description" @click="saveProductImages()"><i class="fas fa-check"></i></button>
+            <button class="btn btn-primary btn-sm" type="button" :disabled="saving.description" @click="saveProductImages()"><i class="fas fa-upload"></i> Submit product</button>
             <button class="btn btn-secondary btn-sm ml-3" type="button" @click="hide_edit_images()"><i class="fas fa-times"></i></button>
           </div>
         </div>
@@ -77,13 +77,13 @@
                   <button class="btn btn-secondary btn-sm ml-3" type="button" @click="hide_edit('description')"><i class="fas fa-times"></i></button>
                 </div>
               </div>
-              <div v-else>
+              <div style="white-space: pre-line;" v-else>
                 {{product.description}}
               </div>
             </div>
             <div class="form-group d-flex justify-content-between">
               <div class="d-flex align-items-center">
-                <label class="mr-3 mb-0">Color:</label>
+                <label class="mr-3 mb-0" :class="{disabled: !product.enable_color || active_colors.length == 0}">Color:</label>
                 <div v-if="edit.color" class="form-inline">
                   <span :class="{disabled: !product.enable_color}">
                     <span class="c-circle" :style="{backgroundColor: color.value}" v-for="color in colors" :key="color.value"
@@ -119,7 +119,7 @@
             </div>
             <div class="form-group d-flex justify-content-between">
               <div class="d-flex align-items-center">
-                <label class="mr-3 mb-0">Size:</label>
+                <label class="mr-3 mb-0" :class="{disabled: !product.enable_size || active_sizes.length == 0}">Size:</label>
                 <div v-if="edit.size">
                   <span :class="{disabled: !product.enable_size}">
                     <span @click="toggleSize(size)" :class="{'badge-secondary': active_sizes.indexOf(size.value) == -1, 'badge-primary': active_sizes.indexOf(size.value) != -1}" class="badge mr-1 product-size"
@@ -247,10 +247,13 @@ export default {
       })
     },
     set_active_sizes_and_color(product) {
+      // eslint-disable-next-line no-debugger
       let group = _.groupBy(product.variants, 'size');
-      this.active_sizes = Object.keys(group);
+      delete group[undefined];
+      this.active_sizes = Object.keys(group) || [];
       group = _.groupBy(product.variants, 'color');
-      this.active_colors = Object.keys(group);
+      delete group[undefined];
+      this.active_colors = Object.keys(group) || [];
     },
     reset_attribute(attr) {
       if (attr == 'color' && !this.product.enable_color) {

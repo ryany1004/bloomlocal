@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+  {% include "pages/includes/shopper_menu.html" %}
+
+  <div class="container">
+    <shop-details :media-url="media_url" :shop-id="shopId" :shop-name="shop_name"></shop-details>
+  </div>
+{% endblock %}
+
+{% block main_vue %}
+  <script>
+  let main = new Vue({
+    el: '#app',
+    delimiters: ["[{", "}]"],
+    data: function () {
+      return {
+        media_url: "{{ MEDIA_URL }}",
+        shop_id: "{{ shop.id }}",
+        shop_name: "{{ shop.name }}"
+      }
+    },
+    computed: {
+      shopId() {
+        return parseInt(this.shop_id);
+      }
+    },
+    created() {
+      {% if user.is_authenticated %}
+      this.$store.dispatch("add_recent_viewed_shop", this.shopId);
+      {% endif %}
+    }
+  });
+  </script>
+{% endblock %}

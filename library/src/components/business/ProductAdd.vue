@@ -43,7 +43,7 @@
             </el-upload>
             <p class="error" v-if="errs.images">Images are required</p>
           </div>
-          <button type="button" class="btn btn-primary btn-block mt-3 mb-4" @click="uploadProduct"><i class="fas fa-upload"></i> Upload Product</button>
+          <button type="button" class="btn btn-primary btn-block mt-3 mb-4" @click="uploadProduct"><i class="fas fa-upload"></i> Submit Product</button>
         </div>
         <div class="col-md-8 col-12">
           <div class="form-row">
@@ -68,7 +68,7 @@
           <div class="form-row">
             <div class="form-group col-md-5">
               <div class="d-flex">
-                <label for="product_tile" class="mr-4">Color</label>
+                <label for="product_tile" class="mr-4" :class="{disabled: !product.enable_color}">Color</label>
                 <el-switch v-model="product.enable_color" @change="reset_attribute('color')"></el-switch>
               </div>
               <div :class="{disabled: !product.enable_color}">
@@ -78,7 +78,7 @@
             </div>
             <div class="form-group col-md-7">
               <div class="d-flex">
-                <label for="product_tile" class="mr-4">Size</label>
+                <label for="product_tile" class="mr-4" :class="{disabled: !product.enable_size}">Size</label>
                 <el-switch v-model="product.enable_size" @change="reset_attribute('size')"></el-switch>
               </div>
               <div :class="{disabled: !product.enable_size}">

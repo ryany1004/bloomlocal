@@ -68,3 +68,12 @@ class FollowedShops(BaseModelMixin, models.Model):
 
     def __str__(self):
         return self.collection_name
+
+
+class RecentViewedShop(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    shop = models.ForeignKey('shop.Shop', on_delete=models.CASCADE)
+    viewed_date = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = [['user', 'shop']]

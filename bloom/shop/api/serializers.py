@@ -146,6 +146,8 @@ class ShopSerializer(serializers.ModelSerializer):
         response = super(ShopSerializer, self).to_representation(instance)
         if instance.logo:
             response['logo'] = str(instance.logo)
+        else:
+            response['logo'] = "shop/7f094ea2/7f09__sample-image.jpg"
         return response
 
     def get_category_names(self, obj):
