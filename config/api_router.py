@@ -5,6 +5,7 @@ from rest_framework.routers import DefaultRouter, SimpleRouter
 
 from bloom.users.api import views
 from bloom.shop.api import views as shop_views
+from bloom.order.api import views as order_views
 
 if settings.DEBUG:
     router = DefaultRouter()
@@ -33,4 +34,7 @@ urlpatterns += [
     path('user/shop/<int:shop_id>/following/', views.FollowingShopAPI.as_view(), name="following-shop"),
     path('user/shop/<int:shop_id>/love/', views.LoveShopAPI.as_view(), name="love-shop"),
     path('user/shop/<int:shop_id>/recent-viewed/', views.RecentViewdShopAPI.as_view(), name="recent-viewed-shop"),
+    path('order/cart/', order_views.CartAPI.as_view(), name="cart-data"),
+    path('order/cart/item/add/', order_views.CartAddAPI.as_view(), name="cart-add"),
+    path('order/cart/item/remove/', order_views.CartRemoveItemAPI.as_view(), name="cart-remove"),
 ]

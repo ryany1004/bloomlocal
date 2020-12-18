@@ -369,3 +369,5 @@ from google.oauth2 import service_account
 GS_CREDENTIALS = service_account.Credentials.from_service_account_file(
     str(ROOT_DIR / "config/credentials.json")
 )
+
+CART_SESSION_ID = "cart-session"

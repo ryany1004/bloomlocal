@@ -481,7 +481,7 @@ export default {
       height: 178px;
       display: block;
       background-position: center;
-      background-size: cover;
+      background-size: contain;
       background-repeat: no-repeat;
     }
     .product-images {

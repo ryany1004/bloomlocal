@@ -83,6 +83,8 @@ export default {
   created() {
     this.$store.dispatch('get_categories');
     this.$store.dispatch("get_user");
+    this.$store.dispatch("get_sizes");
+    this.$store.dispatch("get_colors");
   },
   methods: {
     toggleLove(shopId) {
@@ -142,7 +144,7 @@ export default {
       .card-image {
         height: 153px;
         width: 100%;
-        background-size: cover;
+        background-size: contain;
         background-position: center;
         background-repeat: no-repeat;
         border: 1px solid #f8f8f8;

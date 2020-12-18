@@ -1,6 +1,6 @@
 {% load static %}
 <div class="mb-4" >
-  <div style="border-bottom: 1px solid #e0e0e0;border-top: 1px solid #e0e0e0;padding: 13px 0;">
+  <div style="border-bottom: 1px solid #e0e0e0;padding: 13px 0;">
     <div class="container">
       <ul class="shopper-menu">
         <li>
@@ -19,4 +19,23 @@
       </ul>
     </div>
   </div>
+
+  {% if page != 'home' %}
+  <div style="border-bottom: 1px solid #e0e0e0;">
+    <div class="container">
+      <nav aria-label="breadcrumb">
+          <ol class="breadcrumb" style="background-color: transparent;margin-bottom: 0;padding-left: 0">
+            <li class="breadcrumb-item"><a href="/">Category</a></li>
+            {% if page == 'shop_details' %}
+            <li class="breadcrumb-item active" aria-current="page">{{ shop.name}}</li>
+            {% endif %}
+            {% if page == 'product' %}
+              <li class="breadcrumb-item"><a href="{% url 'shop:shop-details' product.shop.slug %}">{{ product.shop.name }}</a></li>
+              <li class="breadcrumb-item active" aria-current="page">{{ product.title }}</li>
+            {% endif %}
+          </ol>
+      </nav>
+    </div>
+  </div>
+  {% endif %}
 </div>

@@ -36,6 +36,7 @@ class BaseAPIView(APIView):
 
 class AttributeValueAPIView(ListAPIView):
     serializer_class = AttributeValueSerializer
+    permission_classes = []
 
     def get_queryset(self):
         attributes = cache.get('attribute_{}'.format(self.kwargs['code']))
@@ -137,19 +138,20 @@ class PublishShopProductList(ShopProductListAPI):
         if self.request.GET.get('view') == 'recent_added':
             return Product.objects.select_related('shop') \
                        .prefetch_related('productimage_set', 'productvariant_set', 'categories') \
-                       .filter(shop_id=self.kwargs['shop_id'], archived=False).order_by('-created_at')[:20]
+                       .filter(shop_id=self.kwargs['shop_id'], archived=False, status=0).order_by('-created_at')[:20]
         elif self.request.GET.get('view') == 'best_selling':
             return []
         return Product.objects.select_related('shop') \
             .prefetch_related('productimage_set', 'productvariant_set', 'categories') \
-            .filter(shop=self.kwargs['shop_id'], archived=False)
+            .filter(shop=self.kwargs['shop_id'], status=0, archived=False)
 
 
 class ProductDetails(RetrieveUpdateAPIView):
+    permission_classes = []
     serializer_class = ProductModelSerializer
 
     def get_object(self):
-        return get_object_or_404(Product, uuid=self.kwargs['uuid'], shop__owner=self.request.user)
+        return get_object_or_404(Product, uuid=self.kwargs['uuid'])
 
 
 class ShopListAPI(ListAPIView):

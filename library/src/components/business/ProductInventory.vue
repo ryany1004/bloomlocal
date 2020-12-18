@@ -298,7 +298,7 @@ export default {
       width: 30px;
       height: 30px;
       background-position: center;
-      background-size: cover;
+      background-size: contain;
       border-radius: 5px;
     }
     .icon-edit {

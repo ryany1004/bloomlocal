@@ -16,7 +16,7 @@ class HomePage(View):
         if request.user.is_authenticated and request.user.role_type == UserRole.BUSINESS:
             return render(request, 'pages/business_dashboard.html', {"page": 'dashboard'})
 
-        return render(request, 'pages/home.html')
+        return render(request, 'pages/home.html', {'page' : 'home'})
 
 
 class InventoryPage(View):
@@ -57,3 +57,21 @@ class ShopDetails(DetailView):
 
     def get_object(self, queryset=None):
         return get_object_or_404(Shop, slug=self.kwargs['slug'])
+
+    def get_context_data(self, **kwargs):
+        context = super(ShopDetails, self).get_context_data(**kwargs)
+        context['page'] = 'shop_details'
+        return context
+
+
+class ProductDetails(DetailView):
+    template_name = 'pages/shop/product-details.html'
+    context_object_name = 'product'
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(Product, slug=self.kwargs['slug'])
+
+    def get_context_data(self, **kwargs):
+        context = super(ProductDetails, self).get_context_data(**kwargs)
+        context['page'] = 'product'
+        return context

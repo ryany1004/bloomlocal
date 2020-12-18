@@ -23,8 +23,9 @@ class ProductModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ['id', 'uuid', 'title', 'thumbnail', 'price', 'description', 'length', 'width', 'height', 'status',
-                  'weight', 'weight_unit', 'stock', 'delivery_type', 'enable_color', 'enable_size', 'shop_id', 'archived',
-                  'variants', 'images', 'created_at', 'updated_at', 'categories', 'category_names', 'dimension_unit',]
+                  'weight', 'weight_unit', 'stock', 'delivery_type', 'enable_color', 'enable_size', 'shop_id',
+                  'archived', 'slug', 'variants', 'images', 'created_at', 'updated_at', 'categories',
+                  'category_names', 'dimension_unit',]
 
     def to_representation(self, instance):
         response = super(ProductModelSerializer, self).to_representation(instance)

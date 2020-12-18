@@ -3,7 +3,6 @@ import HelloWorld from "@/components/HelloWorld";
 import PasswordMeter from "@/components/PasswordMeter";
 import {PlaceAutocompleteField} from 'vue-place-autocomplete';
 import VuePhoneNumberInput from 'vue-phone-number-input';
-import 'vue-phone-number-input/dist/vue-phone-number-input.css';
 import Avatar from 'vue-avatar';
 import Switches from 'vue-switches';
 import ElementUI from 'element-ui';
@@ -13,6 +12,10 @@ import VueCookies from 'vue-cookies'
 import axios from "axios";
 import VueAxios from "vue-axios";
 import moment from "vue-moment";
+import { SidebarPlugin } from 'bootstrap-vue'
+
+import 'vue-phone-number-input/dist/vue-phone-number-input.css';
+import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 axios.defaults.headers.common['X-CSRFToken'] = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
@@ -20,9 +23,11 @@ Vue.use(VueCookies);
 Vue.use(ElementUI, {locale});
 Vue.use(VueAxios, axios);
 Vue.use(moment);
+Vue.use(SidebarPlugin);
 
 // import App from './App.vue'
 import './store';
+import "./filters";
 import ProductAdd from "./components/business/ProductAdd";
 import Products from "./components/business/Products";
 import ProductConfirmUpload from "./components/business/ProductConfirmUpload";
@@ -48,6 +53,10 @@ import BusinessProductCard from "./components/business/storefront/BusinessProduc
 import ProductCard from "./components/shopper/shop/ProductCard";
 import ShopDetails from "./components/shopper/shop/ShopDetails";
 import MyShops from "./components/shopper/MyShops";
+import ProductDetails from "./components/shopper/shop/ProductDetails";
+import CartWidget from "./components/shopper/CartWidget";
+import BtnAddToCart from "./components/shopper/BtnAddToCart";
+import Cart from "./components/shopper/Cart";
 
 Vue.config.productionTip = false
 
@@ -82,13 +91,17 @@ const Components = {
     RecentAddedProduct,
     ViewAllProduct,
     ProductCard,
-    MyShops
+    MyShops,
+    ProductDetails,
+    CartWidget,
+    BtnAddToCart,
+    Cart
 }
 Object.keys(Components).forEach(name => {
     console.info('name: '+ name);
     Vue.component(name,Components[name])
 })
-
+Vue.config.devtools = false;
 export default Components
 
 // new Vue({

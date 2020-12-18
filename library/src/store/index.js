@@ -12,7 +12,8 @@ const vStore = new Vuex.Store({
     product: {},
     shop_categories: [],
     user: {},
-    isLoggedIn: false
+    isLoggedIn: false,
+    cart_items: []
   },
   getters: {
     colors: state => {
@@ -46,18 +47,25 @@ const vStore = new Vuex.Store({
       if (user.id) {
         state.isLoggedIn = true;
       }
+    },
+    setCart(state, products) {
+      state.cart_items = products;
     }
   },
   actions: {
     get_colors(context) {
-      axios.get('/api/product/attribute/color/').then((res) => {
-        context.commit('setColors', res.data);
-      })
+      if (context.state.colors.length == 0) {
+        axios.get('/api/product/attribute/color/').then((res) => {
+          context.commit('setColors', res.data);
+        })
+      }
     },
     get_sizes(context) {
-      axios.get('/api/product/attribute/size/').then((res) => {
-        context.commit('setSizes', res.data);
-      })
+      if (context.state.sizes.length == 0) {
+        axios.get('/api/product/attribute/size/').then((res) => {
+          context.commit('setSizes', res.data);
+        })
+      }
     },
     get_categories(context) {
       axios.get('/api/product/categories/').then((res) => {
@@ -87,6 +95,29 @@ const vStore = new Vuex.Store({
     },
     add_recent_viewed_shop(context, shop_id) {
       axios.post(`/api/user/shop/${shop_id}/recent-viewed/`).then(() => {
+      }).catch((err) => {
+        console.log(err)
+      })
+    },
+    add_to_cart(context, data) {
+      return axios.post(`/api/order/cart/item/add/`, data).then((res) => {
+        context.commit("setCart", res.data);
+      }).catch((err) => {
+        alert("Unable add to cart! Please try again.");
+        console.log(err)
+      })
+    },
+    remove_item_cart(context, data) {
+      return axios.post(`/api/order/cart/item/remove/`, data).then((res) => {
+        context.commit("setCart", res.data);
+      }).catch((err) => {
+        alert("Unable remove to cart! Please try again.");
+        console.log(err)
+      })
+    },
+    get_cart(context) {
+      return axios.get(`/api/order/cart/`).then((res) => {
+        context.commit("setCart", res.data);
       }).catch((err) => {
         console.log(err)
       })

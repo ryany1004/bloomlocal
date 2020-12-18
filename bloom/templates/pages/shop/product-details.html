@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}{{ product.title }} | {{ block.super }}{% endblock title %}
+
+{% block content %}
+  {% include "pages/includes/shopper_menu.html" %}
+
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 col-sm-12 col-md-12">
+        <product-details :media-url="media_url" :product-id="product_id"></product-details>
+      </div>
+
+    </div>
+  </div>
+{% endblock %}
+
+{% block main_vue %}
+  <script>
+  let main1 = new Vue({
+    el: '#app',
+    delimiters: ["[{", "}]"],
+    data: function () {
+      return {
+        product_id: "{{ product.uuid }}",
+        media_url: "{{ MEDIA_URL }}",
+      }
+    },
+    methods: {
+
+    }
+  });
+  </script>
+{% endblock %}
