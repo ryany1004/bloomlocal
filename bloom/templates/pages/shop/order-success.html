@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Purchase Confirmed | {{ block.super }}{% endblock title %}
+
+{% block content %}
+  <div class="container">
+    <order-success :media-url="media_url" :uuid-order="uuid_order"></order-success>
+  </div>
+{% endblock %}
+
+{% block main_vue %}
+  <script>
+  let main = new Vue({
+    el: '#app',
+    delimiters: ["[{", "}]"],
+    data: function () {
+      return {
+        media_url: "{{ MEDIA_URL }}",
+        uuid_order: "{{ order.uuid }}"
+      }
+    },
+  });
+  </script>
+{% endblock %}

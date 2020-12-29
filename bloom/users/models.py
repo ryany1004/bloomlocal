@@ -31,6 +31,7 @@ class User(AbstractUser):
     role_type = models.CharField(max_length=10, choices=ROLE_TYPES, blank=True)
     following_shops = JSONField(default=list, blank=True)
     love_shops = JSONField(default=list, blank=True)
+    wishlist_products = JSONField(default=list, blank=True)
 
     def get_absolute_url(self):
         """Get url for user's detail view.

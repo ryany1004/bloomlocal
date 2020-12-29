@@ -1,37 +1,46 @@
 {% load static %}
+{%  if page == 'order-overview' %}
+  <div class="mb-3" >
+    <div style="border-bottom: 1px solid #e0e0e0;">
+      <div class="container">
+        <header style="font-size: 24px;font-weight: bold;padding: 8px 0">Order Overview</header>
+      </div>
+    </div>
+  </div>
+{% else %}
 <div class="mb-4" >
   <div style="border-bottom: 1px solid #e0e0e0;padding: 13px 0;">
     <div class="container">
       <ul class="shopper-menu">
-        <li>
-          <a>
-             <img style="height: 20px" src="{% static 'images/icon-shop.svg' %}"/> My Shops
+        <li {% if page == 'my-shops' %}class="active"{% endif %}>
+          <a href="/my-shops" class="font-14">
+             <img class="icon-my-shops" style="height: 20px" src="{% static 'images/icon-shop.svg' %}"/> My Shops
           </a>
         </li>
-        <li>
-          <a>
-             <img style="height: 20px" src="{% static 'images/icon-purchase.svg' %}"/> My Purchases
+        <li {% if page == 'my-purchase' %}class="active"{% endif %}>
+          <a href="/my-purchase" class="font-14">
+             <img class="icon-purchase" style="height: 20px" src="{% static 'images/icon-purchase.svg' %}"/> My Purchases
           </a>
         </li>
-        <li>
-          <a><img style="height: 20px" src="{% static 'images/shopping-bag-2.svg' %}"/> My Collections</a>
+        <li {% if page == 'my-collections' %}class="active"{% endif %}>
+          <a class="font-14" href="/my-collections"><img class="icon-collection" style="height: 20px" src="{% static 'images/shopping-bag-2.svg' %}"/> My Collections</a>
         </li>
       </ul>
     </div>
   </div>
 
-  {% if page != 'home' %}
+  {% if page != 'home' and page != "my-shops" and page != "my-purchase" and page != "my-collections" %}
   <div style="border-bottom: 1px solid #e0e0e0;">
     <div class="container">
       <nav aria-label="breadcrumb">
           <ol class="breadcrumb" style="background-color: transparent;margin-bottom: 0;padding-left: 0">
-            <li class="breadcrumb-item"><a href="/">Category</a></li>
+            <li class="breadcrumb-item"><a href="/" class="font-14">Category</a></li>
             {% if page == 'shop_details' %}
-            <li class="breadcrumb-item active" aria-current="page">{{ shop.name}}</li>
+            <li class="breadcrumb-item active font-14" aria-current="page">{{ shop.name}}</li>
             {% endif %}
             {% if page == 'product' %}
-              <li class="breadcrumb-item"><a href="{% url 'shop:shop-details' product.shop.slug %}">{{ product.shop.name }}</a></li>
-              <li class="breadcrumb-item active" aria-current="page">{{ product.title }}</li>
+              <li class="breadcrumb-item"><a class="font-14" href="{% url 'shop:shop-details' product.shop.slug %}">{{ product.shop.name }}</a></li>
+              <li class="breadcrumb-item active font-14" aria-current="page">{{ product.title }}</li>
             {% endif %}
           </ol>
       </nav>
@@ -39,3 +48,4 @@
   </div>
   {% endif %}
 </div>
+{% endif %}

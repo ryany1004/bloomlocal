@@ -15,7 +15,7 @@
       <cart :media-url="mediaUrl"></cart>
       <template #footer>
         <div class="p-3" v-if="cart_items.length > 0">
-          <a class="btn btn-primary btn-lg btn-block" style="font-size: 16px">Proceed To Checkout</a>
+          <a href="/order/overview/" class="btn btn-primary btn-lg btn-block" style="font-size: 16px">Proceed To Checkout</a>
         </div>
       </template>
     </b-sidebar>

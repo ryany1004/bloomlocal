@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from bloom.shop.models import AttributeValue, Category, Product, ProductVariant, ProductImage, Shop, ShopCategory
+from bloom.users.models import RecentViewedShop
 
 
 class AttributeValueSerializer(serializers.ModelSerializer):
@@ -15,7 +16,23 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = ['id', 'name']
 
 
-class ProductModelSerializer(serializers.ModelSerializer):
+class ProductModelSimpleSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Product
+        fields = ['id', 'uuid', 'title', 'thumbnail', 'price', 'description', 'length', 'width', 'height', 'status',
+                  'weight', 'weight_unit', 'stock', 'delivery_type', 'enable_color', 'enable_size', 'shop_id',
+                  'archived', 'slug', 'created_at', 'updated_at',
+                  'dimension_unit',]
+
+    def to_representation(self, instance):
+        response = super(ProductModelSimpleSerializer, self).to_representation(instance)
+        if instance.thumbnail:
+            response['thumbnail'] = str(instance.thumbnail)
+        return response
+
+
+class ProductModelSerializer(ProductModelSimpleSerializer):
     variants = serializers.SerializerMethodField()
     images = serializers.SerializerMethodField()
     category_names = serializers.SerializerMethodField()
@@ -25,13 +42,7 @@ class ProductModelSerializer(serializers.ModelSerializer):
         fields = ['id', 'uuid', 'title', 'thumbnail', 'price', 'description', 'length', 'width', 'height', 'status',
                   'weight', 'weight_unit', 'stock', 'delivery_type', 'enable_color', 'enable_size', 'shop_id',
                   'archived', 'slug', 'variants', 'images', 'created_at', 'updated_at', 'categories',
-                  'category_names', 'dimension_unit',]
-
-    def to_representation(self, instance):
-        response = super(ProductModelSerializer, self).to_representation(instance)
-        if instance.thumbnail:
-            response['thumbnail'] = str(instance.thumbnail)
-        return response
+                  'category_names', 'dimension_unit', ]
 
     def get_variants(self, obj):
         variants = obj.productvariant_set.all()
@@ -49,7 +60,6 @@ class ProductModelSerializer(serializers.ModelSerializer):
 
     def get_category_names(self, obj):
         return [c.name for c in obj.categories.all()]
-
 
 class ProductSerializer(serializers.Serializer):
     title = serializers.CharField(max_length=500)
@@ -159,3 +169,12 @@ class ShopCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = ShopCategory
         fields = ['id', 'name']
+
+
+class RecentViewedShopSerializer(serializers.ModelSerializer):
+    shop = ShopSerializer(read_only=True)
+
+    class Meta:
+        model = RecentViewedShop
+        fields = ['viewed_date', 'shop']
+        depth = 1

@@ -4,8 +4,9 @@
       <div class="card-image" :style="{backgroundImage: `url('${mediaUrl}${product.thumbnail}')`}">
       </div>
     </a>
-    <article>
-      <h2 :title="product.title" class="mt-2"><a :href="`/product/${product.slug}/`">{{product.title}}</a></h2>
+    <article class="position-relative">
+      <h2 :title="product.title" class="mt-2 pr-4"><a :href="`/product/${product.slug}/`">{{product.title}}</a></h2>
+      <wishlist :product="product" class="wishlist"></wishlist>
       <p>{{product.description}}</p>
     </article>
     <footer class="d-flex justify-content-between align-items-center">
@@ -31,6 +32,12 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style lang="scss">
+.product-card {
+  .wishlist {
+    position: absolute;
+    right: 5px;
+    top: 10px;
+  }
+}
 </style>

@@ -13,7 +13,8 @@ const vStore = new Vuex.Store({
     shop_categories: [],
     user: {},
     isLoggedIn: false,
-    cart_items: []
+    cart_items: [],
+    cartLoading: false
   },
   getters: {
     colors: state => {
@@ -50,6 +51,9 @@ const vStore = new Vuex.Store({
     },
     setCart(state, products) {
       state.cart_items = products;
+    },
+    setCartLoading(state, loading) {
+      state.cartLoading = loading
     }
   },
   actions: {
@@ -116,8 +120,10 @@ const vStore = new Vuex.Store({
       })
     },
     get_cart(context) {
+      context.commit("setCartLoading", true);
       return axios.get(`/api/order/cart/`).then((res) => {
         context.commit("setCart", res.data);
+        context.commit("setCartLoading", false);
       }).catch((err) => {
         console.log(err)
       })

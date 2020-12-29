@@ -30,6 +30,7 @@
     created() {
       {% if user.is_authenticated %}
       this.$store.dispatch("add_recent_viewed_shop", this.shopId);
+      this.$store.dispatch('get_user');
       {% endif %}
     }
   });

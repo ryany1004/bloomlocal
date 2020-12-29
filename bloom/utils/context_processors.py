@@ -8,5 +8,6 @@ def settings_context(_request):
     return {
         "DEBUG": settings.DEBUG,
         "GOOGLE_MAPS_API_KEY": settings.GOOGLE_MAPS_API_KEY,
-        "MEDIA_URL": settings.MEDIA_URL
+        "MEDIA_URL": settings.MEDIA_URL,
+        "STRIPE_PUBLISHABLE_KEY": settings.STRIPE_PUBLISHABLE_KEY
     }

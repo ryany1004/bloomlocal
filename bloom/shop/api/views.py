@@ -1,25 +1,25 @@
 import django
 from django.conf import settings
 from django.core.cache import cache
+from django.db.models.aggregates import Count
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from google.cloud.storage import Bucket, Blob
 from rest_framework import status
-from rest_framework.generics import ListAPIView, CreateAPIView, RetrieveAPIView, get_object_or_404, \
+from rest_framework.generics import ListAPIView, get_object_or_404, \
     RetrieveUpdateAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from bloom.order.models import OrderItem, Order
 from bloom.shop.api.pagination import StandardResultsSetPagination
 from bloom.shop.api.serializers import AttributeValueSerializer, CategorySerializer, ProductSerializer, \
     ProductModelSerializer, ShopSerializer, ShopCategorySerializer
 from bloom.shop.models import AttributeValue, Category, Product, Shop, ShopCategory
 import datetime
-import json
 import random
 import string
-from datetime import time
 from bloom.utils.bucket_registry import _bucket_registry
 
 URLSAFE_CHARACTERS = string.ascii_letters + string.digits + "-._~"
@@ -120,15 +120,23 @@ class ShopProductListAPI(ListAPIView):
     # pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
+        shop = self.request.user.get_shop()
         if self.request.GET.get('view') == 'recent_added':
             return Product.objects.select_related('shop') \
                 .prefetch_related('productimage_set', 'productvariant_set', 'categories') \
-                .filter(shop=self.request.user.get_shop(), archived=False).order_by('-created_at')[:20]
+                .filter(shop=shop, archived=False).order_by('-created_at')[:20]
+
         elif self.request.GET.get('view') == 'best_selling':
-            return []
+            product_ids = OrderItem.objects.filter(order__status=Order.Status.SUCCEED, product__shop=shop) \
+                .values('product_id').annotate(total=Count('product_id')) \
+                .order_by('-total').values_list('product_id', flat=True)[:50]
+            return Product.objects.select_related('shop') \
+                .prefetch_related('productimage_set', 'productvariant_set','categories') \
+                .filter(id__in=product_ids, archived=False)
+
         return Product.objects.select_related('shop') \
             .prefetch_related('productimage_set', 'productvariant_set','categories') \
-            .filter(shop=self.request.user.get_shop(), archived=False)
+            .filter(shop=shop, archived=False)
 
 
 class PublishShopProductList(ShopProductListAPI):
@@ -139,8 +147,16 @@ class PublishShopProductList(ShopProductListAPI):
             return Product.objects.select_related('shop') \
                        .prefetch_related('productimage_set', 'productvariant_set', 'categories') \
                        .filter(shop_id=self.kwargs['shop_id'], archived=False, status=0).order_by('-created_at')[:20]
+
         elif self.request.GET.get('view') == 'best_selling':
-            return []
+            product_ids = OrderItem.objects.filter(order__status=Order.Status.SUCCEED,
+                                                   product__shop_id=self.kwargs['shop_id']) \
+                              .values('product_id').annotate(total=Count('product_id')) \
+                              .order_by('-total').values_list('product_id', flat=True)[:50]
+            return Product.objects.select_related('shop') \
+                .prefetch_related('productimage_set', 'productvariant_set', 'categories') \
+                .filter(id__in=product_ids, archived=False)
+
         return Product.objects.select_related('shop') \
             .prefetch_related('productimage_set', 'productvariant_set', 'categories') \
             .filter(shop=self.kwargs['shop_id'], status=0, archived=False)
@@ -164,7 +180,11 @@ class ShopListAPI(ListAPIView):
             return Shop.objects.select_related('owner') \
                        .prefetch_related('categories').order_by('-created_at')[:20]
         elif self.request.GET.get('view') == 'best_selling':
-            return []
+            shop_ids = OrderItem.objects.filter(order__status=Order.Status.SUCCEED) \
+                              .values('product__shop').annotate(total=Count('product__shop')) \
+                              .order_by('-total').values_list('product__shop', flat=True)[:50]
+            return Shop.objects.select_related('owner') \
+                       .prefetch_related('categories').filter(id__in=shop_ids)
         return Shop.objects.select_related('owner') \
             .prefetch_related('categories')
 

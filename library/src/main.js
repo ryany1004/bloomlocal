@@ -13,6 +13,7 @@ import axios from "axios";
 import VueAxios from "vue-axios";
 import moment from "vue-moment";
 import { SidebarPlugin } from 'bootstrap-vue'
+import vueCountryRegionSelect from 'vue-country-region-select'
 
 import 'vue-phone-number-input/dist/vue-phone-number-input.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css'
@@ -24,6 +25,7 @@ Vue.use(ElementUI, {locale});
 Vue.use(VueAxios, axios);
 Vue.use(moment);
 Vue.use(SidebarPlugin);
+Vue.use(vueCountryRegionSelect)
 
 // import App from './App.vue'
 import './store';
@@ -52,11 +54,17 @@ import ShopCard from "./components/shopper/shops/ShopCard";
 import BusinessProductCard from "./components/business/storefront/BusinessProductCard";
 import ProductCard from "./components/shopper/shop/ProductCard";
 import ShopDetails from "./components/shopper/shop/ShopDetails";
-import MyShops from "./components/shopper/MyShops";
 import ProductDetails from "./components/shopper/shop/ProductDetails";
 import CartWidget from "./components/shopper/CartWidget";
 import BtnAddToCart from "./components/shopper/BtnAddToCart";
 import Cart from "./components/shopper/Cart";
+import OrderOverview from "./components/shopper/OrderOverview";
+import OrderSuccess from "./components/shopper/OrderSuccess";
+import MyShops from "./components/shopper/account/MyShops";
+import MyPurchase from "./components/shopper/account/MyPurchase";
+import MyCollections from "./components/shopper/account/MyCollections";
+import OrderCanceled from "./components/shopper/OrderCanceled";
+import Wishlist from "./components/shopper/shop/Wishlist";
 
 Vue.config.productionTip = false
 
@@ -91,11 +99,17 @@ const Components = {
     RecentAddedProduct,
     ViewAllProduct,
     ProductCard,
-    MyShops,
     ProductDetails,
     CartWidget,
     BtnAddToCart,
-    Cart
+    Cart,
+    OrderOverview,
+    OrderSuccess,
+    OrderCanceled,
+    MyShops,
+    MyPurchase,
+    MyCollections,
+    Wishlist
 }
 Object.keys(Components).forEach(name => {
     console.info('name: '+ name);

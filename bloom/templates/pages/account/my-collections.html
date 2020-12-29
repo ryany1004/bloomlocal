@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}My Collections | {{ block.super }}{% endblock title %}
+
+{% block content %}
+  {% include "pages/includes/shopper_menu.html" %}
+
+  <div class="container">
+    <my-collections :media-url="media_url"></my-collections>
+  </div>
+{% endblock %}
+
+{% block main_vue %}
+  <script>
+  let main = new Vue({
+    el: '#app',
+    delimiters: ["[{", "}]"],
+    data: function () {
+      return {
+        media_url: "{{ MEDIA_URL }}"
+      }
+    },
+    created() {
+      this.$store.dispatch('get_user');
+      this.$store.dispatch('get_categories');
+    }
+  });
+  </script>
+{% endblock %}

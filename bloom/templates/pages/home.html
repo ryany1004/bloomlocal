@@ -19,6 +19,9 @@
       }
     },
     created() {
+      {% if user.is_authenticated %}
+        this.$store.dispatch('get_user');
+      {% endif %}
     }
   });
   </script>

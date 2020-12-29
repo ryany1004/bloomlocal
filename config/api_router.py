@@ -33,8 +33,19 @@ urlpatterns += [
     path('shop/upload/generate-url/', shop_views.UploadURLAPI.as_view(), name="upload-url"),
     path('user/shop/<int:shop_id>/following/', views.FollowingShopAPI.as_view(), name="following-shop"),
     path('user/shop/<int:shop_id>/love/', views.LoveShopAPI.as_view(), name="love-shop"),
-    path('user/shop/<int:shop_id>/recent-viewed/', views.RecentViewdShopAPI.as_view(), name="recent-viewed-shop"),
+    path('user/product/<int:product_id>/wishlist/', views.WishlistProductAPI.as_view(), name="wishlist-product"),
+    path('user/shop/<int:shop_id>/recent-viewed/', views.RecentViewedShopAPI.as_view(), name="recent-viewed-shop"),
     path('order/cart/', order_views.CartAPI.as_view(), name="cart-data"),
     path('order/cart/item/add/', order_views.CartAddAPI.as_view(), name="cart-add"),
     path('order/cart/item/remove/', order_views.CartRemoveItemAPI.as_view(), name="cart-remove"),
+    path('order/shipping-address/valid/', order_views.ValidShippingAddress.as_view(), name="valid-shipping-address"),
+    path('order/confirm/', order_views.OrderConfirm.as_view(), name="order-confirm"),
+    path('order/<uuid>/details/', order_views.OrderDetailsAPI.as_view(), name="order-details"),
+    path('user/followed-shops/', views.FollowedShopsListAPI.as_view(), name="followed-shops"),
+    path('user/recent-viewed-shops/', views.RecentViewedShopsListAPI.as_view(), name="recent-viewed-shops"),
+    path('user/similar-shops/', views.SimilarShopsListAPI.as_view(), name="similar-shops"),
+    path('user/wishlist-products/', views.WishlistProductsAPI.as_view(), name="wishlist-product"),
+    path('user/orders/', order_views.UserOrderListAPI.as_view(), name="user-orders"),
+
+
 ]

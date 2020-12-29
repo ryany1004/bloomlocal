@@ -121,8 +121,29 @@ $icon-color: #4f4f4f;
     display: inline-block;
     margin-right: 15px;
     a {
+      color: #0C242E;
       img {
         margin-right: 5px;
+      }
+    }
+    a:hover {
+      text-decoration: none !important;
+    }
+  }
+  li.active {
+    background: #4FC5E9;
+    border-radius: 10px;
+    padding: 5px 15px;
+    a {
+      color: white;
+      .icon-my-shops{
+        content: url("../images/active/icon-shop.svg");
+      }
+      .icon-purchase {
+        content: url("../images/active/icon-purchase.svg");
+      }
+      .icon-collection {
+        content: url("../images/active/shopping-bag-2.svg");
       }
     }
   }
@@ -133,4 +154,16 @@ $icon-color: #4f4f4f;
   -webkit-box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.08);
   -o-box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.08);
   -moz-box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.08);
+}
+.font-12 {
+  font-size: 12px;
+}
+.font-10 {
+  font-size: 10px;
+}
+.font-14 {
+  font-size: 14px;
+}
+.font-16 {
+  font-size: 16px;
 }

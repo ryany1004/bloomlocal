@@ -57,7 +57,6 @@ export default {
     },
   },
   created() {
-    this.$store.dispatch('get_user');
     this.$store.dispatch('get_shop_categories');
   },
   methods: {
@@ -88,72 +87,71 @@ export default {
   .btn-light {
     border-color: #bdbdbd;
   }
+}
+.shop-cards {
+  @media (min-width: 992px) {
+    .col-lg-2 {
+       max-width: 20%;
+      flex: 0 0 20%;
+    }
+  }
+  .category-title {
+    font-size: 20px;
+    margin-bottom: 0px;
+  }
+  .shop-card {
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.12);
+    border-radius: 10px;
+    background-color: #fff;
 
-  .shop-cards {
-    @media (min-width: 992px) {
-      .col-lg-2 {
-         max-width: 20%;
-        flex: 0 0 20%;
+    .card-image {
+      height: 153px;
+      width: 100%;
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      border: 1px solid #f8f8f8;
+      border-top-right-radius: 10px;
+      border-top-left-radius: 10px;
+    }
+    h2 {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-size: 18px;
+      margin-bottom: 0;
+      a {
+        font-size: 14px;
+        color: #4F4F4F;
       }
     }
-    .category-title {
-      font-size: 20px;
-      margin-bottom: 0px;
+    .list-categories {
+      margin-bottom: 0;
+      padding-left: 0;
+      height: 24px;
+      li {
+        display: inline-block;
+        margin-right: 8px;
+        font-size: 8px;
+        color: #0C242E;
+      }
+      li + li::before {
+        content: "•";
+        padding-right: 8px;
+      }
     }
-    .shop-card {
-      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.12);
-      border-radius: 10px;
-      background-color: #fff;
-
-      .card-image {
-        height: 153px;
-        width: 100%;
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        border: 1px solid #f8f8f8;
-        border-top-right-radius: 10px;
-        border-top-left-radius: 10px;
-      }
-      h2 {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        font-size: 18px;
-        margin-bottom: 0;
-        a {
-          font-size: 14px;
-          color: #4F4F4F;
-        }
-      }
-      .list-categories {
+    footer {
+      .shop-feature {
         margin-bottom: 0;
         padding-left: 0;
-        height: 24px;
         li {
           display: inline-block;
-          margin-right: 8px;
+          margin-right: 3px;
           font-size: 8px;
-          color: #0C242E;
+          color: #828282;
         }
-        li + li::before {
-          content: "•";
-          padding-right: 8px;
-        }
-      }
-      footer {
-        .shop-feature {
-          margin-bottom: 0;
-          padding-left: 0;
-          li {
-            display: inline-block;
-            margin-right: 3px;
-            font-size: 8px;
-            color: #828282;
-          }
-          li:last-child {
-            margin-right: 0px;
-          }
+        li:last-child {
+          margin-right: 0px;
         }
       }
     }

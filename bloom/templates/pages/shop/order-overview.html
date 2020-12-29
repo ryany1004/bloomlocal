@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Order Overview | {{ block.super }}{% endblock title %}
+
+{% block content %}
+  {% include "pages/includes/shopper_menu.html" %}
+
+  <div class="container">
+    <order-overview :media-url="media_url" :stripe-publishable-key="stripePublishableKey"></order-overview>
+  </div>
+{% endblock %}
+
+{% block main_vue %}
+  <script>
+  let main = new Vue({
+    el: '#app',
+    delimiters: ["[{", "}]"],
+    data: function () {
+      return {
+        media_url: "{{ MEDIA_URL }}",
+        stripePublishableKey: "{{ STRIPE_PUBLISHABLE_KEY }}"
+      }
+    },
+  });
+  </script>
+{% endblock %}
+
+{% block extra_js %}
+  <script src="https://js.stripe.com/v3/"></script>
+{% endblock %}

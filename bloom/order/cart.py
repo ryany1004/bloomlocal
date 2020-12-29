@@ -1,7 +1,12 @@
 import json
 
+import stripe
 from django.conf import settings
+from django.contrib.sites.models import Site
+from django.db import transaction
+from django.urls import reverse
 
+from bloom.order.models import Order, OrderItem
 from bloom.shop.models import Product
 
 
@@ -52,17 +57,22 @@ class Cart(object):
             del self.cart[product_key]
             self.save()
 
-    def __iter__(self):
-        """
-        Iterate over the items in the cart and get the products
-        from the database.
-        """
+    def get_product_ids(self):
         product_keys = self.cart.keys()
         product_ids = []
         for key in product_keys:
             product_id = key.split(":")[0]
             if product_id not in product_ids:
                 product_ids.append(product_id)
+
+        return product_ids
+
+    def __iter__(self):
+        """
+        Iterate over the items in the cart and get the products
+        from the database.
+        """
+        product_ids = self.get_product_ids()
 
         # get the product objects and add them to the cart
         products = Product.objects.filter(id__in=product_ids)
@@ -96,12 +106,7 @@ class Cart(object):
         return self.get_total_price()
 
     def to_json(self):
-        product_keys = self.cart.keys()
-        product_ids = []
-        for key in product_keys:
-            product_id = key.split(":")[0]
-            if product_id not in product_ids:
-                product_ids.append(product_id)
+        product_ids = self.get_product_ids()
 
         # get the product objects and add them to the cart
         products = Product.objects.select_related('shop').filter(id__in=product_ids)
@@ -129,3 +134,64 @@ class Cart(object):
             }
             data.append(p)
         return data
+
+    @transaction.atomic
+    def confirm_order(self, shopper=None, shipping=None, sms_update=False, shopper_share_info=False):
+        order = Order()
+        order.shipping_address = shipping
+        order.shopper = shopper
+        order.shopper_share_info = shopper_share_info
+        order.shopper_sms_update = sms_update
+        order.total_price = self.get_total_price()
+        order.save()
+
+        product_ids = self.get_product_ids()
+        # get the product objects and add them to the cart
+        products = Product.objects.select_related('shop').filter(id__in=product_ids)
+        map_products = {}
+        for p in products:
+            map_products[p.id] = p
+
+        items = []
+        checkout_items = []
+        for obj in self.cart.values():
+            product = map_products[obj['product_id']]
+            item = OrderItem()
+            item.order = order
+            item.price = product.price
+            item.product = product
+            item.color = obj['color']
+            item.size = obj['size']
+            item.quantity = obj['quantity']
+            items.append(item)
+
+            checkout_items.append({
+                'price_data': {
+                    'currency': 'usd',
+                    'product_data': {
+                        'name': product.title,
+                    },
+                    "unit_amount": int(product.price * 100)
+                },
+                'quantity': item.quantity
+            })
+
+        OrderItem.objects.bulk_create(items)
+        session = self.create_session(checkout_items, order)
+        return order, session
+
+    def create_session(self, items, order):
+        site = Site.objects.get_current()
+        domain = "{}://{}".format('https' if settings.SECURE_SSL_REDIRECT else "http", site.domain)
+        success_url = domain + reverse("order:order-success", kwargs={'uuid': order.uuid})
+        cancel_url = domain + reverse("order:order-canceled", kwargs={'uuid': order.uuid})
+        stripe.api_key = settings.STRIPE_SECRET_KEY
+        session = stripe.checkout.Session.create(payment_method_types=['card'],
+                                                 line_items=items,
+                                                 mode='payment',
+                                                 success_url=success_url,
+                                                 cancel_url=cancel_url)
+        order.payment_intent = session.payment_intent
+        order.save()
+        return session
+

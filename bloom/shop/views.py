@@ -1,11 +1,9 @@
 import django
-from django.conf import settings
-from django.http.response import HttpResponseBadRequest, HttpResponse
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
-from django.utils import baseconv, timezone
+from django.utils.decorators import method_decorator
 from django.views.generic.base import View
 from django.views.generic.detail import DetailView
-from google.cloud.storage import Bucket, Blob
 
 from bloom.shop.models import Shop, Product
 from bloom.users.models import UserRole
@@ -75,3 +73,21 @@ class ProductDetails(DetailView):
         context = super(ProductDetails, self).get_context_data(**kwargs)
         context['page'] = 'product'
         return context
+
+
+class MyShopsView(View):
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        return render(request, "pages/account/my-shops.html", {'page': "my-shops"})
+
+
+class MyPurchaseView(View):
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        return render(request, "pages/account/my-purchase.html", {'page': "my-purchase"})
+
+
+class MyCollectionsView(View):
+    @method_decorator(login_required)
+    def get(self, request, *args, **kwargs):
+        return render(request, "pages/account/my-collections.html", {'page': "my-collections"})

@@ -24,6 +24,7 @@ urlpatterns = [
     path("users/", include("bloom.users.urls", namespace="users")),
     path("accounts/", include("allauth.urls")),
     path("", include("shop.urls"), name='shop'),
+    path("", include("order.urls"), name='order'),
     # Your stuff: custom urls includes go here
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 if settings.DEBUG:
