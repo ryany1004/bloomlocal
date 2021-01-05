@@ -16,7 +16,7 @@
         <ul class="cart-items">
           <li v-for="item in cart_items" :key="item.product.id">
             <div class="d-flex">
-              <a :title="item.product.title" :href="`/product/${item.product.slug}/`">
+              <a :title="item.product.title" :href="item.product.url">
                 <div class="item-img" :style="{backgroundImage: `url('${mediaUrl}${item.product.thumbnail}')`}">
                 </div>
               </a>

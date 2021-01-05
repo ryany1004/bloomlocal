@@ -3,13 +3,13 @@
     <ul class="cart-items">
       <li v-for="item in cart_items" :key="item.product.id">
         <div class="d-flex">
-          <a :title="item.product.title" :href="`/product/${item.product.slug}/`">
+          <a :title="item.product.title" :href="item.product.url">
             <div class="item-img" :style="{backgroundImage: `url('${mediaUrl}${item.product.thumbnail}')`}">
             </div>
           </a>
           <div class="d-flex flex-column pl-2" style="flex: 0 0 120px;width: 120px">
             <small>{{item.product.shop_name}}</small>
-            <a :title="item.product.title" class="product-title" :href="`/product/${item.product.slug}/`">{{ item.product.title }}</a>
+            <a :title="item.product.title" class="product-title" :href="item.product.url">{{ item.product.title }}</a>
             <small>{{ productVariant(item) }}</small>
           </div>
           <div class="form-row">

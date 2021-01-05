@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Search results for "{{ query }}" | {{ block.super }}{% endblock title %}
+
+{% block content %}
+  <div class="container">
+    <search-page :media-url="media_url" :query="query" :type="search_type"></search-page>
+  </div>
+{% endblock %}
+
+{% block main_vue %}
+  <script>
+  let main = new Vue({
+    el: '#app',
+    delimiters: ["[{", "}]"],
+    data: function () {
+      return {
+        media_url: "{{ MEDIA_URL }}",
+        query: "{{ query }}",
+        search_type: "{{ search_type }}"
+      }
+    },
+  });
+  </script>
+{% endblock %}

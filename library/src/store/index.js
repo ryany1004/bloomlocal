@@ -127,6 +127,9 @@ const vStore = new Vuex.Store({
       }).catch((err) => {
         console.log(err)
       })
+    },
+    strip_connect() {
+      return axios.post('/users/stripe/connect/')
     }
   },
   modules: {

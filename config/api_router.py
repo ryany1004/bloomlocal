@@ -46,6 +46,7 @@ urlpatterns += [
     path('user/similar-shops/', views.SimilarShopsListAPI.as_view(), name="similar-shops"),
     path('user/wishlist-products/', views.WishlistProductsAPI.as_view(), name="wishlist-product"),
     path('user/orders/', order_views.UserOrderListAPI.as_view(), name="user-orders"),
-
+    path('product/search/', shop_views.ProductSearch.as_view(), name="product-search"),
+    path('shop/search/', shop_views.ShopSearch.as_view(), name="shop-search"),
 
 ]

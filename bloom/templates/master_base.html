@@ -5,7 +5,17 @@
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <title>{% block title %}Bloom{% endblock title %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-site-verification" content="FHQF9u0b_e5J3ycsy8dtuCizIeRmbGVksEi4bttJnOQ" />
+
+    {% block meta %}
+    <meta name=”robots” content="index, follow">
     <meta name="description" content="This is an ecomerce project">
+    <meta property="og:title" content="Bloom">
+    <meta property="og:description" content="This is an ecomerce project">
+    <meta property="og:image" content="">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    {% endblock %}
+
     <meta name="author" content="Bloom">
 
     <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->

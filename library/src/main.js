@@ -65,6 +65,8 @@ import MyPurchase from "./components/shopper/account/MyPurchase";
 import MyCollections from "./components/shopper/account/MyCollections";
 import OrderCanceled from "./components/shopper/OrderCanceled";
 import Wishlist from "./components/shopper/shop/Wishlist";
+import SearchBar from "./components/shopper/SearchBar";
+import SearchPage from "./components/shopper/SearchPage";
 
 Vue.config.productionTip = false
 
@@ -109,7 +111,9 @@ const Components = {
     MyShops,
     MyPurchase,
     MyCollections,
-    Wishlist
+    Wishlist,
+    SearchBar,
+    SearchPage
 }
 Object.keys(Components).forEach(name => {
     console.info('name: '+ name);

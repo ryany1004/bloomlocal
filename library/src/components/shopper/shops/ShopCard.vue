@@ -1,12 +1,12 @@
 <template>
   <section class="shop-card">
-    <a :href="`/shop/${shop.slug}/`">
+    <a :href="shop.url">
       <div class="card-image" :style="{backgroundImage: `url('${mediaUrl}${shop.logo}')`}">
       </div>
     </a>
     <article class="px-2 mt-2">
       <div class="d-flex">
-        <h2 :title="shop.name" class="shop-name flex-grow-1"><a :href="`/shop/${shop.slug}/`">{{shop.name}}</a></h2>
+        <h2 :title="shop.name" class="shop-name flex-grow-1"><a :href="shop.url">{{shop.name}}</a></h2>
         <following-love :shop="shop"></following-love>
       </div>
 

@@ -1,7 +1,9 @@
 import django
 from django.conf import settings
+from django.contrib.postgres.search import SearchVector
 from django.core.cache import cache
 from django.db.models.aggregates import Count
+from django.db.models.query_utils import Q
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
@@ -199,3 +201,24 @@ class ShopCategoryAPIView(ListAPIView):
             categories = ShopCategory.objects.filter(parent=None)
             cache.set('shop_categories', categories)
         return categories
+
+
+class ProductSearch(ListAPIView):
+    serializer_class = ProductModelSerializer
+    permission_classes = []
+
+    def get_queryset(self):
+        query = self.request.GET.get("query")
+        return Product.objects.select_related('shop') \
+            .prefetch_related('productimage_set', 'productvariant_set', 'categories') \
+            .filter(Q(title__icontains=query) | Q(description__icontains=query), status=0, archived=False)[:50]
+
+
+class ShopSearch(ListAPIView):
+    serializer_class = ShopSerializer
+    permission_classes = []
+
+    def get_queryset(self):
+        query = self.request.GET.get("query")
+        return Shop.objects.select_related('owner').prefetch_related('categories') \
+            .filter(name__icontains=query)[:50]

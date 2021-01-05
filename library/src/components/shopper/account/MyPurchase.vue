@@ -7,7 +7,7 @@
       </div>
       <div class="order-items row">
         <div class="col-6 d-flex mb-4" v-for="item in order.order_items" :key="item.id">
-          <a :href="`/product/${item.product.slug}/`" style="flex: 0 0 160px">
+          <a :href="item.product.url" style="flex: 0 0 160px">
             <div class="product-image" :style="{backgroundImage: `url('${mediaUrl}${item.product.thumbnail}')`}">
             </div>
           </a>
@@ -16,7 +16,7 @@
             <p class="font-10 product-desc mt-2" style="white-space: pre-line">{{ item.product.description }}</p>
             <div class="d-flex align-items-center mt-3">
               <span class="item-status mr-4">Received</span>
-              <a class="btn btn-primary btn-sm font-10 white" :href="`/product/${item.product.slug}/`">Buy it agian</a>
+              <a class="btn btn-primary btn-sm font-10 white" :href="item.product.url">Buy it again</a>
             </div>
           </div>
         </div>

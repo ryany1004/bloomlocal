@@ -5,34 +5,59 @@
 
 {% block content %}
   <div class="container">
-    <div>
+    <div class="mt-4">
       <div class="row">
         <div class="col-sm-12">
 
-          <h2>{{ object.username }}</h2>
-          <p>Role: {% if object.role_type == '2' %}Shopper{% elif object.role_type == '1' %}Local Business{% endif %}</p>
-          {% if object.name %}
-            <p>{{ object.name }}</p>
+          <h2>{{ object.get_full_name }}</h2>
+          {% if object.role_type == '2' %}
+            Shopper
+          {% elif object.role_type == '1' %}
+            <div class="form-row align-items-center">
+              {% if user.stripe_account_id %}
+                <div class="col-auto my-1">
+                  <label><strong>Stripe Account ID</strong>: {{ user.stripe_account_id }}</label><br>
+                  <label><strong>Charge status</strong>: <span href="#" class="badge {% if user.charges_enabled %}badge-success{% else %}badge-warning{% endif %}">{{ user.get_charge_status }}</span></label>
+                </div>
+              {% else %}
+                <div class="col-auto my-1">
+                  <button :disabled="loading" type="button" @click="stripe_connect()" class="btn btn-primary white">Connect with Stripe</button>
+                </div>
+              {% endif %}
+            </div>
           {% endif %}
         </div>
       </div>
-
-    {% if object == request.user %}
-    <!-- Action buttons -->
-    <div class="row">
-
-      <div class="col-sm-12">
-        <a class="btn btn-primary" href="{% url 'users:update' %}" role="button">My Info</a>
-        <a class="btn btn-primary" href="{% url 'account_email' %}" role="button">E-Mail</a>
-        <!-- Your Stuff: Custom user template urls -->
-      </div>
-
-    </div>
-    <!-- End Action buttons -->
-    {% endif %}
-
-
     </div>
   </div>
 {% endblock content %}
 
+{% block main_vue %}
+  <script>
+  let main = new Vue({
+    el: '#app',
+    delimiters: ["[{", "}]"],
+    data: function () {
+      return {
+        media_url: "{{ MEDIA_URL }}",
+        loading: false,
+      }
+    },
+    methods: {
+      stripe_connect() {
+        let that = this;
+        that.loading = true;
+        this.$store.dispatch('strip_connect').then(function (res) {
+          if (res.data.url) {
+            window.location = res.data.url;
+          }
+          that.loading = false;
+        }).catch(function (err) {
+          console.log(err);
+          alert("Oops, Something wrong!")
+        })
+      }
+    }
+  });
+  </script>
+{% endblock %}

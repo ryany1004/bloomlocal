@@ -4,14 +4,14 @@
       <div class="row">
         <div class="col-md-4 col-12">
           <div>
-            <div class="product-thumbnail" :style="{backgroundImage: `url(${mediaUrl}${thumbnail}`}">
+            <div class="product-thumbnail" :style="{backgroundImage: `url('${mediaUrl}${thumbnail}')`}">
             </div>
 
             <div class="product-images mt-4">
               <ul class="el-upload-list el-upload-list--picture-card">
                 <li class="el-upload-list__item is-success" v-for="img in product_imgs" :key="img.uid">
                   <div>
-                    <a href="javascript:void(0)" @click="thumbnail = img.url"><div class="el-upload-list__item-thumbnail" :style="{backgroundImage: `url('${mediaUrl}${img.url}'`}"></div></a>
+                    <a href="javascript:void(0)" @click="thumbnail = img.url"><div class="el-upload-list__item-thumbnail" :style="{backgroundImage: `url('${mediaUrl}${img.url}')`}"></div></a>
                   </div>
                 </li>
               </ul>

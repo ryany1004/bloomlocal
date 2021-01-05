@@ -13,7 +13,7 @@ pytz = "==2020.4"
 python-slugify = "==4.0.1"
 rcssmin = "==1.0.6"
 argon2-cffi = "==20.1.0"
-whitenoise = {extras = ["brotli"],version = "*"}
+whitenoise = "==5.2.0"
 redis = "==3.5.3"
 hiredis = "==1.1.0"
 celery = "==4.4.6"
@@ -56,11 +56,16 @@ gunicorn = "==20.0.4"
 django-storages = {extras = ["google"],version = "*"}
 django-anymail = {extras = ["mailgun"],version = "*"}
 django-autoslug = "*"
-django = "==3.1.4"
 django-braces = "*"
 django-direct-cloud-upload = "*"
 django-auto-prefetching = "*"
 stripe = "*"
+google-api-python-client = "==1.12.8"
+google-auth = "*"
+google-auth-oauthlib = "*"
+google-auth-httplib2 = "*"
+six = "*"
+Django = "==3.1.4"
 
 [requires]
 python_version = "3.9"

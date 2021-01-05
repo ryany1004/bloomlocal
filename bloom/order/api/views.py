@@ -78,6 +78,7 @@ class OrderConfirm(APIView):
 
 class OrderDetailsAPI(RetrieveAPIView):
     serializer_class = OrderSerializer
+    permission_classes = []
 
     def get_object(self):
         return get_object_or_404(Order.objects.prefetch_related('order_items', "order_items__product") \

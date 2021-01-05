@@ -32,6 +32,8 @@ class User(AbstractUser):
     following_shops = JSONField(default=list, blank=True)
     love_shops = JSONField(default=list, blank=True)
     wishlist_products = JSONField(default=list, blank=True)
+    charges_enabled = models.BooleanField(default=False, editable=False)
+    stripe_account_id = models.CharField(max_length=100, blank=True, editable=False, db_index=True)
 
     def get_absolute_url(self):
         """Get url for user's detail view.
@@ -44,6 +46,12 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.get_full_name()
+
+    def get_charge_status(self):
+        if self.charges_enabled:
+            return "Enabled"
+
+        return "Disabled"
 
     def get_shop(self):
         from bloom.shop.models import Shop

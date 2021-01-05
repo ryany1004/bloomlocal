@@ -5,6 +5,7 @@ from django.contrib.postgres import fields
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models.fields.json import JSONField
+from django.urls import reverse
 
 from bloom.base import BaseModelMixin
 from bloom.utils.paths import get_photo_path, get_shop_path
@@ -52,6 +53,9 @@ class Shop(BaseModelMixin, models.Model):
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return reverse("shop:shop-details", kwargs={'slug': self.slug})
 
 
 class Category(models.Model):
@@ -103,6 +107,7 @@ class Product(BaseModelMixin, models.Model):
     shipment_id = models.IntegerField(blank=True, null=True)
     archived = models.BooleanField(default=False)
     shop = models.ForeignKey('shop.Shop', on_delete=models.CASCADE, null=True)
+    content_product_id = models.CharField(max_length=50, blank=True, editable=False)
 
     def __str__(self):
         return self.title
@@ -114,6 +119,9 @@ class Product(BaseModelMixin, models.Model):
 
     def get_product_images(self):
         return ProductImage.objects.filter(product_id=self.id).values_list('image')
+
+    def get_absolute_url(self):
+        return reverse("product-details", kwargs={'slug': self.slug, 'shop_slug': self.shop.slug})
 
 
 class ProductImage(models.Model):

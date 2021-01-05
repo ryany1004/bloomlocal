@@ -1,6 +1,15 @@
 {% extends "base.html" %}
 {% block title %}{{ product.title }} | {{ block.super }}{% endblock title %}
 
+{% block meta %}
+  <meta name=”robots” content="index, follow">
+  <meta name="description" content="{{ product.description }}">
+  <meta property="og:title" content="{{ product.title }}">
+  <meta property="og:description" content="{{ product.description }}">
+  <meta property="og:image" content="{{ product.thumbnail.url }}">
+  <meta property="og:url" content="{{ request.build_absolute_uri }}">
+{% endblock %}
+
 {% block content %}
   {% include "pages/includes/shopper_menu.html" %}
 

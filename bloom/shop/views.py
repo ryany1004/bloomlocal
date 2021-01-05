@@ -91,3 +91,10 @@ class MyCollectionsView(View):
     @method_decorator(login_required)
     def get(self, request, *args, **kwargs):
         return render(request, "pages/account/my-collections.html", {'page': "my-collections"})
+
+
+class SearchView(View):
+    def get(self, request, *args, **kwargs):
+        query = request.GET.get('query', '')
+        search_type = request.GET.get("type", "all")
+        return render(request, "pages/search.html", {'query': query, 'search_type': search_type})

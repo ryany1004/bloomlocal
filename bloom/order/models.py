@@ -52,6 +52,9 @@ class Order(BaseModelMixin, models.Model):
     def count_items(self):
         return OrderItem.objects.filter(order_id=self.id).count()
 
+    def get_order_id(self):
+        return "Order:#{}".format(self.id)
+
 
 class OrderItem(BaseModelMixin, models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="order_items")

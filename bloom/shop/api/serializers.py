@@ -17,19 +17,23 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class ProductModelSimpleSerializer(serializers.ModelSerializer):
+    url = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
         fields = ['id', 'uuid', 'title', 'thumbnail', 'price', 'description', 'length', 'width', 'height', 'status',
                   'weight', 'weight_unit', 'stock', 'delivery_type', 'enable_color', 'enable_size', 'shop_id',
                   'archived', 'slug', 'created_at', 'updated_at',
-                  'dimension_unit',]
+                  'dimension_unit', 'url']
 
     def to_representation(self, instance):
         response = super(ProductModelSimpleSerializer, self).to_representation(instance)
         if instance.thumbnail:
             response['thumbnail'] = str(instance.thumbnail)
         return response
+
+    def get_url(self, product):
+        return product.get_absolute_url()
 
 
 class ProductModelSerializer(ProductModelSimpleSerializer):
@@ -42,7 +46,7 @@ class ProductModelSerializer(ProductModelSimpleSerializer):
         fields = ['id', 'uuid', 'title', 'thumbnail', 'price', 'description', 'length', 'width', 'height', 'status',
                   'weight', 'weight_unit', 'stock', 'delivery_type', 'enable_color', 'enable_size', 'shop_id',
                   'archived', 'slug', 'variants', 'images', 'created_at', 'updated_at', 'categories',
-                  'category_names', 'dimension_unit', ]
+                  'category_names', 'dimension_unit', 'url']
 
     def get_variants(self, obj):
         variants = obj.productvariant_set.all()
@@ -147,11 +151,12 @@ class ProductSerializer(serializers.Serializer):
 
 class ShopSerializer(serializers.ModelSerializer):
     category_names = serializers.SerializerMethodField()
+    url = serializers.SerializerMethodField()
 
     class Meta:
         model = Shop
         fields = ['id', 'uuid', 'name', 'slug', 'logo', 'owner', 'business_address', 'business_phone',
-                  'categories', 'locality', 'category_names']
+                  'categories', 'locality', 'category_names', 'url']
 
     def to_representation(self, instance):
         response = super(ShopSerializer, self).to_representation(instance)
@@ -163,6 +168,9 @@ class ShopSerializer(serializers.ModelSerializer):
 
     def get_category_names(self, obj):
         return [{"name": c.name, 'id': c.id} for c in obj.categories.all()]
+
+    def get_url(self, shop):
+        return shop.get_absolute_url()
 
 
 class ShopCategorySerializer(serializers.ModelSerializer):

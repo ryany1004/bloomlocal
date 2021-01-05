@@ -1,5 +1,3 @@
-import json
-
 import stripe
 from django.conf import settings
 from django.contrib.sites.models import Site
@@ -8,6 +6,8 @@ from django.urls import reverse
 
 from bloom.order.models import Order, OrderItem
 from bloom.shop.models import Product
+
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
 class Cart(object):
@@ -128,6 +128,7 @@ class Cart(object):
                     'uuid': str(product.uuid),
                     'title': product.title,
                     'slug': product.slug,
+                    'url': product.get_absolute_url(),
                     'thumbnail': str(product.thumbnail),
                     'shop_name': product.shop.name
                 }
@@ -170,6 +171,8 @@ class Cart(object):
                     'currency': 'usd',
                     'product_data': {
                         'name': product.title,
+                        'description': product.description,
+                        'images': [product.thumbnail.url]
                     },
                     "unit_amount": int(product.price * 100)
                 },
@@ -185,12 +188,15 @@ class Cart(object):
         domain = "{}://{}".format('https' if settings.SECURE_SSL_REDIRECT else "http", site.domain)
         success_url = domain + reverse("order:order-success", kwargs={'uuid': order.uuid})
         cancel_url = domain + reverse("order:order-canceled", kwargs={'uuid': order.uuid})
-        stripe.api_key = settings.STRIPE_SECRET_KEY
         session = stripe.checkout.Session.create(payment_method_types=['card'],
                                                  line_items=items,
                                                  mode='payment',
                                                  success_url=success_url,
-                                                 cancel_url=cancel_url)
+                                                 cancel_url=cancel_url,
+                                                 payment_intent_data={
+                                                     'transfer_group': order.get_order_id(),
+                                                     "description": "Payment for the order #{}".format(order.id)
+                                                 })
         order.payment_intent = session.payment_intent
         order.save()
         return session
