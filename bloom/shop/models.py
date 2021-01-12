@@ -1,7 +1,6 @@
 import uuid as uuid
 from autoslug import AutoSlugField
 from django.contrib.auth import get_user_model
-from django.contrib.postgres import fields
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models.fields.json import JSONField
@@ -50,6 +49,7 @@ class Shop(BaseModelMixin, models.Model):
     tax_id = models.CharField(max_length=20, blank=True)
     integrations = JSONField(default=list, blank=True)
     locality = models.CharField(max_length=20, blank=True)
+    subscriber = models.IntegerField(default=0, blank=True)
 
     def __str__(self):
         return self.name
@@ -85,17 +85,17 @@ class Product(BaseModelMixin, models.Model):
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     title = models.CharField(max_length=500)
     slug = AutoSlugField(populate_from='title', unique=True, always_update=True, db_index=True, max_length=700)
-    price = models.FloatField(validators=[MinValueValidator(0)])
+    price = models.FloatField(validators=[MinValueValidator(0)], default=0)
     thumbnail = models.ImageField(upload_to=get_photo_path, max_length=500)
     description = models.TextField(blank=True)
     length = models.FloatField(blank=True, null=True, validators=[MinValueValidator(0)])
     width = models.FloatField(blank=True, null=True, validators=[MinValueValidator(0)])
     height = models.FloatField(blank=True, null=True, validators=[MinValueValidator(0)])
     dimension_unit = models.CharField(max_length=10)
-    weight = models.FloatField(validators=[MinValueValidator(0)])
-    weight_unit = models.CharField(max_length=10)
+    weight = models.FloatField(validators=[MinValueValidator(0)], blank=True, null=True)
+    weight_unit = models.CharField(max_length=10, blank=True)
     stock = models.IntegerField(null=True, blank=True, validators=[MinValueValidator(0)])
-    delivery_type = models.CharField(max_length=10)
+    delivery_type = models.CharField(max_length=10, blank=True)
     status = models.IntegerField(default=0, choices=STATUS_CHOICES)
     rating = models.FloatField(default=0, editable=False, validators=[MinValueValidator(0)])
     categories = models.ManyToManyField(Category, blank=True)
@@ -108,6 +108,7 @@ class Product(BaseModelMixin, models.Model):
     archived = models.BooleanField(default=False)
     shop = models.ForeignKey('shop.Shop', on_delete=models.CASCADE, null=True)
     content_product_id = models.CharField(max_length=50, blank=True, editable=False)
+    shopify_product_id = models.BigIntegerField(null=True, blank=True, editable=False)
 
     def __str__(self):
         return self.title
@@ -118,14 +119,23 @@ class Product(BaseModelMixin, models.Model):
         return self.image.url
 
     def get_product_images(self):
-        return ProductImage.objects.filter(product_id=self.id).values_list('image')
+        imgs = ProductImage.objects.filter(product_id=self.id).first()
+        if imgs:
+            return imgs.images
+        return []
+
+    def get_product_variants(self):
+        variant = ProductVariant.objects.filter(product_id=self.id).first()
+        if variant:
+            return variant.values
+        return  []
 
     def get_absolute_url(self):
         return reverse("product-details", kwargs={'slug': self.slug, 'shop_slug': self.shop.slug})
 
 
 class ProductImage(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, unique=True)
     images = JSONField(default=list, blank=True)
 
     def get_image_url(self):
@@ -144,24 +154,20 @@ class ProductRating(BaseModelMixin, models.Model):
 class Attribute(models.Model):
     attribute_code = models.CharField(max_length=20, primary_key=True)
     attribute_name = models.CharField(max_length=20)
+    values = JSONField(default=list, blank=True)
 
     def __str__(self):
         return self.attribute_name
 
 
-class AttributeValue(models.Model):
-    attribute = models.ForeignKey(Attribute, on_delete=models.CASCADE)
-    value = models.CharField(max_length=20, null=True, help_text="These changes affect all related products.")
-    text = models.CharField(max_length=20, null=True)
-
-    def __str__(self):
-        return self.text
-
-
 class ProductVariant(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, unique=True)
     """{
         data: {
         }
     }"""
     values = JSONField(default=list)
+
+
+class ImageStorage(models.Model):
+    image = models.ImageField(upload_to=get_photo_path, max_length=500)

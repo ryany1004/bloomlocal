@@ -14993,7 +14993,7 @@ a.text-dark:hover, a.text-dark:focus {
   color: #4FC5E9; }
 
 .white {
-  color: #fff; }
+  color: #fff !important; }
 
 .bg-1 {
   background-color: #4FC5E9; }
@@ -15065,3 +15065,9 @@ a.text-dark:hover, a.text-dark:focus {
 
 .nowrap {
   white-space: nowrap; }
+
+.el-menu-item a {
+  color: #303133; }
+
+.el-menu-item.is-active a, .el-menu-item.is-active i {
+  color: #409EFF !important; }

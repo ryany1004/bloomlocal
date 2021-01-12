@@ -6,6 +6,8 @@
       </div>
       <div class="d-flex align-items-center">
         <a href="/business/product/upload/"><i class="fas fa-plus fa-1x"></i></a>
+        <a href="/business/google-merchant/upload/" class="ml-3" title="Upload your products to Google Merchant"><i class="fas fa-upload"></i></a>
+          <a href="/business/products/import/" class="ml-3 btn btn-primary btn-sm white" title="Import products from Shopify">Import</a>
         <div class="dropdown mx-4">
           <button class="btn btn-light btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             Sort by {{ sort_by_text }}
@@ -211,7 +213,7 @@ export default {
       }
     },
     pagingTableData() {
-      let products = 0;
+      let products = [];
       let size_start = (this.current_page - 1) * this.page_size;
       products = this.tableData.slice(size_start, size_start + this.page_size);
       return products

@@ -14,6 +14,8 @@
       <div class="col-lg-6 col-md-6 col-12">
         <div class="d-flex align-items-center justify-content-end">
           <a href="/business/product/upload/"><i class="fas fa-plus fa-1x"></i></a>
+          <a href="/business/google-merchant/upload/" class="ml-3" title="Upload your products to Google Merchant"><i class="fas fa-upload"></i></a>
+          <a href="/business/products/import/" class="ml-3 btn btn-primary btn-sm white" title="Import products from Shopify">Import</a>
           <div class="dropdown mx-4">
             <button class="btn btn-light btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               View by {{sort_by_text}}
@@ -152,6 +154,12 @@ export default {
         border: 1px solid #f8f8f8;
         border-top-right-radius: 10px;
         border-top-left-radius: 10px;
+        position: relative;
+        .select-product {
+          position: absolute;
+          right: 10px;
+          top: 10px;
+        }
       }
       h2 {
         white-space: nowrap;

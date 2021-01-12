@@ -67,6 +67,12 @@ import OrderCanceled from "./components/shopper/OrderCanceled";
 import Wishlist from "./components/shopper/shop/Wishlist";
 import SearchBar from "./components/shopper/SearchBar";
 import SearchPage from "./components/shopper/SearchPage";
+import MyOrders from "./components/business/orders/MyOrders";
+import ProductsImport from "./components/business/ProductsImport";
+import ShopifyProductCard from "./components/business/ShopifyProductCard";
+import ShopifyProductEdit from "@/components/business/ShopifyProductEdit";
+import Receipt from "@/components/business/orders/Receipt";
+import ShopperInfo from "@/components/business/orders/ShopperInfo";
 
 Vue.config.productionTip = false
 
@@ -113,13 +119,19 @@ const Components = {
     MyCollections,
     Wishlist,
     SearchBar,
-    SearchPage
+    SearchPage,
+    MyOrders,
+    ProductsImport,
+    ShopifyProductCard,
+    ShopifyProductEdit,
+    Receipt,
+    ShopperInfo
 }
 Object.keys(Components).forEach(name => {
     console.info('name: '+ name);
     Vue.component(name,Components[name])
 })
-Vue.config.devtools = false;
+Vue.config.devtools = true;
 export default Components
 
 // new Vue({

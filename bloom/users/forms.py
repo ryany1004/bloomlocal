@@ -6,6 +6,8 @@ from django.contrib.auth.forms import UsernameField
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
+from bloom.users.models import ShopifyConfig
+
 User = get_user_model()
 
 
@@ -66,3 +68,9 @@ class VendorSignUpForm(forms.Form):
     business_address = forms.CharField()
     business_phone = forms.CharField()
     store_type = forms.ChoiceField(choices=STORE_TYPES)
+
+
+class ShopifyConfigForm(forms.ModelForm):
+    class Meta:
+        model = ShopifyConfig
+        fields = ['shop_url', 'api_key', 'secret_key']

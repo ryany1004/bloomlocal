@@ -59,3 +59,19 @@ class OrderSerializer(serializers.ModelSerializer):
         fields = ['id', 'uuid', 'tax', 'total_price', 'shopper', 'shipping_address', 'shopper_share_info',
                   'shopper_sms_update', 'order_items']
         depth = 1
+
+
+class BusinessOrderItemSerializer(serializers.ModelSerializer):
+    product_title = serializers.SerializerMethodField()
+    order_uuid = serializers.SerializerMethodField()
+
+    class Meta:
+        model = OrderItem
+        fields = ['id', 'product', 'price', 'color', 'size', 'quantity', 'commission_rate', 'order_id',
+                  'product_title', 'order_uuid']
+
+    def get_product_title(self, obj):
+        return obj.product.title
+
+    def get_order_uuid(self, obj):
+        return obj.order.uuid

@@ -7,6 +7,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.base import View
 
+from bloom.order.cart import Cart
 from bloom.order.models import Order
 from bloom.order.payment import transfer_to_connected_accounts
 
@@ -22,12 +23,17 @@ class OrderOverviewPage(View):
 class OrderSuccessPage(View):
     def get(self, request, *args, **kwargs):
         order = get_object_or_404(Order, uuid=kwargs['uuid'])
+        cart = Cart(request)
+        cart.clear()
         return render(request, 'pages/shop/order-success.html', {"page": 'order-success', 'order': order})
 
 
 class OrderCanceledPage(View):
     def get(self, request, *args, **kwargs):
         order = get_object_or_404(Order, uuid=kwargs['uuid'])
+        if order.status == Order.Status.PENDING:
+            order.status = Order.Status.CANCELED
+            order.save()
         return render(request, 'pages/shop/order-canceled.html', {"page": 'order-success', 'order': order})
 
 

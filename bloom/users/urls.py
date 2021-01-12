@@ -5,7 +5,7 @@ from bloom.users.views import (
     user_redirect_view,
     user_update_view,
     StripConnectView,
-    StripAccountRefreshView
+    StripAccountRefreshView, StripeSettingView, ShopifySettingView, ShopifyCallbackView
 )
 
 app_name = "users"
@@ -15,4 +15,7 @@ urlpatterns = [
     path("details/", view=user_detail_view, name="detail"),
     path("stripe/connect/", view=StripConnectView.as_view(), name="stripe_connect"),
     path("stripe/refresh/", view=StripAccountRefreshView.as_view(), name="stripe_refresh"),
+    path("stripe-integration/", view=StripeSettingView.as_view(), name="stripe-integration"),
+    path("shopify-integration/", view=ShopifySettingView.as_view(), name="shopify-integration"),
+    path("auth/shopify/callback/", view=ShopifyCallbackView.as_view(), name="shopify-callback"),
 ]

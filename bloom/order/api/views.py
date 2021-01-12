@@ -1,13 +1,20 @@
+import json
+import traceback
+
 import django_auto_prefetching
+import shopify
+from django.conf import settings
+from django.utils.html import strip_tags
 from rest_framework import status
 from rest_framework.generics import get_object_or_404, RetrieveAPIView, ListAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from bloom.order.api.serializers import ShippingAddresSerializer, OrderSerializer
+from bloom.order.api.serializers import ShippingAddresSerializer, OrderSerializer, BusinessOrderItemSerializer
 from bloom.order.cart import Cart
-from bloom.order.models import Order
-from bloom.shop.models import Product
+from bloom.order.models import Order, OrderItem
+from bloom.shop.models import Product, Attribute
+from bloom.utils.pagination import StandardResultsSetPagination
 
 
 class CartAddAPI(APIView):
@@ -64,7 +71,6 @@ class OrderConfirm(APIView):
             order, session = cart.confirm_order(shopper=user, shipping=shipping,
                                                 sms_update=request.data['sms_update'],
                                                 shopper_share_info=request.data['shopper_share_info'])
-            cart.clear()
         else:
             return Response(data=data.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -91,5 +97,135 @@ class UserOrderListAPI(django_auto_prefetching.AutoPrefetchViewSetMixin, ListAPI
     def get_queryset(self):
         queryset = Order.objects.prefetch_related('order_items', 'order_items__product') \
             .select_related('shopper', 'shipping_address') \
-            .filter(shopper=self.request.user).order_by('-created_at')
+            .filter(shopper=self.request.user, status=Order.Status.SUCCEED).order_by('-created_at')
         return django_auto_prefetching.prefetch(queryset, self.serializer_class)
+
+
+class BusinessMyOrdersAPI(ListAPIView):
+    serializer_class = BusinessOrderItemSerializer
+    pagination_class = StandardResultsSetPagination
+
+    def get_queryset(self):
+        return OrderItem.objects \
+            .select_related('order', 'product', 'order__shipping_address') \
+            .filter(product__shop__owner=self.request.user, order__status=Order.Status.SUCCEED).order_by('-order_id')
+
+
+class ShopifyRetrieveProductAPI(APIView):
+    def get(self, request, *args, **kwargs):
+        config = request.user.get_shopify_config()
+        session = shopify.Session(config.shop_url, settings.SHOPIFY_API_VERSION, config.secret_key)
+        shopify.ShopifyResource.activate_session(session)
+        try:
+            products = self.get_all_resources(shopify.Product)
+        except Exception as e:
+            print(e)
+            raise Exception(e)
+        finally:
+            shopify.ShopifyResource.clear_session()
+
+        return Response(data=products, status=status.HTTP_200_OK)
+
+    def get_all_resources(self, resource, **kwargs):
+        # resource_count = resource.count(**kwargs)
+        resources = resource.find(limit=250)
+        products = []
+        for obj in resources:
+            draft = json.loads(obj.to_json())['product']
+            variants, enable_size, enable_color = self.get_variants(draft)
+            images = self.get_images(draft)
+            product = {
+                'id': draft['id'],
+                'title': draft['title'],
+                'description': strip_tags(draft.get('body_html') or ''),
+                'price': self.get_price(draft),
+                'enable_color': enable_color,
+                'enable_size': enable_size,
+                'status': 0 if draft.get('status') == 'active' else 1,
+                'variants': variants,
+                'thumbnail': draft['image']['src'] if draft['image'] else None,
+                'images': self.get_images(draft),
+                'categories': [],
+                'stock': self.get_stock(draft)
+            }
+            products.append(product)
+        return products
+
+    def get_price(self, product):
+        variants = product.get('variants') or []
+        if variants:
+            return float(variants[0].get('price') or 0)
+        return 0
+
+    def get_stock(self, product):
+        variants = product.get('variants') or []
+        if variants:
+            return variants[0].get('inventory_quantity') or 0
+        return 0
+
+    def get_images(self, product):
+        images = []
+        for img in (product.get('images') or []):
+            if img['src']:
+                images.append(img['src'])
+
+        return [{'src': img} for img in images]
+
+    def get_variants(self, product):
+        enable_color = False
+        enable_size = False
+        variants = []
+        options = product.get('options') or []
+        var_objs = product.get('variants') or []
+
+        attr_size = Attribute.objects.get(attribute_code='size')
+        attr_color = Attribute.objects.get(attribute_code='color')
+
+        for opt in options:
+            if opt['name'] == "Size":
+                for v in opt['values']:
+                    if v not in attr_size.values:
+                        attr_size.values.append(v)
+                attr_size.save()
+            elif opt['name'] == "Color":
+                for v in opt['values']:
+                    if v.capitalize() not in attr_color.values:
+                        attr_color.values.append(v.capitalize())
+                attr_color.save()
+
+        if len(options) == 1:
+            option = options[0]
+            if option['name'] == "Color":
+                enable_color = True
+                values = option['values']
+                for v in values:
+                    variants.append({'color': v.capitalize()})
+            elif option['name'] == "Size":
+                enable_size = True
+                values = option['values']
+                for v in values:
+                    variants.append({'size': v})
+        elif len(options) > 1:
+            size_values = []
+            color_values = []
+            for option in options:
+                if option['name'] == "Color":
+                    color_values = option['values']
+                    enable_color = True
+                if option['name'] == "Size":
+                    enable_size = True
+                    size_values = option['values']
+
+            if len(size_values) > 0 and len(color_values) > 0:
+                for size in size_values:
+                    for color in color_values:
+                        variants.append({"size": size, "color": color.capitalize()})
+            elif len(size_values) > 0:
+                for size in size_values:
+                    variants.append({"size": size})
+            elif len(color_values) > 0:
+                for color in color_values:
+                    variants.append({"color": color.capitalize()})
+
+        return variants, enable_size, enable_color
+

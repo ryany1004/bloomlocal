@@ -4,16 +4,9 @@ from django.contrib import admin
 from bloom.shop import models
 
 
-class AttributeValueInline(admin.TabularInline):
-    model = models.AttributeValue
-
-
 @admin.register(models.Attribute)
 class AttributeAdmin(admin.ModelAdmin):
-    list_display = ('attribute_code', 'attribute_name')
-    inlines = [
-        AttributeValueInline,
-    ]
+    list_display = ('attribute_code', 'attribute_name', 'values')
 
 
 @admin.register(models.Shop)

@@ -1,4 +1,10 @@
+import binascii
+import os
+
+import shopify
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser
+from django.contrib.sites.models import Site
 from django.db import models
 from django.db.models.fields.json import JSONField
 from django.urls import reverse
@@ -49,9 +55,9 @@ class User(AbstractUser):
 
     def get_charge_status(self):
         if self.charges_enabled:
-            return "Enabled"
+            return "Connected"
 
-        return "Disabled"
+        return "Unknown"
 
     def get_shop(self):
         from bloom.shop.models import Shop
@@ -59,6 +65,12 @@ class User(AbstractUser):
         if not shop:
             shop = Shop.objects.create(owner=self, name='My Shop')
         return shop
+
+    def get_shopify_config(self):
+        return ShopifyConfig.objects.get_or_create(user=self)[0]
+
+    def enable_shopify_import(self):
+        return ShopifyConfig.objects.filter(user=self).exclude(secret_key="").exists()
 
 
 class MyCollection(BaseModelMixin, models.Model):
@@ -86,3 +98,14 @@ class RecentViewedShop(models.Model):
 
     class Meta:
         unique_together = [['user', 'shop']]
+
+
+class ShopifyConfig(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    shop_url = models.URLField(blank=True, )
+    api_key = models.CharField(max_length=200, blank=True)
+    secret_key = models.CharField(max_length=200, blank=True)
+    access_token = models.CharField(max_length=200, blank=True, editable=False)
+
+    def __str__(self):
+        return self.user.__str__()

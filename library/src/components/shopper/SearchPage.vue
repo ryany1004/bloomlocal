@@ -9,7 +9,8 @@
         </div>
       </div>
       <div v-else class="mb-5 font-14">
-        Not Found
+        <span v-if="!loading">Not Found</span>
+        <span v-else>Searching...</span>
       </div>
     </div>
 
@@ -21,7 +22,8 @@
         </div>
       </div >
       <div v-else class="mb-5 font-14">
-        Not Found
+        <span v-if="!loading">Not Found</span>
+        <span v-else>Searching...</span>
       </div>
     </div>
   </div>

@@ -72,8 +72,8 @@
                 <el-switch v-model="product.enable_color" @change="reset_attribute('color')"></el-switch>
               </div>
               <div :class="{disabled: !product.enable_color}">
-                <span @click="toggleColor(color)" class="c-circle" :style="{backgroundColor: color.value}" v-for="color in colors" :key="color.value"
-                      :class="{ active: active_colors.indexOf(color.value) != -1}"></span>
+                <span @click="toggleColor(color)" class="c-circle" :style="{backgroundColor: color}" v-for="color in colors" :key="color"
+                      :class="{ active: active_colors.indexOf(color) != -1}"></span>
               </div>
             </div>
             <div class="form-group col-md-7">
@@ -82,8 +82,8 @@
                 <el-switch v-model="product.enable_size" @change="reset_attribute('size')"></el-switch>
               </div>
               <div :class="{disabled: !product.enable_size}">
-                <span @click="toggleSize(size)" :class="{'badge-secondary': active_sizes.indexOf(size.value) == -1, 'badge-primary': active_sizes.indexOf(size.value) != -1}" class="badge mr-1 product-size"
-                      v-for="size in sizes" :key="size.value">{{size.text}}</span>
+                <span @click="toggleSize(size)" :class="{'badge-secondary': active_sizes.indexOf(size) == -1, 'badge-primary': active_sizes.indexOf(size) != -1}" class="badge mr-1 product-size"
+                      v-for="size in sizes" :key="size">{{size}}</span>
               </div>
             </div>
           </div>
@@ -385,19 +385,19 @@ export default {
       return variants;
     },
     toggleColor(color) {
-      let index = this.active_colors.indexOf(color.value);
+      let index = this.active_colors.indexOf(color);
       if ( index != -1) {
         this.$delete(this.active_colors, index);
       } else {
-        this.active_colors.push(color.value);
+        this.active_colors.push(color);
       }
     },
     toggleSize(size) {
-      let index = this.active_sizes.indexOf(size.value);
+      let index = this.active_sizes.indexOf(size);
       if ( index != -1) {
         this.$delete(this.active_sizes, index);
       } else {
-        this.active_sizes.push(size.value);
+        this.active_sizes.push(size);
       }
     },
     reset_attribute(attr) {

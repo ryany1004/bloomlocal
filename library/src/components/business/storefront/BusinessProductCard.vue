@@ -2,6 +2,7 @@
   <section class="product-card">
     <a :href="`/business/product/${product.uuid}/update/`">
       <div class="card-image" :style="{backgroundImage: `url('${mediaUrl}${product.thumbnail}')`}">
+        <input v-if="selectable" type="checkbox" v-model="product.checked" :checked="product.checked" class="select-product"/>
       </div>
     </a>
     <article>
@@ -29,6 +30,10 @@ export default {
       type: String,
       default: ""
     },
+    selectable: {
+      type: Boolean,
+      default: false
+    }
   },
   methods: {
     toggleActive(product) {

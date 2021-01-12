@@ -48,5 +48,12 @@ urlpatterns += [
     path('user/orders/', order_views.UserOrderListAPI.as_view(), name="user-orders"),
     path('product/search/', shop_views.ProductSearch.as_view(), name="product-search"),
     path('shop/search/', shop_views.ShopSearch.as_view(), name="shop-search"),
+]
+
+# Business API
+urlpatterns += [
+    path('business/my-orders/', order_views.BusinessMyOrdersAPI.as_view(), name="my-orders"),
+    path('shopify/retrieve-products/', order_views.ShopifyRetrieveProductAPI.as_view(), name="shopify-retrieve-product"),
+    path('shopify/import-product/', shop_views.ImportProductStorefront.as_view(), name="shopify-import-product"),
 
 ]

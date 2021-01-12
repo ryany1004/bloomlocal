@@ -86,14 +86,14 @@
                 <label class="mr-3 mb-0" :class="{disabled: !product.enable_color || active_colors.length == 0}">Color:</label>
                 <div v-if="edit.color" class="form-inline">
                   <span :class="{disabled: !product.enable_color}">
-                    <span class="c-circle" :style="{backgroundColor: color.value}" v-for="color in colors" :key="color.value"
-                      :class="{ active: active_colors.indexOf(color.value) != -1}" @click="toggleColor(color)"></span>
+                    <span class="c-circle" :style="{backgroundColor: color}" v-for="color in colors" :key="color"
+                      :class="{ active: active_colors.indexOf(color) != -1}" @click="toggleColor(color)"></span>
                   </span>
                   <button class="btn btn-primary btn-sm mx-3" type="button" :disabled="saving.color" @click="saveProductVariants('color')"><i class="fas fa-check"></i></button>
                   <button class="btn btn-secondary btn-sm" type="button" @click="hide_edit('color')"><i class="fas fa-times"></i></button>
                 </div>
                 <span v-else class="d-flex align-items-center">
-                  <span class="c-circle" :style="{backgroundColor: color.value}" v-show="active_colors.indexOf(color.value) != -1" v-for="color in colors" :key="color.value"></span>
+                  <span class="c-circle" :style="{backgroundColor: color}" v-show="active_colors.indexOf(color) != -1" v-for="color in colors" :key="color"></span>
                   <a class="ml-3" href="javascript:void(0)" @click="enable_edit('color')"><i class="fas fa-edit edit-icon"></i></a>
                 </span>
               </div>
@@ -122,8 +122,8 @@
                 <label class="mr-3 mb-0" :class="{disabled: !product.enable_size || active_sizes.length == 0}">Size:</label>
                 <div v-if="edit.size">
                   <span :class="{disabled: !product.enable_size}">
-                    <span @click="toggleSize(size)" :class="{'badge-secondary': active_sizes.indexOf(size.value) == -1, 'badge-primary': active_sizes.indexOf(size.value) != -1}" class="badge mr-1 product-size"
-                                                                         v-for="size in sizes" :key="size.value">{{size.text}}</span>
+                    <span @click="toggleSize(size)" :class="{'badge-secondary': active_sizes.indexOf(size) == -1, 'badge-primary': active_sizes.indexOf(size) != -1}" class="badge mr-1 product-size"
+                                                                         v-for="size in sizes" :key="size">{{size}}</span>
                   </span>
                   <div class="mt-2">
                     <button class="btn btn-primary btn-sm mr-3" type="button" :disabled="saving.size" @click="saveProductVariants('size')"><i class="fas fa-check"></i></button>
@@ -131,7 +131,7 @@
                   </div>
                 </div>
                 <span v-else class="d-flex align-items-center">
-                  <span class="badge badge-primary mr-1 product-size white" v-show="active_sizes.indexOf(size.value) != -1" v-for="size in sizes" :key="size.value">{{size.text}}</span>
+                  <span class="badge badge-primary mr-1 product-size white" v-show="active_sizes.indexOf(size) != -1" v-for="size in sizes" :key="size">{{size}}</span>
                   <a class="ml-3" href="javascript:void(0)" @click="enable_edit('size')"><i class="fas fa-edit edit-icon"></i></a>
                 </span>
               </div>
@@ -502,21 +502,21 @@ export default {
     changeColor(color) {
       let that = this;
       if (this.product.enable_size && this.product.enable_color) {
-        let active_color_variant_group = _.groupBy(this.variants, 'color')[color.value] || [];
+        let active_color_variant_group = _.groupBy(this.variants, 'color')[color] || [];
         let active_sizes = [];
         active_color_variant_group.forEach(function (item) {
           active_sizes.push(item.size)
         })
         this.active_sizes = active_sizes
-        this.active_color = color.value;
+        this.active_color = color;
         this.active_colors = [];
       } else if (!this.product.enable_size && this.product.enable_color) {
         this.active_color = null;
-        let index = this.active_colors.indexOf(color.value)
+        let index = this.active_colors.indexOf(color)
         if (index != -1) {
           this.$delete(this.active_colors, index);
         } else {
-          this.active_colors.push(color.value)
+          this.active_colors.push(color)
         }
         this.variants = [];
         this.active_colors.forEach(function (color) {
@@ -526,19 +526,19 @@ export default {
       console.log(this.variants)
     },
     toggleSize(size) {
-      let index = this.active_sizes.indexOf(size.value);
+      let index = this.active_sizes.indexOf(size);
       if ( index != -1) {
         this.$delete(this.active_sizes, index);
       } else {
-        this.active_sizes.push(size.value);
+        this.active_sizes.push(size);
       }
     },
     toggleColor(color) {
-      let index = this.active_colors.indexOf(color.value);
+      let index = this.active_colors.indexOf(color);
       if ( index != -1) {
         this.$delete(this.active_colors, index);
       } else {
-        this.active_colors.push(color.value);
+        this.active_colors.push(color);
       }
     }
   }

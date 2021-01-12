@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="container mt-5">
+    <products-upload :media-url="media_url" :enable-import="shopify_enable"></products-upload>
+  </div>
+{% endblock %}
+
+{% block main_vue %}
+  <script>
+  let main1 = new Vue({
+    el: '#app',
+    delimiters: ["[{", "}]"],
+    data: function () {
+      return {
+        media_url: "{{ MEDIA_URL }}",
+        shopify_enable: {% if user.enable_shopify_import %}true{% else %}false{% endif %}
+      }
+    },
+    methods: {
+
+    }
+  });
+  </script>
+{% endblock %}

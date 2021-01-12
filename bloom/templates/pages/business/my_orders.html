@@ -3,9 +3,7 @@
 {% block content %}
   {% include 'pages/includes/bis_menu.html' %}
 
-  <div class="container">
-    My Orders
-  </div>
+  <my-orders :media-url="media_url"></my-orders>
 {% endblock %}
 
 {% block main_vue %}
@@ -13,6 +11,11 @@
   let main = new Vue({
     el: '#app',
     delimiters: ["[{", "}]"],
+    data: function () {
+      return {
+        media_url: "{{ MEDIA_URL }}",
+      }
+    },
   });
   </script>
 {% endblock %}

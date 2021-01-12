@@ -64,6 +64,7 @@ class BusinessSignUpSerializer(serializers.ModelSerializer):
         for field in fields:
             data[field] = validated_data.get(field)
 
+        data['username'] = data['email']
         user = super().create(data)
         user.set_password(validated_data['password'])
         user.role_type = '1'

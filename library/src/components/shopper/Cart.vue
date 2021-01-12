@@ -67,20 +67,6 @@ export default {
     ...mapState([
       "cart_items", 'sizes', 'colors'
     ]),
-    mapSizes() {
-      let sizes = {};
-      this.sizes.forEach((size) => {
-        sizes[size.value] = size.text
-      })
-      return sizes
-    },
-    mapColors() {
-      let colors = {};
-      this.colors.forEach((color) => {
-        colors[color.value] = color.text
-      })
-      return colors
-    },
     total_price() {
       let total = 0;
       this.cart_items.forEach((item) => {
@@ -97,10 +83,10 @@ export default {
     productVariant(item) {
       let variants = [];
       if (item.color) {
-        variants.push(this.mapColors[item.color] || item.color)
+        variants.push(item.color)
       }
       if (item.size) {
-        variants.push(this.mapSizes[item.size] || item.size)
+        variants.push(item.size)
       }
       return variants.join(", ");
     },

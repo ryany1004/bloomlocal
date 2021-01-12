@@ -7,7 +7,7 @@
       </div>
       <div class="form-check form-check-inline">
         <input class="form-check-input" type="checkbox" id="inlineCheckbox2" v-model="shopper_share_info">
-        <label class="form-check-label" for="inlineCheckbox2">Share your information with Merchant</label>
+        <label class="form-check-label" for="inlineCheckbox2">Support Local Businesses by Sharing your information</label>
       </div>
     </div>
 

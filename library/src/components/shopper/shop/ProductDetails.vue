@@ -39,7 +39,7 @@
               <div class="d-flex align-items-center">
                 <label class="mr-3 mb-0">Color:</label>
                 <span class="d-flex align-items-center">
-                  <span class="c-circle" :class="{active: color.value == active_color}" :style="{backgroundColor: color.value}" @click="active_color = color.value" v-show="active_colors.indexOf(color.value) != -1" v-for="color in colors" :key="color.value"></span>
+                  <span class="c-circle" :class="{active: color == active_color}" :style="{backgroundColor: color}" @click="active_color = color" v-show="active_colors.indexOf(color) != -1" v-for="color in colors" :key="color"></span>
                 </span>
               </div>
             </div>
@@ -52,9 +52,9 @@
                 <label class="mr-3 mb-0">Size:</label>
                 <span class="d-flex align-items-center">
                   <span class="badge mr-1 product-size white"
-                        @click="active_size = size.value" v-show="active_sizes.indexOf(size.value) != -1" v-for="size in sizes"
-                        :class="{'badge-success': size.value == active_size, 'badge-primary': size.value!= active_size}"
-                        :key="size.value">{{size.text}}</span>
+                        @click="active_size = size" v-show="active_sizes.indexOf(size) != -1" v-for="size in sizes"
+                        :class="{'badge-success': size == active_size, 'badge-primary': size!= active_size}"
+                        :key="size">{{size}}</span>
                 </span>
               </div>
             </div>
@@ -168,7 +168,6 @@ export default {
       })
     },
     set_active_sizes_and_color(product) {
-      // eslint-disable-next-line no-debugger
       let group = _.groupBy(product.variants, 'size');
       delete group[undefined];
       this.active_sizes = Object.keys(group) || [];

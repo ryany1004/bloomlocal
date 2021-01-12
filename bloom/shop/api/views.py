@@ -1,7 +1,12 @@
+import json
+import os
+import urllib.request
+
 import django
 from django.conf import settings
 from django.contrib.postgres.search import SearchVector
 from django.core.cache import cache
+from django.core.files.base import File
 from django.db.models.aggregates import Count
 from django.db.models.query_utils import Q
 from django.utils import timezone
@@ -15,10 +20,11 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from bloom.order.models import OrderItem, Order
-from bloom.shop.api.pagination import StandardResultsSetPagination
-from bloom.shop.api.serializers import AttributeValueSerializer, CategorySerializer, ProductSerializer, \
+from bloom.utils.pagination import StandardResultsSetPagination
+from bloom.shop.api.serializers import CategorySerializer, ProductSerializer, \
     ProductModelSerializer, ShopSerializer, ShopCategorySerializer
-from bloom.shop.models import AttributeValue, Category, Product, Shop, ShopCategory
+from bloom.shop.models import Category, Product, Shop, ShopCategory, Attribute, ProductImage, ProductVariant, \
+    ImageStorage
 import datetime
 import random
 import string
@@ -36,16 +42,16 @@ class BaseAPIView(APIView):
         return super(BaseAPIView, self).dispatch(*args, **kwargs)
 
 
-class AttributeValueAPIView(ListAPIView):
-    serializer_class = AttributeValueSerializer
+class AttributeValueAPIView(APIView):
     permission_classes = []
 
-    def get_queryset(self):
-        attributes = cache.get('attribute_{}'.format(self.kwargs['code']))
-        if not attributes:
-            attributes = AttributeValue.objects.filter(attribute__attribute_code=self.kwargs['code'])
-            cache.set('attribute_{}'.format(self.kwargs['code']), attributes)
-        return attributes
+    def get(self, request, *args, **kwargs):
+        attribute = cache.get('attribute_{}'.format(self.kwargs['code']))
+        if not attribute:
+            attribute = Attribute.objects.get(attribute_code=self.kwargs['code'])
+            cache.set('attribute_{}'.format(self.kwargs['code']), attribute)
+
+        return Response(data=attribute.values, status=status.HTTP_200_OK)
 
 
 class CategoryAPIView(ListAPIView):
@@ -222,3 +228,49 @@ class ShopSearch(ListAPIView):
         query = self.request.GET.get("query")
         return Shop.objects.select_related('owner').prefetch_related('categories') \
             .filter(name__icontains=query)[:50]
+
+
+class ImportProductStorefront(APIView):
+    def post(self, request, *args, **kwargs):
+        data = request.data
+        p = Product.objects.filter(shopify_product_id=data['id'], shop=request.user.get_shop()).first()
+        if not p:
+            p = Product()
+            p.shopify_product_id = data['id']
+            p.shop = request.user.get_shop()
+
+        p.title = data['title']
+        p.description = data['description']
+        p.price = data['price']
+        p.stock = data['stock']
+        p.status = data['status']
+        p.enable_color = data['enable_color']
+        p.enable_size = data['enable_size']
+
+        if data['thumbnail']:
+            result = urllib.request.urlretrieve(data['thumbnail'])
+            p.thumbnail.save(os.path.basename(data['thumbnail'].split("?")[0]), File(open(result[0], 'rb')))
+        p.save()
+
+        images = []
+        count = 1
+        for img in data['images']:
+            temp = ImageStorage()
+            result = urllib.request.urlretrieve(img['src'])
+            filename = os.path.basename(img['src'].split("?")[0])
+            temp.image.save(filename, File(open(result[0], 'rb')))
+            images.append({'url': str(temp.image), 'name': filename, 'uid': count})
+            count += 1
+
+        if images:
+            product_img = ProductImage.objects.get_or_create(product=p)[0]
+            product_img.images = images
+            product_img.save()
+
+        if data['variants']:
+            variant = ProductVariant.objects.get_or_create(product=p)[0]
+            variant.values = data['variants']
+            variant.save()
+
+        return Response(status=status.HTTP_200_OK)
+

@@ -1,13 +1,7 @@
 from rest_framework import serializers
 
-from bloom.shop.models import AttributeValue, Category, Product, ProductVariant, ProductImage, Shop, ShopCategory
+from bloom.shop.models import Category, Product, ProductVariant, ProductImage, Shop, ShopCategory, Attribute
 from bloom.users.models import RecentViewedShop
-
-
-class AttributeValueSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = AttributeValue
-        fields = ['value', 'text']
 
 
 class CategorySerializer(serializers.ModelSerializer):
