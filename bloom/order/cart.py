@@ -166,18 +166,20 @@ class Cart(object):
             item.quantity = obj['quantity']
             items.append(item)
 
-            checkout_items.append({
+            obj = {
                 'price_data': {
                     'currency': 'usd',
                     'product_data': {
                         'name': product.title,
-                        'description': product.description,
                         'images': [product.thumbnail.url]
                     },
                     "unit_amount": int(product.price * 100)
                 },
                 'quantity': item.quantity
-            })
+            }
+            if product.description:
+                obj['price_data']['product_data']['description'] = product.description
+            checkout_items.append(obj)
 
         OrderItem.objects.bulk_create(items)
         session = self.create_session(checkout_items, order)

@@ -1,5 +1,7 @@
+import shopify
 from allauth.account.forms import LoginForm
 from django import forms
+from django.conf import settings
 from django.contrib.auth import forms as admin_forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UsernameField
@@ -74,3 +76,16 @@ class ShopifyConfigForm(forms.ModelForm):
     class Meta:
         model = ShopifyConfig
         fields = ['shop_url', 'api_key', 'secret_key']
+
+    def clean(self):
+        shop_url = self.cleaned_data['shop_url']
+        secret_key = self.cleaned_data['secret_key']
+        session = shopify.Session(shop_url, settings.SHOPIFY_API_VERSION, secret_key)
+        shopify.ShopifyResource.activate_session(session)
+        try:
+            products = shopify.Product.find(limit=10)
+        except Exception as e:
+            raise forms.ValidationError("Unable to verify your key. Please check it again.")
+        finally:
+            shopify.ShopifyResource.clear_session()
+        return self.cleaned_data

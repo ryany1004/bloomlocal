@@ -19,6 +19,7 @@ class ShippingAddress(models.Model):
     zip_code = models.CharField(max_length=20)
     email = models.EmailField()
     phone_number = models.CharField(max_length=30)
+    owner = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return "{} {}".format(self.first_name, self.last_name)
@@ -53,7 +54,11 @@ class Order(BaseModelMixin, models.Model):
         return OrderItem.objects.filter(order_id=self.id).count()
 
     def get_order_id(self):
-        return "Order:#{}".format(self.id)
+        return "Order:#{}".format(self.get_order_no())
+
+    def get_order_no(self):
+        order_id = "{}".format(self.id)
+        return order_id.zfill(6)
 
 
 class OrderItem(BaseModelMixin, models.Model):
@@ -67,5 +72,9 @@ class OrderItem(BaseModelMixin, models.Model):
 
     def __str__(self):
         return self.product.title
+
+    def get_merchant_no(self):
+        no = "{}".format(self.product.shop.owner_id)
+        return no.zfill(2)
 
 

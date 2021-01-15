@@ -1,10 +1,10 @@
 <template>
   <div v-loading.fullscreen="loading">
-    <div class="product-category" v-loading.fullscreen="loading" v-if="products.length > 0">
-      <div class="mb-4" v-for="(objs, category_id) in groupedCategory" :key="category_id">
-        <h3 class="category-title">{{objectCategories[category_id]}}</h3>
-        <vue-horizontal-list
-          :items="objs"
+    <div class="product-category" v-loading.fullscreen="loading" v-if="collections.length > 0">
+      <div class="mb-4" v-for="collection in collections" :key="collection.id">
+        <h3 class="category-title">{{collection.collection_name}}</h3>
+        <vue-horizontal-list v-if="collection.products.length > 0"
+          :items="collection.items"
           :options="{
             responsive: [
               { end: 576, size: 2 },
@@ -18,17 +18,17 @@
             </div>
           </template>
         </vue-horizontal-list>
+        <p v-else class="mt-3 font-12 mb-5">No products</p>
       </div>
     </div>
     <div v-else>
-      <p>No any products here</p>
+      <p>No collections</p>
     </div>
   </div>
 </template>
 
 <script>
 import VueHorizontalList from "vue-horizontal-list";
-import {mapState} from "vuex";
 import axios from "axios";
 
 export default {
@@ -44,40 +44,18 @@ export default {
   },
   data: function () {
     return {
-      products: [],
+      collections: [],
       loading: false,
     }
   },
   computed: {
-    ...mapState([
-        'categories',
-    ]),
-    objectCategories() {
-      let obj = {};
-      this.categories.forEach((c) => {
-        obj[c.id] = c.name;
-      })
-      return obj;
-    },
-    groupedCategory() {
-      let groups = {}, that = this;
-      that.products.forEach((p) => {
-        p.categories.forEach((c) => {
-          if (groups[c] == undefined) {
-            groups[c] = [p];
-          } else {
-            groups[c].push(p);
-          }
-        })
-      })
-      return groups
-    },
+
   },
   created() {
     let that = this;
     that.loading = true;
-    axios.get(`/api/user/wishlist-products/`).then(function (res) {
-      that.products = res.data
+    axios.get(`/api/user/collections/`).then(function (res) {
+      that.collections = res.data
       that.loading = false
     }).catch(function () {
       that.loading = false

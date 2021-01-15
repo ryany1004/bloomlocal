@@ -32,8 +32,8 @@ urlpatterns += [
     path('shop/categories/', shop_views.ShopCategoryAPIView.as_view(), name="shop-categories"),
     path('shop/upload/generate-url/', shop_views.UploadURLAPI.as_view(), name="upload-url"),
     path('user/shop/<int:shop_id>/following/', views.FollowingShopAPI.as_view(), name="following-shop"),
-    path('user/shop/<int:shop_id>/love/', views.LoveShopAPI.as_view(), name="love-shop"),
-    path('user/product/<int:product_id>/wishlist/', views.WishlistProductAPI.as_view(), name="wishlist-product"),
+    path('user/product/<int:product_id>/collection/', views.WishlistProductAPI.as_view(), name="wishlist-product"),
+    path('user/collections/', views.MyCollectionsAPI.as_view(), name="my-collections"),
     path('user/shop/<int:shop_id>/recent-viewed/', views.RecentViewedShopAPI.as_view(), name="recent-viewed-shop"),
     path('order/cart/', order_views.CartAPI.as_view(), name="cart-data"),
     path('order/cart/item/add/', order_views.CartAddAPI.as_view(), name="cart-add"),
@@ -46,6 +46,8 @@ urlpatterns += [
     path('user/similar-shops/', views.SimilarShopsListAPI.as_view(), name="similar-shops"),
     path('user/wishlist-products/', views.WishlistProductsAPI.as_view(), name="wishlist-product"),
     path('user/orders/', order_views.UserOrderListAPI.as_view(), name="user-orders"),
+    path('user/saved-addresses/', views.SavedAddressesAPI.as_view(), name="saved-addresses"),
+    path('user/saved-address/<int:id>/', views.DeleteSaveAddress.as_view(), name="delete-saved-address"),
     path('product/search/', shop_views.ProductSearch.as_view(), name="product-search"),
     path('shop/search/', shop_views.ShopSearch.as_view(), name="shop-search"),
 ]
@@ -55,5 +57,7 @@ urlpatterns += [
     path('business/my-orders/', order_views.BusinessMyOrdersAPI.as_view(), name="my-orders"),
     path('shopify/retrieve-products/', order_views.ShopifyRetrieveProductAPI.as_view(), name="shopify-retrieve-product"),
     path('shopify/import-product/', shop_views.ImportProductStorefront.as_view(), name="shopify-import-product"),
+    path('statistic/order-revenue/by-month/', order_views.OrderRevenueMonthAPI.as_view(), name="order-revenue-month"),
+    path('statistic/order-revenue/by-year/', order_views.OrderRevenueYearAPI.as_view(), name="order-revenue-year"),
 
 ]

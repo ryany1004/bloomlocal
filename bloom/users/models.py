@@ -36,7 +36,6 @@ class User(AbstractUser):
     locality = models.CharField(max_length=20, blank=True)
     role_type = models.CharField(max_length=10, choices=ROLE_TYPES, blank=True)
     following_shops = JSONField(default=list, blank=True)
-    love_shops = JSONField(default=list, blank=True)
     wishlist_products = JSONField(default=list, blank=True)
     charges_enabled = models.BooleanField(default=False, editable=False)
     stripe_account_id = models.CharField(max_length=100, blank=True, editable=False, db_index=True)

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}User: {{ object.username }}{% endblock %}
+{% block title %}Shopify Integration{% endblock %}
 
 {% block content %}
   <div class="container">
@@ -14,28 +14,36 @@
           <h3 class="mt-3">Shopify Integration</h3>
           <div class="pr-3">
             <h4 class="font-16 mt-4">Provide your App credentials:</h4>
+
+            {% if form.non_field_errors %}
+              <div class="non-field-errors">
+                {% for err in form.non_field_errors %}
+                  <p class="form-error">{{ err }}</p>
+                {% endfor %}
+              </div>
+            {% endif %}
             <form method="post" action=".">  {% csrf_token %}
               <div class="form-group row">
                 <label for="shop_url" class="col-sm-2 col-form-label font-14">Shop URL</label>
                 <div class="col-6">
-                  <input type="url" class="form-control font-14" id="shop_url" required name="shop_url" value="{{ shopify.shop_url }}" placeholder="https://myshop.myshopify.com">
+                  <input type="url" class="form-control font-14" id="shop_url" required name="shop_url" value="{{ form.shop_url.value }}" placeholder="https://myshop.myshopify.com">
                 </div>
               </div>
               <div class="form-group row">
                 <label for="api_key" class="col-sm-2 col-form-label font-14">API Key</label>
                 <div class="col-6">
-                  <input type="text" class="form-control font-14" id="api_key" required name="api_key" placeholder="API key" value="{{ shopify.api_key }}">
+                  <input type="text" class="form-control font-14" id="api_key" required name="api_key" placeholder="API key" value="{{ form.api_key.value }}">
                 </div>
               </div>
               <div class="form-group row">
                 <label for="inputPassword" class="col-sm-2 col-form-label  font-14">Password</label>
                 <div class="col-6">
-                  <input type="password" class="form-control font-14" id="api_secret_key" required name="secret_key" value="{{ shopify.secret_key }}" placeholder="API secret key">
+                  <input type="password" class="form-control font-14" id="api_secret_key" required name="secret_key" value="{{ form.secret_key.value }}" placeholder="API secret key">
                 </div>
               </div>
               <div class="form-group row">
                 <div class="col-6 offset-2">
-                  <button class="btn btn-primary white" type="submit">Save</button>
+                  <button class="btn btn-primary white" type="submit" @click="handleClick()" v-html="loading ? 'Saving...' : 'Save'">Save</button>
                 </div>
               </div>
             </form>
@@ -70,6 +78,9 @@
           console.log(err);
           alert("Oops, Something wrong!")
         })
+      },
+      handleClick() {
+        this.loading = true;
       }
     }
   });

@@ -6,13 +6,13 @@
           <h3 class="font-16 ml-3">Personal Details</h3>
           <ul>
             <li>
-              {{ order.shopper.first_name }} {{ order.shopper.last_name }}
+              <i class="far fa-user-circle color-1 mr-2"></i> {{ order.shopper.first_name }} {{ order.shopper.last_name }}
             </li>
             <li>
-              {{ order.shopper.email }}
+              <i class="fas fa-envelope color-1 mr-2"></i> {{ order.shopper.email }}
             </li>
             <li v-if="order.shopper.phone_number">
-              {{ order.shopper.phone_number }}
+              <i class="fas fa-phone-alt color-1 mr-2"></i> {{ order.shopper.phone_number }}
             </li>
           </ul>
         </div>
@@ -22,16 +22,16 @@
           <h3 class="font-16 ml-3">Billing Address</h3>
           <ul>
             <li>
-              {{ order.shipping_address.first_name }} {{ order.shipping_address.last_name }}
+              <i class="far fa-user-circle color-1 mr-2"></i> {{ order.shipping_address.first_name }} {{ order.shipping_address.last_name }}
             </li>
             <li>
-              {{ order.shipping_address.email }}
+              <i class="fas fa-envelope color-1 mr-2"></i> {{ order.shipping_address.email }}
             </li>
             <li>
-              {{ order.shipping_address.phone_number }}
+              <i class="fas fa-phone-alt color-1 mr-2"></i> {{ order.shipping_address.phone_number }}
             </li>
             <li>
-              {{ get_full_address(order.shipping_address) }}
+              <i class="fas fa-map-marker-alt color-1 mr-2"></i> {{ get_full_address(order.shipping_address) }}
             </li>
           </ul>
         </div>

@@ -48,7 +48,10 @@
       </div>
       <div class="col-5">
         <div class="shipping">
-          <header class="shipping-title">Shipping Address</header>
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <header class="shipping-title mb-0">Shipping Address</header>
+            <a href="javascript:void(0)" @click="dialogVisible=true" class="font-12">Saved Addresses</a>
+          </div>
 
           <div class="form-row">
             <div class="form-group col-md-6">
@@ -103,7 +106,7 @@
           <div class="form-row">
             <div class="form-group col-md-12">
               <label for="phone">Phone</label>
-              <vue-phone-number-input id="phone" @update="onUpdate" v-model="shipping_address.phone" name="phone_number" :required="true" :class="{'is-invalid': errors.phone_number}"/>
+              <vue-phone-number-input ref="phone_input" id="phone" @update="onUpdate" v-model="shipping_address.phone" name="phone_number" :required="true" :class="{'is-invalid': errors.phone_number}"/>
             </div>
           </div>
 
@@ -131,15 +134,29 @@
         </div>
       </div>
     </div>
+
+    <el-dialog
+      title="Saved Addresses"
+      :visible.sync="dialogVisible" width="75%">
+      <saved-addresses :select-address="handleSelect"></saved-addresses>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">Close</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import {mapState} from "vuex";
 import axios from "axios";
+import SavedAddresses from "@/components/shopper/account/SavedAddresses";
+import { parsePhoneNumberFromString } from 'libphonenumber-js';
 
 export default {
   name: "OrderOverview",
+  components: {
+    SavedAddresses,
+  },
   props: {
     mediaUrl: {
       type: String,
@@ -166,11 +183,12 @@ export default {
         phone_number: "",
         phone: ""
       },
-      sms_update: false,
-      shopper_share_info: false,
+      sms_update: true,
+      shopper_share_info: true,
       errors: {},
       valid_shipping: false,
-      loading: false
+      loading: false,
+      dialogVisible: false
     }
   },
   computed: {
@@ -205,7 +223,15 @@ export default {
   },
   methods: {
     onUpdate(payload) {
-      this.shipping_address.phone_number = payload.formatInternational;
+      this.shipping_address.phone_number = payload.formatInternational || '';
+    },
+    handleSelect(address) {
+      this.shipping_address = address;
+      this.shipping_address.confirm_email = address.email;
+      let parsed = parsePhoneNumberFromString(address.phone_number);
+      this.$refs.phone_input.countryCode = parsed.country;
+      this.$refs.phone_input.phoneNumber = address.phone_number;
+      this.dialogVisible = false;
     },
     productVariant(item) {
       let variants = [];

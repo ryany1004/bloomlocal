@@ -77,8 +77,8 @@ def _generate_account_link(account_id, origin):
     account_link = stripe.AccountLink.create(
         type='account_onboarding',
         account=account_id,
-        refresh_url=f'{origin}/users/stripe/refresh/',
-        return_url=f'{origin}/users/details/',
+        refresh_url='{}{}'.format(origin, reverse("users:stripe_refresh")),
+        return_url='{}{}'.format(origin, reverse("users:stripe-integration")),
     )
     return account_link.url
 
@@ -136,6 +136,11 @@ class ShopifySettingView(LoginRequiredMixin, UpdateView):
         context["page"] = 'shopify'
         context['redirect_url'] = self.request.build_absolute_uri(reverse("users:shopify-callback"))
         return context
+
+    def form_valid(self, form):
+        form.save()
+        messages.info(self.request, "Your key is verified.")
+        return redirect(self.get_success_url())
 
     # def form_valid(self, form):
     #     obj = form.save()

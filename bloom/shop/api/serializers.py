@@ -59,6 +59,7 @@ class ProductModelSerializer(ProductModelSimpleSerializer):
     def get_category_names(self, obj):
         return [c.name for c in obj.categories.all()]
 
+
 class ProductSerializer(serializers.Serializer):
     title = serializers.CharField(max_length=500)
     price = serializers.FloatField(min_value=0)

@@ -48,7 +48,7 @@
 import axios from "axios";
 
 export default {
-  name: "ProductsImport",
+  name: "ProductsUpload",
   props: {
     mediaUrl: {
       type: String,

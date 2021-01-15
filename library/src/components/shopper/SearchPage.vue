@@ -18,7 +18,8 @@
       <h3 class="group-title">Products:</h3>
       <div  class="row product-cards" v-if="products.length > 0">
         <div class="col-lg-2 col-md-3 col-6 mb-5" v-for="product in products" :key="product.id">
-          <product-card :product="product" :media-url="mediaUrl"></product-card>
+          <business-product-card v-if="user.role_type == '1'" :product="product" :media-url="mediaUrl"></business-product-card>
+          <product-card v-else :product="product" :media-url="mediaUrl"></product-card>
         </div>
       </div >
       <div v-else class="mb-5 font-14">
@@ -31,6 +32,7 @@
 
 <script>
 import axios from "axios";
+import {mapState} from "vuex";
 
 export default {
   name: "SearchPage",
@@ -55,6 +57,9 @@ export default {
       loading: false
     }
   },
+  beforeMount() {
+    this.$store.dispatch('get_user');
+  },
   created() {
     if (this.type == 'product') {
       this.search_product()
@@ -64,6 +69,11 @@ export default {
       this.search_product();
       this.search_shop()
     }
+  },
+  computed: {
+    ...mapState([
+        'user'
+    ])
   },
   methods: {
     search_product() {

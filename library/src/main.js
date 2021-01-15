@@ -73,6 +73,8 @@ import ShopifyProductCard from "./components/business/ShopifyProductCard";
 import ShopifyProductEdit from "@/components/business/ShopifyProductEdit";
 import Receipt from "@/components/business/orders/Receipt";
 import ShopperInfo from "@/components/business/orders/ShopperInfo";
+import Dashboard from "@/components/business/dashboard/Dashboard";
+import ProductsUpload from "@/components/business/ProductsUpload";
 
 Vue.config.productionTip = false
 
@@ -125,13 +127,15 @@ const Components = {
     ShopifyProductCard,
     ShopifyProductEdit,
     Receipt,
-    ShopperInfo
+    ShopperInfo,
+    Dashboard,
+    ProductsUpload
 }
 Object.keys(Components).forEach(name => {
-    console.info('name: '+ name);
+    // console.info('name: '+ name);
     Vue.component(name,Components[name])
 })
-Vue.config.devtools = true;
+// Vue.config.devtools = true;
 export default Components
 
 // new Vue({

@@ -1,3 +1,5 @@
+import traceback
+
 import stripe
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -68,8 +70,10 @@ class OrderHooksPage(View):
             if order:
                 order.status = Order.Status.SUCCEED
                 order.save()
-
-                transfer_to_connected_accounts(order)
+                try:
+                    transfer_to_connected_accounts(order)
+                except:
+                    print(traceback.format_exc())
 
         elif event.type == "payment_intent.canceled":
             payment_intent = event.data.object

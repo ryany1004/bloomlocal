@@ -5413,6 +5413,14 @@ input[type=color].form-control:disabled {
       font-size: 14px;
 }
 
+.collection-list {
+  list-style: none;
+  padding-left: 0;
+}
+.collection-list li {
+    padding: 5px 0;
+}
+
 
 .fa-heart.fas[data-v-41fb7456] {
   color: #ED6B5E;
@@ -5562,6 +5570,22 @@ input[type=color].form-control:disabled {
   transition: none;
 }
 
+.order-summary[data-v-4c303a86] {
+  list-style: none;
+  margin-top: 40px;
+}
+.order-summary li[data-v-4c303a86] {
+    padding: 5px 0;
+}
+.order-summary li .text-right[data-v-4c303a86] {
+      width: 200px;
+}
+.order-summary li .txt-price[data-v-4c303a86] {
+      flex: 0 0 80px;
+      padding-left: 10px;
+      text-align: right;
+}
+
 .shopper-info[data-v-2af2633a] {
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.12);
   border-radius: 10px;
@@ -5580,5 +5604,28 @@ input[type=color].form-control:disabled {
 }
 .shopper-info ul li[data-v-2af2633a]:last-child {
       border-bottom: none;
+}
+
+.dashboard[data-v-500cb20c] {
+  margin-bottom: 20px;
+}
+.dashboard .pie-chart[data-v-500cb20c] {
+    min-height: 50px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.12);
+    border-radius: 10px;
+}
+.dashboard .order-received[data-v-500cb20c], .dashboard .revenue[data-v-500cb20c] {
+    padding: 20px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.12);
+    border-radius: 10px;
+    font-size: 12px;
+}
+.dashboard .product-sale-chart[data-v-500cb20c] {
+    min-height: 50px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.12);
+    border-radius: 10px;
+}
+.dashboard .color-red[data-v-500cb20c] {
+    color: red;
 }
 

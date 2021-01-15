@@ -1,16 +1,23 @@
+import datetime
 import json
 import traceback
 
 import django_auto_prefetching
 import shopify
+from dateutil.relativedelta import relativedelta
 from django.conf import settings
+from django.db import models
+from django.db.models.aggregates import Sum
+from django.db.models.expressions import F
+from django.db.models.functions import ExtractYear
 from django.utils.html import strip_tags
 from rest_framework import status
 from rest_framework.generics import get_object_or_404, RetrieveAPIView, ListAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from bloom.order.api.serializers import ShippingAddresSerializer, OrderSerializer, BusinessOrderItemSerializer
+from bloom.order.api.serializers import ShippingAddressSerializer, OrderSerializer, BusinessOrderItemSerializer, \
+    BusinessOrderSerializer
 from bloom.order.cart import Cart
 from bloom.order.models import Order, OrderItem
 from bloom.shop.models import Product, Attribute
@@ -51,7 +58,7 @@ class CartAPI(APIView):
 
 class ValidShippingAddress(APIView):
     def post(self, request, *args, **kwargs):
-        data = ShippingAddresSerializer(data=request.data, context={"request": request})
+        data = ShippingAddressSerializer(data=request.data, context={"request": request})
         if data.is_valid():
             pass
         else:
@@ -63,7 +70,7 @@ class OrderConfirm(APIView):
     permission_classes = []
 
     def post(self, request, *args, **kwargs):
-        data = ShippingAddresSerializer(data=request.data, context={"request": request})
+        data = ShippingAddressSerializer(data=request.data, context={"request": request})
         if data.is_valid():
             shipping = data.save()
             cart = Cart(request)
@@ -83,19 +90,24 @@ class OrderConfirm(APIView):
 
 
 class OrderDetailsAPI(RetrieveAPIView):
-    serializer_class = OrderSerializer
     permission_classes = []
 
+    def get_serializer_class(self):
+        if self.request.user.is_authenticated and self.request.user.role_type == '1':
+            return BusinessOrderSerializer
+        return OrderSerializer
+
     def get_object(self):
-        return get_object_or_404(Order.objects.prefetch_related('order_items', "order_items__product") \
+        order = get_object_or_404(Order.objects.prefetch_related('order_items', "order_items__product", 'order_items__product__shop') \
                                  .select_related('shopper', "shipping_address"), uuid=self.kwargs['uuid'])
+        return order
 
 
 class UserOrderListAPI(django_auto_prefetching.AutoPrefetchViewSetMixin, ListAPIView):
     serializer_class = OrderSerializer
 
     def get_queryset(self):
-        queryset = Order.objects.prefetch_related('order_items', 'order_items__product') \
+        queryset = Order.objects.prefetch_related('order_items', 'order_items__product', 'order_items__product__shop') \
             .select_related('shopper', 'shipping_address') \
             .filter(shopper=self.request.user, status=Order.Status.SUCCEED).order_by('-created_at')
         return django_auto_prefetching.prefetch(queryset, self.serializer_class)
@@ -107,7 +119,7 @@ class BusinessMyOrdersAPI(ListAPIView):
 
     def get_queryset(self):
         return OrderItem.objects \
-            .select_related('order', 'product', 'order__shipping_address') \
+            .select_related('order', 'product', 'product__shop', 'order__shipping_address') \
             .filter(product__shop__owner=self.request.user, order__status=Order.Status.SUCCEED).order_by('-order_id')
 
 
@@ -229,3 +241,47 @@ class ShopifyRetrieveProductAPI(APIView):
 
         return variants, enable_size, enable_color
 
+
+class OrderRevenueMonthAPI(APIView):
+
+    def get(self, request, *args, **kwargs):
+        this_month = datetime.date.today()
+        prev_month = this_month - relativedelta(months=1)
+        items = OrderItem.objects.filter(order__status=Order.Status.SUCCEED,
+                                         product__shop__owner=request.user,
+                                         created_at__month=this_month.month,
+                                         created_at__year=this_month.year)
+
+        prev_month_items = OrderItem.objects.filter(order__status=Order.Status.SUCCEED,
+                                                    product__shop__owner=request.user,
+                                                    created_at__month=prev_month.month,
+                                                    created_at__year=prev_month.year)
+
+        total_orders_this_month = items.values('order').distinct().count()
+        total_orders_prev_month = prev_month_items.values('order').distinct().count()
+
+        total_revenue_this_month = items.aggregate(
+            total=Sum(F("price") * F('quantity'), output_field=models.FloatField()))['total'] or 0
+        total_revenue_prev_month = prev_month_items.aggregate(
+            total=Sum(F("price") * F('quantity'), output_field=models.FloatField()))['total'] or 0
+        data = {
+            'this_month': {
+                'total_orders': total_orders_this_month,
+                'revenue': total_revenue_this_month
+            },
+            'previous_month': {
+                'total_orders': total_orders_prev_month,
+                'revenue': total_revenue_prev_month
+            }
+        }
+        return Response(data=data, status=status.HTTP_200_OK)
+
+
+class OrderRevenueYearAPI(APIView):
+    def get(self, request, *args, **kwargs):
+        items = OrderItem.objects.filter(order__status=Order.Status.SUCCEED,
+                                         product__shop__owner=request.user)
+        data = items.annotate(year=ExtractYear("created_at")).values('year') \
+            .annotate(total=Sum(F("price") * F("quantity"), output_field=models.FloatField()))
+
+        return Response(data=list(data), status=status.HTTP_200_OK)

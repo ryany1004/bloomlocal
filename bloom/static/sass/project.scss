@@ -192,3 +192,10 @@ $icon-color: #4f4f4f;
     color: #409EFF !important;
   }
 }
+.non-field-errors {
+  margin-top: 15px;
+  .form-error {
+    color: red;
+    font-size: 14px;
+  }
+}

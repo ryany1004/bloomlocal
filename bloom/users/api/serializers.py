@@ -3,7 +3,9 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-from bloom.shop.models import Shop
+from bloom.shop.api.serializers import ProductSerializer, ProductModelSerializer
+from bloom.shop.models import Shop, Product
+from bloom.users.models import MyCollection
 
 User = get_user_model()
 
@@ -12,7 +14,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', "username", "email", 'first_name', 'last_name', 'phone_number', 'following_shops',
-                  'love_shops', 'wishlist_products', 'stripe_account_id', 'charges_enabled']
+                  'wishlist_products', 'stripe_account_id', 'charges_enabled', 'role_type']
 
 
 class ShopperSignUpSerializer(serializers.ModelSerializer):
@@ -109,3 +111,23 @@ class BusinessSerializer(serializers.ModelSerializer):
         model = User
         fields = ['first_name', 'last_name', 'phone_number', 'email', 'business_phone', 'business_address',
                   'store_type', ]
+
+
+class CollectionSimpleSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = MyCollection
+        fields = ['id', 'user', 'collection_name', 'products']
+
+
+class CollectionSerializer(serializers.ModelSerializer):
+    items = serializers.SerializerMethodField()
+
+    class Meta:
+        model = MyCollection
+        fields = ['id', 'user', 'collection_name', 'products', 'items']
+
+    def get_items(self, collection):
+        products = Product.objects.filter(id__in=collection.products).select_related('shop') \
+                .prefetch_related('productimage_set', 'productvariant_set', 'categories')
+        return ProductModelSerializer(instance=products, many=True).data

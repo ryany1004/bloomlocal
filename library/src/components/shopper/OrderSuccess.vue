@@ -10,7 +10,7 @@
     <div class="order-content">
       <div class="order-details d-flex flex-column">
         <p class="text-center">Order</p>
-        <span class="order-no mx-auto">#{{ order.id }}</span>
+        <span class="order-no mx-auto">#{{ order.order_no }}</span>
 
         <div class="row" style="padding: 20px;">
           <div class="col d-flex justify-content-center align-items-center border-right pr-5">

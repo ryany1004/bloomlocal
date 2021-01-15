@@ -59,8 +59,8 @@
 
 
       <!-- place project specific Javascript in this file -->
-      {% compress js file app %}
       <script src="{% static 'libs/bloomLib.umd.js' %}"></script>
+      {% compress js file app %}
       <script src="{% static 'js/project.js' %}"></script>
       {% endcompress %}
 

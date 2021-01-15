@@ -15071,3 +15071,9 @@ a.text-dark:hover, a.text-dark:focus {
 
 .el-menu-item.is-active a, .el-menu-item.is-active i {
   color: #409EFF !important; }
+
+.non-field-errors {
+  margin-top: 15px; }
+  .non-field-errors .form-error {
+    color: red;
+    font-size: 14px; }

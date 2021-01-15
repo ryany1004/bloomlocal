@@ -10,7 +10,7 @@
     <div class="d-flex justify-content-between mb-4">
       <div class="d-flex align-items-center">
         <span class="btn btn-primary btm-sm font14 mr-3 white">{{ shopName }}</span>
-        <a href="javascript:void(0)" v-if="isLoggedIn" class="btn btn-light btn-sm" @click="toggleLove(shopId)"><i class="fa-heart color-red" :class="{fas: user.love_shops.indexOf(shopId) != -1, far: user.love_shops.indexOf(shopId) == -1}"></i></a>
+        <a href="javascript:void(0)" v-if="isLoggedIn" class="btn btn-light btn-sm" @click="toggleFollow(shopId)"><i class="fa-heart color-red" :class="{fas: user.following_shops.indexOf(shopId) != -1, far: user.following_shops.indexOf(shopId) == -1}"></i></a>
       </div>
       <div class="dropdown">
         <button class="btn btn-light btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -87,9 +87,9 @@ export default {
     this.$store.dispatch("get_colors");
   },
   methods: {
-    toggleLove(shopId) {
+    toggleFollow(shopId) {
       let that = this;
-      axios.post(`/api/user/shop/${shopId}/love/`).then((res) => {
+      axios.post(`/api/user/shop/${shopId}/following/`).then((res) => {
         that.$store.dispatch('set_user', res.data);
       })
     }

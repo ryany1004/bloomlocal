@@ -5,18 +5,13 @@ from bloom.shop.api.serializers import ProductModelSimpleSerializer
 from bloom.users.api.serializers import ShopperSerializer
 
 
-class ShippingAddresSerializer(serializers.Serializer):
-    country = serializers.CharField()
-    first_name = serializers.CharField()
-    last_name = serializers.CharField()
-    street_address = serializers.CharField()
-    street_address_2 = serializers.CharField(required=False, allow_blank=True)
-    city = serializers.CharField()
-    state = serializers.CharField()
-    zip_code = serializers.CharField()
-    email = serializers.EmailField()
+class ShippingAddressSerializer(serializers.ModelSerializer):
     confirm_email = serializers.EmailField(write_only=True)
-    phone_number = serializers.CharField()
+
+    class Meta:
+        model = ShippingAddress
+        fields = ['country', 'first_name', 'last_name', 'street_address', 'street_address_2', 'city',
+                  'state', 'zip_code', 'email', 'confirm_email', 'phone_number', 'id']
 
     def validate_confirm_email(self, val):
         request = self.context['request']
@@ -37,6 +32,8 @@ class ShippingAddresSerializer(serializers.Serializer):
         shipping.street_address = validated_data['street_address']
         shipping.street_address_2 = validated_data['street_address_2']
         shipping.phone_number = validated_data['phone_number']
+        if 'owner' in validated_data:
+            shipping.owner = validated_data['owner']
         shipping.save()
         return shipping
 
@@ -51,27 +48,50 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
 class OrderSerializer(serializers.ModelSerializer):
     shopper = ShopperSerializer(read_only=True)
-    shipping_address = ShippingAddresSerializer(read_only=True)
+    shipping_address = ShippingAddressSerializer(read_only=True)
     order_items = OrderItemSerializer(many=True)
+    order_no = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Order
+        fields = ['id', 'uuid', 'tax', 'total_price', 'shopper', 'shipping_address', 'shopper_share_info',
+                  'shopper_sms_update', 'order_items', 'order_no']
+        depth = 1
+
+    def get_order_no(self, obj):
+        return obj.get_order_no()
+
+
+class BusinessOrderSerializer(serializers.ModelSerializer):
+    shopper = ShopperSerializer(read_only=True)
+    shipping_address = ShippingAddressSerializer(read_only=True)
+    order_items = serializers.SerializerMethodField()
 
     class Meta:
         model = Order
         fields = ['id', 'uuid', 'tax', 'total_price', 'shopper', 'shipping_address', 'shopper_share_info',
                   'shopper_sms_update', 'order_items']
-        depth = 1
+
+    def get_order_items(self, order):
+        items = OrderItem.objects.filter(order=order, product__shop__owner=self.context['request'].user)
+        return BusinessOrderItemSerializer(many=True, instance=items).data
 
 
 class BusinessOrderItemSerializer(serializers.ModelSerializer):
     product_title = serializers.SerializerMethodField()
     order_uuid = serializers.SerializerMethodField()
+    order_no = serializers.SerializerMethodField()
 
     class Meta:
         model = OrderItem
         fields = ['id', 'product', 'price', 'color', 'size', 'quantity', 'commission_rate', 'order_id',
-                  'product_title', 'order_uuid']
+                  'product_title', 'order_uuid', 'order_no']
 
     def get_product_title(self, obj):
         return obj.product.title
 
     def get_order_uuid(self, obj):
         return obj.order.uuid
+
+    def get_order_no(self, obj):
+        return "{}-{}".format(obj.order.get_order_no(), obj.get_merchant_no())

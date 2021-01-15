@@ -2,7 +2,7 @@
   <div v-loading.fullscreen="loading" class="row">
     <div class="order-details mb-5 col-12 col-md-12 col-lg-9" v-for="order in orders" :key="order.id">
       <div class="d-flex justify-content-between order-header mb-3">
-        <span>Order #{{ order.id }}</span>
+        <span>Order #{{ order.order_no }}</span>
         <span>Total price = ${{ order.total_price }}</span>
       </div>
       <div class="order-items row">

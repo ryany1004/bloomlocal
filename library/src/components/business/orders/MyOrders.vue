@@ -15,10 +15,10 @@
         width="80">
       </el-table-column>
       <el-table-column
-        width="85"
+        width="100"
         label="Order Number">
         <template slot-scope="scope">
-          #{{ scope.row.order_id }}
+          #{{ scope.row.order_no }}
         </template>
       </el-table-column>
       <el-table-column
@@ -83,13 +83,13 @@
       </el-pagination>
     </div>
 
-    <el-dialog title="Shopper Information" :visible.sync="dialogShopperVisible">
+    <el-dialog title="Shopper Information" :visible.sync="dialogShopperVisible" width="70%">
       <shopper-info :uuid="uuid" v-if="uuid"></shopper-info>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogShopperVisible = false">Close</el-button>
       </span>
     </el-dialog>
-    <el-dialog title="Receipt" :visible.sync="dialogReceiptVisible">
+    <el-dialog title="Receipt" :visible.sync="dialogReceiptVisible" width="70%">
       <receipt :uuid="uuid" v-if="uuid"></receipt>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogReceiptVisible = false">Close</el-button>

@@ -215,9 +215,14 @@ class ProductSearch(ListAPIView):
 
     def get_queryset(self):
         query = self.request.GET.get("query")
+        kwargs = {}
+        if self.request.user.role_type == '1':
+            kwargs['shop__owner'] = self.request.user
+
         return Product.objects.select_related('shop') \
             .prefetch_related('productimage_set', 'productvariant_set', 'categories') \
-            .filter(Q(title__icontains=query) | Q(description__icontains=query), status=0, archived=False)[:50]
+            .filter(Q(title__icontains=query) | Q(description__icontains=query),
+                    status=0, archived=False, **kwargs)[:50]
 
 
 class ShopSearch(ListAPIView):

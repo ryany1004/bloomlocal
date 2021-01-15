@@ -1,10 +1,9 @@
 <template>
   <div v-if="isLoggedIn" style="width: 80px" class="d-flex justify-content-end align-items-baseline shop-following">
     <a href="javascript:void(0)" class="font-8 mr-1" @click="toggleFollowing(shop)"
-       :class="{'followed': user.following_shops.indexOf(shop.id) != -1}">{{ user.following_shops.indexOf(shop.id) != -1 ? "Following" : "Follow" }}</a>
-    <a href="javascript:void(0)" @click="toggleLove(shop)">
-      <i class="fa-heart" :class="{'fas': user.love_shops.indexOf(shop.id) != -1,
-        'far': user.love_shops.indexOf(shop.id) == -1}" style="font-size: 10px"></i>
+       :class="{'followed': user.following_shops.indexOf(shop.id) != -1}">
+      {{ user.following_shops.indexOf(shop.id) != -1 ? "Following" : "Follow" }} <i class="fa-heart" :class="{'fas': user.following_shops.indexOf(shop.id) != -1,
+        'far': user.following_shops.indexOf(shop.id) == -1}" style="font-size: 10px"></i>
     </a>
   </div>
 </template>
