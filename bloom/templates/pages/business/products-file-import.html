@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Import Products from CSV or Google Spreadsheet{% endblock %}
+
+{% block content %}
+  <div class="container mt-5">
+    <products-file-import :media-url="media_url" :enable-import="enable_import"
+                          :has-items='has_data' :items="products"></products-file-import>
+  </div>
+{% endblock %}
+
+{% block main_vue %}
+  <script>
+  let main1 = new Vue({
+    el: '#app',
+    delimiters: ["[{", "}]"],
+    data: function () {
+      return {
+        media_url: "{{ MEDIA_URL }}",
+        enable_import: {% if user.enable_shopify_import %}true{% else %}false{% endif %},
+        products: {{ products | safe }},
+        has_data: {% if has_data %} true {% else %} false {% endif %}
+      }
+    },
+    methods: {
+
+    }
+  });
+  </script>
+{% endblock %}

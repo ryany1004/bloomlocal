@@ -7,7 +7,15 @@
       <div class="d-flex align-items-center">
         <a href="/business/product/upload/"><i class="fas fa-plus fa-1x"></i></a>
         <a href="/business/google-merchant/upload/" class="ml-3" title="Upload your products to Google Merchant"><i class="fas fa-upload"></i></a>
-          <a href="/business/products/import/" class="ml-3 btn btn-primary btn-sm white" title="Import products from Shopify">Import</a>
+        <div class="dropdown">
+          <button class="btn btn-primary dropdown-toggle btn-sm white ml-3" type="button" id="dropdownImportButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Import
+          </button>
+          <div class="dropdown-menu" aria-labelledby="dropdownImportButton">
+            <a class="dropdown-item font-14" href="/business/products/shopify/import/">Shopify</a>
+            <a class="dropdown-item font-14" href="/business/products/file/import/">CSV or Google Spreadsheet</a>
+          </div>
+        </div>
         <div class="dropdown mx-4">
           <button class="btn btn-light btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             Sort by {{ sort_by_text }}

@@ -1,12 +1,10 @@
-import json
-
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.core.management.base import BaseCommand
 from django.db.models.query_utils import Q
 
 from bloom.shop.models import Product
-from bloom.utils.shopping import get_product_data, update_products_to_gmc, delete_products_to_gmc
+from bloom.utils.shopping import update_products_to_gmc, delete_products_to_gmc
 from shopping.content import common
 
 

@@ -1,0 +1,6 @@
+Title,Description,Color,Size,Variant Price,Image Src,Length,Width,Height,Dimension Unit,Weight,Weight Unit,Status
+Example T-Shirt,,Green,Small,25,https://help.shopify.com/images/green-t-shirt.jpg,4.3,3.5,6.7,inch,100,g,active
+,,Red,Medium,19.99,,,,,,,g,
+,,Blue,Large,19.99,,,,,,,g,
+Example Pants,,,,49.99,https://help.shopify.com/images/jeans-pants.jpg,,,,,,g,inactive
+Example Hat,,,,17.99,https://help.shopify.com/images/grey-hat.jpg,10,8,7,cm,,g,active

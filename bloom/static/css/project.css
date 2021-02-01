@@ -15077,3 +15077,6 @@ a.text-dark:hover, a.text-dark:focus {
   .non-field-errors .form-error {
     color: red;
     font-size: 14px; }
+
+.hidden {
+  display: none; }

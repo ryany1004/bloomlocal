@@ -18,6 +18,9 @@
         </template>
       </vue-horizontal-list>
     </div>
+    <div v-if="products.length == 0">
+      {{ loading ? "Loading...": "No data" }}
+    </div>
   </div>
 </template>
 

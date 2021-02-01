@@ -75,6 +75,7 @@ import Receipt from "@/components/business/orders/Receipt";
 import ShopperInfo from "@/components/business/orders/ShopperInfo";
 import Dashboard from "@/components/business/dashboard/Dashboard";
 import ProductsUpload from "@/components/business/ProductsUpload";
+import ProductsFileImport from "@/components/business/ProductsFileImport";
 
 Vue.config.productionTip = false
 
@@ -129,7 +130,8 @@ const Components = {
     Receipt,
     ShopperInfo,
     Dashboard,
-    ProductsUpload
+    ProductsUpload,
+    ProductsFileImport,
 }
 Object.keys(Components).forEach(name => {
     // console.info('name: '+ name);

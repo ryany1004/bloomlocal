@@ -6,6 +6,12 @@
         class="orders-table"
         style="width: 100%">
         <el-table-column
+          label="Order Number">
+          <template slot-scope="scope">
+            #{{ scope.row.order_no }}
+          </template>
+        </el-table-column>
+        <el-table-column
           prop="product_title"
           label="Product">
         </el-table-column>

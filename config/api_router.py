@@ -57,6 +57,8 @@ urlpatterns += [
     path('business/my-orders/', order_views.BusinessMyOrdersAPI.as_view(), name="my-orders"),
     path('shopify/retrieve-products/', order_views.ShopifyRetrieveProductAPI.as_view(), name="shopify-retrieve-product"),
     path('shopify/import-product/', shop_views.ImportProductStorefront.as_view(), name="shopify-import-product"),
+    path('file/import-product/', shop_views.FileImportProductStorefront.as_view(), name="file-import-product"),
+    path('spreadsheet/authorization-url/', shop_views.SpreadsheetPermissionURL.as_view(), name="spreadsheet-permission-url"),
     path('statistic/order-revenue/by-month/', order_views.OrderRevenueMonthAPI.as_view(), name="order-revenue-month"),
     path('statistic/order-revenue/by-year/', order_views.OrderRevenueYearAPI.as_view(), name="order-revenue-year"),
 

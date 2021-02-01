@@ -50,7 +50,7 @@
         <div class="shipping">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <header class="shipping-title mb-0">Shipping Address</header>
-            <a href="javascript:void(0)" @click="dialogVisible=true" class="font-12">Saved Addresses</a>
+            <a v-if="isLoggedIn" href="javascript:void(0)" @click="dialogVisible=true" class="font-12">Saved Addresses</a>
           </div>
 
           <div class="form-row">
@@ -193,7 +193,7 @@ export default {
   },
   computed: {
     ...mapState([
-      "cart_items", 'sizes', 'colors', "cartLoading"
+      "cart_items", 'sizes', 'colors', "cartLoading", 'isLoggedIn'
     ]),
     mapSizes() {
       let sizes = {};

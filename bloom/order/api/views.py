@@ -107,9 +107,15 @@ class UserOrderListAPI(django_auto_prefetching.AutoPrefetchViewSetMixin, ListAPI
     serializer_class = OrderSerializer
 
     def get_queryset(self):
+        statuses = [
+            Order.Status.AWAITING_SHIPMENT,
+            Order.Status.SHIPPED,
+            Order.Status.ON_HOLD,
+            Order.Status.CANCELLED
+        ]
         queryset = Order.objects.prefetch_related('order_items', 'order_items__product', 'order_items__product__shop') \
             .select_related('shopper', 'shipping_address') \
-            .filter(shopper=self.request.user, status=Order.Status.SUCCEED).order_by('-created_at')
+            .filter(shopper=self.request.user, status__in=statuses).order_by('-created_at')
         return django_auto_prefetching.prefetch(queryset, self.serializer_class)
 
 
@@ -118,9 +124,15 @@ class BusinessMyOrdersAPI(ListAPIView):
     pagination_class = StandardResultsSetPagination
 
     def get_queryset(self):
+        statuses = [
+            Order.Status.AWAITING_SHIPMENT,
+            Order.Status.SHIPPED,
+            Order.Status.ON_HOLD,
+            Order.Status.CANCELLED
+        ]
         return OrderItem.objects \
             .select_related('order', 'product', 'product__shop', 'order__shipping_address') \
-            .filter(product__shop__owner=self.request.user, order__status=Order.Status.SUCCEED).order_by('-order_id')
+            .filter(product__shop__owner=self.request.user, order__status__in=statuses).order_by('-order_id')
 
 
 class ShopifyRetrieveProductAPI(APIView):
@@ -193,17 +205,35 @@ class ShopifyRetrieveProductAPI(APIView):
         attr_size = Attribute.objects.get(attribute_code='size')
         attr_color = Attribute.objects.get(attribute_code='color')
 
+        size_option = None
+        color_option = None
+        count = 1
         for opt in options:
             if opt['name'] == "Size":
                 for v in opt['values']:
                     if v not in attr_size.values:
                         attr_size.values.append(v)
                 attr_size.save()
+                size_option = 'option{}'.format(count)
             elif opt['name'] == "Color":
                 for v in opt['values']:
                     if v.capitalize() not in attr_color.values:
                         attr_color.values.append(v.capitalize())
                 attr_color.save()
+                color_option = 'option{}'.format(count)
+            count += 1
+
+        prices = {}
+        for v in var_objs:
+            price = float(v['price']) if v['price'] and v['price'].isdigit() else None
+            price = price if price > 0 else None
+            if size_option and color_option:
+                key = "{}:{}".format(v[size_option], v[color_option])
+                prices[key] = price
+            elif size_option:
+                prices[v[size_option]] = price
+            elif color_option:
+                prices[v[color_option]] = price
 
         if len(options) == 1:
             option = options[0]
@@ -211,12 +241,12 @@ class ShopifyRetrieveProductAPI(APIView):
                 enable_color = True
                 values = option['values']
                 for v in values:
-                    variants.append({'color': v.capitalize()})
+                    variants.append({'color': v.capitalize(), 'price': prices.get(v)})
             elif option['name'] == "Size":
                 enable_size = True
                 values = option['values']
                 for v in values:
-                    variants.append({'size': v})
+                    variants.append({'size': v, 'price': prices.get(v)})
         elif len(options) > 1:
             size_values = []
             color_values = []
@@ -231,13 +261,14 @@ class ShopifyRetrieveProductAPI(APIView):
             if len(size_values) > 0 and len(color_values) > 0:
                 for size in size_values:
                     for color in color_values:
-                        variants.append({"size": size, "color": color.capitalize()})
+                        key = "{}:{}".format(size, color)
+                        variants.append({"size": size, "color": color.capitalize(), 'price': prices.get(key)})
             elif len(size_values) > 0:
                 for size in size_values:
-                    variants.append({"size": size})
+                    variants.append({"size": size, 'price': prices.get(size)})
             elif len(color_values) > 0:
                 for color in color_values:
-                    variants.append({"color": color.capitalize()})
+                    variants.append({"color": color.capitalize(), 'price': prices.get(color)})
 
         return variants, enable_size, enable_color
 
@@ -247,12 +278,17 @@ class OrderRevenueMonthAPI(APIView):
     def get(self, request, *args, **kwargs):
         this_month = datetime.date.today()
         prev_month = this_month - relativedelta(months=1)
-        items = OrderItem.objects.filter(order__status=Order.Status.SUCCEED,
+        statuses = [
+            Order.Status.SHIPPED,
+            Order.Status.AWAITING_SHIPMENT,
+            Order.Status.ON_HOLD,
+        ]
+        items = OrderItem.objects.filter(order__status__in=statuses,
                                          product__shop__owner=request.user,
                                          created_at__month=this_month.month,
                                          created_at__year=this_month.year)
 
-        prev_month_items = OrderItem.objects.filter(order__status=Order.Status.SUCCEED,
+        prev_month_items = OrderItem.objects.filter(order__status__in=statuses,
                                                     product__shop__owner=request.user,
                                                     created_at__month=prev_month.month,
                                                     created_at__year=prev_month.year)
@@ -279,7 +315,12 @@ class OrderRevenueMonthAPI(APIView):
 
 class OrderRevenueYearAPI(APIView):
     def get(self, request, *args, **kwargs):
-        items = OrderItem.objects.filter(order__status=Order.Status.SUCCEED,
+        statuses = [
+            Order.Status.SHIPPED,
+            Order.Status.AWAITING_SHIPMENT,
+            Order.Status.ON_HOLD,
+        ]
+        items = OrderItem.objects.filter(order__status__in=statuses,
                                          product__shop__owner=request.user)
         data = items.annotate(year=ExtractYear("created_at")).values('year') \
             .annotate(total=Sum(F("price") * F("quantity"), output_field=models.FloatField()))

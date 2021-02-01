@@ -72,7 +72,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 ALLOWED_HOSTS = [
     'localhost',
     'localhost:8000',
-    'storage.googleapis.com'
+    'storage.googleapis.com',
+    'db1553709c44.ngrok.io'
 ]
 
 INSTALLED_APPS += ["storages"]  # noqa F405

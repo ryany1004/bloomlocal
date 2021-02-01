@@ -60,6 +60,9 @@
                       v-for="size in sizes" :key="size">{{size}}</span>
               </div>
             </div>
+            <div class="mb-3" v-if="active_colors.length > 0 || active_sizes.length > 0">
+              <a href="javascript:void(0)" class="font-14" @click="dialogVisible = true">Set price for variants</a>
+            </div>
           </div>
           <div class="form-row">
             <div class="form-group col-md-5">
@@ -120,6 +123,17 @@
         </div>
       </div>
     </form>
+
+    <el-dialog
+      title="Set price for variants"
+      :visible.sync="dialogVisible"
+      :append-to-body="true"
+      width="50%">
+      <variants :sizes="active_sizes" :colors="active_colors" v-model="variants"/>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">Close</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -128,6 +142,7 @@ import {mapState} from 'vuex';
 import axios from "axios";
 import { ValidationProvider, extend } from 'vee-validate';
 import _ from "lodash";
+import Variants from "@/components/variants/Variants";
 
 extend('positive', value => {
   return value >= 0;
@@ -142,7 +157,8 @@ export default {
     }
   },
   components: {
-    ValidationProvider
+    ValidationProvider,
+    Variants
   },
   data: function () {
     return {
@@ -156,7 +172,8 @@ export default {
       active_colors: [],
       variants: [],
       uploaded: false,
-      errs: {}
+      errs: {},
+      dialogVisible: false
     }
   },
   created() {
@@ -171,7 +188,20 @@ export default {
         return this.product.thumbnail;
       }
       return require("../../assets/sample-image.jpg");
-    }
+    },
+    price_variants() {
+      let data = {};
+      this.variants.forEach(variant => {
+        if (variant.size && variant.color) {
+          data[`${variant.size}:${variant.color}`] = variant.price || null;
+        } else if (variant.size) {
+          data[`${variant.size}`] = variant.price || null;
+        } else if (variant.color) {
+          data[`${variant.color}`] = variant.price || null;
+        }
+      })
+      return data;
+    },
   },
   watch: {
     product: {
@@ -180,6 +210,12 @@ export default {
         this.product_imgs = val.images;
         this.variants = val.variants;
         this.set_active_sizes_and_color(val);
+      }
+    },
+    variants: {
+      immediate: true,
+      handler(val) {
+        this.product.variants = val;
       }
     }
   },
@@ -226,29 +262,30 @@ export default {
       if (this.product.enable_color && this.product.enable_size) {
         if (this.active_colors.length > 0 && that.active_sizes.length == 0) {
           this.active_colors.forEach(function (color) {
-            variants.push({color: color});
+            variants.push({color: color, price: that.price_variants[color] || null});
           })
         } else if (this.active_colors.length == 0 && that.active_sizes.length > 0) {
           this.active_sizes.forEach(function (size) {
-            variants.push({size: size});
+            variants.push({size: size, price: that.price_variants[size] || null});
           })
         } else {
           this.active_colors.forEach(function (color) {
             that.active_sizes.forEach(function (size) {
-              variants.push({size: size, color: color});
+              variants.push({size: size, color: color, price: that.price_variants[`${size}:${color}`] || null});
             })
           })
         }
       } else if (!this.product.enable_color && this.product.enable_size) {
         this.active_sizes.forEach(function (size) {
-          variants.push({size: size});
+          variants.push({size: size, price: that.price_variants[size] || null});
         })
 
       } else if (this.product.enable_color && !this.product.enable_size) {
         this.active_colors.forEach(function (color) {
-          variants.push({color: color});
+          variants.push({color: color, price: that.price_variants[color] || null});
         })
       }
+
       return variants;
     },
     toggleColor(color) {

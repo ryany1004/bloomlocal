@@ -4,15 +4,20 @@ import urllib.request
 
 import django
 from django.conf import settings
+from django.contrib.gis.geos.point import Point
+from django.contrib.gis.measure import D
 from django.contrib.postgres.search import SearchVector
 from django.core.cache import cache
 from django.core.files.base import File
+from django.db import transaction
 from django.db.models.aggregates import Count
 from django.db.models.query_utils import Q
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from google.cloud.storage import Bucket, Blob
+from google_auth_oauthlib.flow import InstalledAppFlow
 from rest_framework import status
 from rest_framework.generics import ListAPIView, get_object_or_404, \
     RetrieveUpdateAPIView
@@ -22,13 +27,14 @@ from rest_framework.views import APIView
 from bloom.order.models import OrderItem, Order
 from bloom.utils.pagination import StandardResultsSetPagination
 from bloom.shop.api.serializers import CategorySerializer, ProductSerializer, \
-    ProductModelSerializer, ShopSerializer, ShopCategorySerializer
+    ProductModelSerializer, ShopSerializer, ShopCategorySerializer, ProductSearchSerializer, ShopSearchSerializer
 from bloom.shop.models import Category, Product, Shop, ShopCategory, Attribute, ProductImage, ProductVariant, \
     ImageStorage
 import datetime
 import random
 import string
 from bloom.utils.bucket_registry import _bucket_registry
+from bloom.utils.shopping import save_product_data
 
 URLSAFE_CHARACTERS = string.ascii_letters + string.digits + "-._~"
 REQUIRED_PARAMS = ['filename', 'content_type']
@@ -135,7 +141,12 @@ class ShopProductListAPI(ListAPIView):
                 .filter(shop=shop, archived=False).order_by('-created_at')[:20]
 
         elif self.request.GET.get('view') == 'best_selling':
-            product_ids = OrderItem.objects.filter(order__status=Order.Status.SUCCEED, product__shop=shop) \
+            statuses = [
+                Order.Status.SHIPPED,
+                Order.Status.AWAITING_SHIPMENT,
+                Order.Status.ON_HOLD
+            ]
+            product_ids = OrderItem.objects.filter(order__status__in=statuses, product__shop=shop) \
                 .values('product_id').annotate(total=Count('product_id')) \
                 .order_by('-total').values_list('product_id', flat=True)[:50]
             return Product.objects.select_related('shop') \
@@ -157,7 +168,12 @@ class PublishShopProductList(ShopProductListAPI):
                        .filter(shop_id=self.kwargs['shop_id'], archived=False, status=0).order_by('-created_at')[:20]
 
         elif self.request.GET.get('view') == 'best_selling':
-            product_ids = OrderItem.objects.filter(order__status=Order.Status.SUCCEED,
+            statuses = [
+                Order.Status.SHIPPED,
+                Order.Status.AWAITING_SHIPMENT,
+                Order.Status.ON_HOLD
+            ]
+            product_ids = OrderItem.objects.filter(order__status__in=statuses,
                                                    product__shop_id=self.kwargs['shop_id']) \
                               .values('product_id').annotate(total=Count('product_id')) \
                               .order_by('-total').values_list('product_id', flat=True)[:50]
@@ -188,7 +204,12 @@ class ShopListAPI(ListAPIView):
             return Shop.objects.select_related('owner') \
                        .prefetch_related('categories').order_by('-created_at')[:20]
         elif self.request.GET.get('view') == 'best_selling':
-            shop_ids = OrderItem.objects.filter(order__status=Order.Status.SUCCEED) \
+            statuses = [
+                Order.Status.SHIPPED,
+                Order.Status.AWAITING_SHIPMENT,
+                Order.Status.ON_HOLD
+            ]
+            shop_ids = OrderItem.objects.filter(order__status__in=statuses) \
                               .values('product__shop').annotate(total=Count('product__shop')) \
                               .order_by('-total').values_list('product__shop', flat=True)[:50]
             return Shop.objects.select_related('owner') \
@@ -210,32 +231,46 @@ class ShopCategoryAPIView(ListAPIView):
 
 
 class ProductSearch(ListAPIView):
-    serializer_class = ProductModelSerializer
+    serializer_class = ProductSearchSerializer
     permission_classes = []
 
     def get_queryset(self):
+        request = self.request
         query = self.request.GET.get("query")
         kwargs = {}
-        if self.request.user.role_type == '1':
-            kwargs['shop__owner'] = self.request.user
+        if request.user.is_authenticated and request.user.role_type == '1':
+            kwargs['shop__owner'] = request.user
 
-        return Product.objects.select_related('shop') \
+        queryset = Product.objects.select_related('shop') \
             .prefetch_related('productimage_set', 'productvariant_set', 'categories') \
             .filter(Q(title__icontains=query) | Q(description__icontains=query),
-                    status=0, archived=False, **kwargs)[:50]
+                    status=0, archived=False, **kwargs)
+
+        if 'lat' in request.GET and 'long' in request.GET:
+            point = Point((float(request.GET['lat']), float(request.GET['long'])))
+            queryset = queryset.filter(shop__location__distance_lte=(point, D(km=settings.SEARCH_DISTANCE_IN_KM)))
+
+        return queryset[:50]
 
 
 class ShopSearch(ListAPIView):
-    serializer_class = ShopSerializer
+    serializer_class = ShopSearchSerializer
     permission_classes = []
 
     def get_queryset(self):
-        query = self.request.GET.get("query")
-        return Shop.objects.select_related('owner').prefetch_related('categories') \
-            .filter(name__icontains=query)[:50]
+        request = self.request
+        query = request.GET.get("query")
+        queryset = Shop.objects.select_related('owner').prefetch_related('categories') \
+                       .filter(name__icontains=query)
+        if 'lat' in request.GET and 'long' in request.GET:
+            point = Point((float(request.GET['lat']), float(request.GET['long'])))
+            queryset = queryset.filter(location__distance_lte=(point, D(km=settings.SEARCH_DISTANCE_IN_KM)))
+        return queryset[:50]
 
 
 class ImportProductStorefront(APIView):
+
+    @method_decorator(transaction.atomic)
     def post(self, request, *args, **kwargs):
         data = request.data
         p = Product.objects.filter(shopify_product_id=data['id'], shop=request.user.get_shop()).first()
@@ -244,38 +279,35 @@ class ImportProductStorefront(APIView):
             p.shopify_product_id = data['id']
             p.shop = request.user.get_shop()
 
-        p.title = data['title']
-        p.description = data['description']
-        p.price = data['price']
-        p.stock = data['stock']
-        p.status = data['status']
-        p.enable_color = data['enable_color']
-        p.enable_size = data['enable_size']
-
-        if data['thumbnail']:
-            result = urllib.request.urlretrieve(data['thumbnail'])
-            p.thumbnail.save(os.path.basename(data['thumbnail'].split("?")[0]), File(open(result[0], 'rb')))
-        p.save()
-
-        images = []
-        count = 1
-        for img in data['images']:
-            temp = ImageStorage()
-            result = urllib.request.urlretrieve(img['src'])
-            filename = os.path.basename(img['src'].split("?")[0])
-            temp.image.save(filename, File(open(result[0], 'rb')))
-            images.append({'url': str(temp.image), 'name': filename, 'uid': count})
-            count += 1
-
-        if images:
-            product_img = ProductImage.objects.get_or_create(product=p)[0]
-            product_img.images = images
-            product_img.save()
-
-        if data['variants']:
-            variant = ProductVariant.objects.get_or_create(product=p)[0]
-            variant.values = data['variants']
-            variant.save()
+        save_product_data(p, data)
 
         return Response(status=status.HTTP_200_OK)
 
+
+class FileImportProductStorefront(APIView):
+
+    @method_decorator(transaction.atomic)
+    def post(self, request, *args, **kwargs):
+        data = request.data
+        p = Product()
+        p.shop = request.user.get_shop()
+        save_product_data(p, data)
+
+        return Response(status=status.HTTP_200_OK)
+
+
+class SpreadsheetPermissionURL(APIView):
+    def post(self, request, *args, **kwargs):
+        file_url = request.data['file_url']
+        import re
+        search = re.compile(r'/d/(\w+)/')
+        sheet_id = search.search(file_url).group(1)
+        request.session['sheet_id'] = sheet_id
+
+        SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
+        redirect_uri = request.build_absolute_uri(reverse('shop:spreadsheet-callback'))
+        credentials_path = str(settings.ROOT_DIR / settings.SPREADSHEET_CREDENTIALS)
+        flow = InstalledAppFlow.from_client_secrets_file(
+            credentials_path, SCOPES, redirect_uri=redirect_uri)
+        auth_url, _ = flow.authorization_url(prompt='consent')
+        return Response(data={'auth_url': auth_url}, status=status.HTTP_200_OK)

@@ -94,7 +94,7 @@ class BusinessSignUpSerializer(serializers.ModelSerializer):
 
     def validate_password(self, val):
         request = self.context['request']
-        if (request.data.get('confirm_password') != val):
+        if request.data.get('confirm_password') != val:
             raise serializers.ValidationError("You must type the same password each time.")
 
         return val

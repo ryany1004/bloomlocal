@@ -1,6 +1,10 @@
+import traceback
+
 import uuid as uuid
 from autoslug import AutoSlugField
 from django.contrib.auth import get_user_model
+from django.contrib.gis.db.models.fields import PointField
+from django.contrib.gis.geos.point import Point
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models.fields.json import JSONField
@@ -50,12 +54,30 @@ class Shop(BaseModelMixin, models.Model):
     integrations = JSONField(default=list, blank=True)
     locality = models.CharField(max_length=20, blank=True)
     subscriber = models.IntegerField(default=0, blank=True)
+    location = PointField(null=True, blank=True, verbose_name='Location')
 
     def __str__(self):
         return self.name
 
     def get_absolute_url(self):
         return reverse("shop:shop-details", kwargs={'slug': self.slug})
+
+    def update_location_by_address(self, commit=False):
+        if self.business_address:
+            try:
+                from geopy.geocoders import Nominatim
+                geolocator = Nominatim(user_agent="google maps")
+                location = geolocator.geocode(self.business_address)
+                self.location = Point((location.latitude, location.longitude))
+                if commit:
+                    self.save()
+            except:
+                print(traceback.format_exc())
+
+    def save(self, **kwargs):
+        if self.business_address:
+            self.update_location_by_address()
+        super(Shop, self).save(**kwargs)
 
 
 class Category(models.Model):
@@ -128,7 +150,22 @@ class Product(BaseModelMixin, models.Model):
         variant = ProductVariant.objects.filter(product_id=self.id).first()
         if variant:
             return variant.values
-        return  []
+        return []
+
+    def get_product_price(self, size=None, color=None):
+        price = self.price
+        variants = self.get_product_variants()
+        v = None
+        if self.enable_size and self.enable_color:
+            v = next(filter(lambda x: x['size'] == size and x['color'] == color, variants))
+        elif self.enable_size:
+            v = next(filter(lambda x: x['size'] == size, variants))
+        elif self.enable_color:
+            v = next(filter(lambda x: x['color'] == color, variants))
+
+        if v and v.get('price') and v.get('price') > 0:
+            price = v['price']
+        return price
 
     def get_absolute_url(self):
         return reverse("product-details", kwargs={'slug': self.slug, 'shop_slug': self.shop.slug})

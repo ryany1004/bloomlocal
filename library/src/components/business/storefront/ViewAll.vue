@@ -3,6 +3,9 @@
     <div class="col-lg-2 col-md-3 col-6 mb-5" v-for="product in data_products" :key="product.id">
       <business-product-card :product="product" :media-url="mediaUrl"></business-product-card>
     </div>
+    <div class="col-12" v-if="products.length == 0">
+      {{ loading ? "Loading...": "No data" }}
+    </div>
   </div>
 </template>
 

@@ -109,30 +109,32 @@ export default {
     },
     async importShopify() {
       let requests = [], that = this;
-      that.uploading = true;
-      this.selected_products.forEach(p => {
-        requests.push(limit(() => new Promise((resolve, reject) => {
-          that.$set(p, "loading", true);
-          axios.post("/api/shopify/import-product/", p).then((res) => {
-            that.$set(p, "loading", false);
-            that.$set(p, "checked", false);
-            resolve(res)
-          }).catch((err) => {
-            that.$set(p, "loading", false);
-            reject(err)
-          })
-        })));
-      });
+      if (confirm("Are you sure?")) {
+        that.uploading = true;
+        this.selected_products.forEach(p => {
+          requests.push(limit(() => new Promise((resolve, reject) => {
+            that.$set(p, "loading", true);
+            axios.post("/api/shopify/import-product/", p).then((res) => {
+              that.$set(p, "loading", false);
+              that.$set(p, "checked", false);
+              resolve(res)
+            }).catch((err) => {
+              that.$set(p, "loading", false);
+              reject(err)
+            })
+          })));
+        });
 
-      Promise.all(requests).then((res) => {
-        console.log(res)
-        that.visible = false;
-        that.checked_all = false;
-        that.uploading = false;
-        setTimeout(() => {
-          alert("The import was successful!")
-        }, 1000)
-      });
+        Promise.all(requests).then((res) => {
+          console.log(res)
+          that.visible = false;
+          that.checked_all = false;
+          that.uploading = false;
+          setTimeout(() => {
+            alert("The import was successful!")
+          }, 1000)
+        });
+      }
     },
     handleClick(product) {
       this.edit_product = product;

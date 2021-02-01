@@ -132,21 +132,23 @@ export default {
     },
     importGoogleMerchant() {
       let product_ids = []
-      this.selected_products.forEach(p => {
-        if (p.checked) {
-          product_ids.push(p.id);
-        }
-      })
-      let that = this;
-      that.loading = true;
-      if (product_ids.length > 0) {
-        axios.put("/business/products/import/", {product_ids: product_ids}).then(() => {
-          that.loading = false;
-          that.visibleDlg = false;
-          alert("The Products were imported successfully")
-        }).catch(() => {
-          that.loading = false;
+      if (confirm("Are you sure?")) {
+        this.selected_products.forEach(p => {
+          if (p.checked) {
+            product_ids.push(p.id);
+          }
         })
+        let that = this;
+        that.loading = true;
+        if (product_ids.length > 0) {
+          axios.put("/business/google-merchant/upload/", {product_ids: product_ids}).then(() => {
+            that.loading = false;
+            that.visibleDlg = false;
+            alert("The Products were imported successfully")
+          }).catch(() => {
+            that.loading = false;
+          })
+        }
       }
     }
   }

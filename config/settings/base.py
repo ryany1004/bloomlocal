@@ -42,6 +42,7 @@ LOCALE_PATHS = [str(ROOT_DIR / "locale")]
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
 DATABASES = {"default": env.db("DATABASE_URL")}
 DATABASES["default"]["ATOMIC_REQUESTS"] = True
+DATABASES["default"]['ENGINE'] = 'django.contrib.gis.db.backends.postgis'
 
 # URLS
 # ------------------------------------------------------------------------------
@@ -59,6 +60,7 @@ DJANGO_APPS = [
     "django.contrib.sites",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    'django.contrib.gis',
     # "django.contrib.humanize", # Handy template tags
     "django.contrib.admin",
     "django.forms",
@@ -302,7 +304,6 @@ ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_ADAPTER = 'bloom.users.adapters.AccountAdapter'
 
-
 ACCOUNT_FORMS = {
     'login': 'bloom.users.forms.UserLoginForm',
 }
@@ -374,7 +375,13 @@ CART_SESSION_ID = "cart-session"
 STRIPE_SECRET_KEY = env("STRIPE_SECRET_KEY")
 STRIPE_PUBLISHABLE_KEY = env("STRIPE_PUBLISHABLE_KEY")
 STRIPE_ENDPOINT_SECRET_KEY = env("STRIPE_ENDPOINT_SECRET_KEY")
-STRIPE_ENDPOINT_CONNECTED_ACCOUNT_KEY= env("STRIPE_ENDPOINT_CONNECTED_ACCOUNT_KEY")
+STRIPE_ENDPOINT_CONNECTED_ACCOUNT_KEY = env("STRIPE_ENDPOINT_CONNECTED_ACCOUNT_KEY")
 
 SHOPIFY_API_SCOPE = ['read_products', 'write_products', 'read_orders']
 SHOPIFY_API_VERSION = "unstable"
+
+SEARCH_DISTANCE_IN_KM = 20
+SPREADSHEET_CREDENTIALS = env("SPREADSHEET_CREDENTIALS")
+
+SHIP_STATION_KEY = env("SHIP_STATION_KEY")
+SHIP_STATION_SECRET_KEY = env("SHIP_STATION_SECRET_KEY")

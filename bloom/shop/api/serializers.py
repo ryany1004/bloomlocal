@@ -1,3 +1,4 @@
+from django.contrib.gis.geos.point import Point
 from rest_framework import serializers
 
 from bloom.shop.models import Category, Product, ProductVariant, ProductImage, Shop, ShopCategory, Attribute
@@ -58,6 +59,24 @@ class ProductModelSerializer(ProductModelSimpleSerializer):
 
     def get_category_names(self, obj):
         return [c.name for c in obj.categories.all()]
+
+
+class ProductSearchSerializer(ProductModelSerializer):
+    distance = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Product
+        fields = ['id', 'uuid', 'title', 'thumbnail', 'price', 'description', 'length', 'width', 'height', 'status',
+                  'weight', 'weight_unit', 'stock', 'delivery_type', 'enable_color', 'enable_size', 'shop_id',
+                  'archived', 'slug', 'variants', 'images', 'created_at', 'updated_at', 'categories',
+                  'category_names', 'dimension_unit', 'url', 'distance']
+
+    def get_distance(self, obj):
+        request = self.context['request']
+        if 'lat' in request.GET and 'long' in request.GET and obj.shop.location:
+            point = Point((float(request.GET['lat']), float(request.GET['long'])))
+            return obj.shop.location.distance(point) * 100
+        return None
 
 
 class ProductSerializer(serializers.Serializer):
@@ -167,6 +186,22 @@ class ShopSerializer(serializers.ModelSerializer):
     def get_url(self, shop):
         return shop.get_absolute_url()
 
+
+class ShopSearchSerializer(ShopSerializer):
+    distance = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Shop
+        fields = ['id', 'uuid', 'name', 'slug', 'logo', 'owner', 'business_address', 'business_phone',
+                  'categories', 'locality', 'category_names', 'url', 'distance']
+
+    def get_distance(self, shop):
+        request = self.context['request']
+        if 'lat' in request.GET and 'long' in request.GET and shop.location:
+            point = Point((float(request.GET['lat']), float(request.GET['long'])))
+            return shop.location.distance(point) * 100
+
+        return None
 
 class ShopCategorySerializer(serializers.ModelSerializer):
     class Meta:

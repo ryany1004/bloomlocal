@@ -26,8 +26,8 @@
     <div class="container">
       <ul class="bis-menu" style="margin-bottom: 0">
         <li class="flex-fill {% if page == 'dashboard' %}active{% endif %}"><a href="{% url 'home' %}">My Dashboard</a></li>
-        <li class="flex-fill {% if page == 'inventory' %}active{% endif %}"><a href="{% url 'inventory_page' %}">My Storefront/Inventory</a></li>
-        <li class="flex-fill {% if page == 'my_order' %}active{% endif %}"><a href="{% url 'orders_page' %}">My Orders</a></li>
+        <li class="flex-fill {% if page == 'inventory' %}active{% endif %}"><a href="{% url 'shop:inventory_page' %}">My Storefront/Inventory</a></li>
+        <li class="flex-fill {% if page == 'my_order' %}active{% endif %}"><a href="{% url 'shop:orders_page' %}">My Orders</a></li>
       </ul>
     </div>
   </div>

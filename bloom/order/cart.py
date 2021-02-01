@@ -30,7 +30,7 @@ class Cart(object):
         if product_key not in self.cart:
             self.cart[product_key] = {
                 'quantity': 0,
-                'price': product.price,
+                'price': product.get_product_price(size, color),
                 'size': size,
                 'color': color,
                 'product_id': product.id

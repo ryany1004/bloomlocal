@@ -7,4 +7,5 @@ urlpatterns = [
     path("order/<uuid>/purchase-canceled/", views.OrderCanceledPage.as_view(), name="order-canceled"),
     path("order/hooks/", views.OrderHooksPage.as_view(), name="order-hooks"),
     path("account/hooks/", views.AccountHooksPage.as_view(), name="account-hooks"),
+    path("shipstation/order-hooks/", views.ShipStationHooksPage.as_view(), name="ship-hooks"),
 ]

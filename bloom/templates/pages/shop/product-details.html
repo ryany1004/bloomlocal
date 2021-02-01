@@ -34,8 +34,10 @@
         media_url: "{{ MEDIA_URL }}",
       }
     },
-    methods: {
-
+    created() {
+      {% if user.is_authenticated %}
+      this.$store.dispatch('get_user');
+      {% endif %}
     }
   });
   </script>

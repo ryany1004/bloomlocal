@@ -4641,6 +4641,7 @@ input[type=color].form-control:disabled {
 .product-update .product-size {
   cursor: pointer;
   padding: 0.4em 0.5em;
+  margin-bottom: 5px;
 }
 .product-update .error {
   font-size: 11px;
@@ -5627,5 +5628,26 @@ input[type=color].form-control:disabled {
 }
 .dashboard .color-red[data-v-500cb20c] {
     color: red;
+}
+
+.product-import .file-import .csv-import .el-upload-dragger {
+  width: 260px;
+}
+.product-import .file-import .google-sheet {
+  width: 260px;
+  height: 180px;
+  background-color: #fff;
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  box-sizing: border-box;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+.product-import .file-import .google-sheet .gs-text {
+    color: #606266;
+    font-size: 14px;
+    margin-top: 20px;
 }
 

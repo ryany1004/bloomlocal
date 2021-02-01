@@ -94,7 +94,7 @@
                 </div>
                 <span v-else class="d-flex align-items-center">
                   <span class="c-circle" :style="{backgroundColor: color}" v-show="active_colors.indexOf(color) != -1" v-for="color in colors" :key="color"></span>
-                  <a class="ml-3" href="javascript:void(0)" @click="enable_edit('color')"><i class="fas fa-edit edit-icon"></i></a>
+                  <a class="ml-3" href="javascript:void(0)" @click="dialogVisible = true"><i class="fas fa-edit edit-icon"></i></a>
                 </span>
               </div>
               <div>
@@ -132,7 +132,7 @@
                 </div>
                 <span v-else class="d-flex align-items-center">
                   <span class="badge badge-primary mr-1 product-size white" v-show="active_sizes.indexOf(size) != -1" v-for="size in sizes" :key="size">{{size}}</span>
-                  <a class="ml-3" href="javascript:void(0)" @click="enable_edit('size')"><i class="fas fa-edit edit-icon"></i></a>
+                  <a class="ml-3" href="javascript:void(0)" @click="dialogVisible = true"><i class="fas fa-edit edit-icon"></i></a>
                 </span>
               </div>
               <div>
@@ -169,6 +169,41 @@
         </div>
       </div>
     </form>
+
+    <el-dialog
+      title="Edit variants"
+      :visible.sync="dialogVisible"
+      :close-on-click-modal="false"
+      width="50%">
+
+      <div class="form-row">
+        <div class="form-group col-md-5">
+          <div class="d-flex">
+            <label for="product_tile" class="mr-4" :class="{disabled: !product.enable_color}">Color</label>
+            <el-switch v-model="product.enable_color" @change="reset_attribute('color')"></el-switch>
+          </div>
+          <div :class="{disabled: !product.enable_color}">
+            <span @click="toggleColor(color)" class="c-circle" :style="{backgroundColor: color}" v-for="color in colors" :key="color"
+                  :class="{ active: active_colors.indexOf(color) != -1}"></span>
+          </div>
+        </div>
+        <div class="form-group col-md-7">
+          <div class="d-flex">
+            <label for="product_tile" class="mr-4" :class="{disabled: !product.enable_size}">Size</label>
+            <el-switch v-model="product.enable_size" @change="reset_attribute('size')"></el-switch>
+          </div>
+          <div :class="{disabled: !product.enable_size}">
+            <span @click="toggleSize(size)" :class="{'badge-secondary': active_sizes.indexOf(size) == -1, 'badge-primary': active_sizes.indexOf(size) != -1}" class="badge mr-1 product-size"
+                  v-for="size in sizes" :key="size">{{size}}</span>
+          </div>
+        </div>
+      </div>
+      <variants :sizes="active_sizes" :colors="active_colors" v-model="variants"/>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="cancelEditVariant()">Cancel</el-button>
+        <el-button type="primary" :disabled="saving.variant" @click="saveProductVariants('variant')">Save</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -178,6 +213,7 @@ import $ from 'jquery'
 import axios from "axios";
 import _ from "lodash";
 import { ValidationProvider, extend } from 'vee-validate';
+import Variants from "@/components/variants/Variants";
 
 extend('positive', value => {
   return value >= 0;
@@ -195,7 +231,8 @@ export default {
     }
   },
   components: {
-    ValidationProvider
+    ValidationProvider,
+    Variants
   },
   data: function () {
     return {
@@ -217,7 +254,8 @@ export default {
       errs: {},
       loading: false,
       saving: {},
-      edit: {}
+      edit: {},
+      dialogVisible: false
     }
   },
   created() {
@@ -228,8 +266,21 @@ export default {
   },
   computed: {
     ...mapState(
-            ['colors', 'sizes', 'categories']
-        ),
+        ['colors', 'sizes', 'categories']
+    ),
+    price_variants() {
+      let data = {};
+      this.variants.forEach(variant => {
+        if (variant.size && variant.color) {
+          data[`${variant.size}:${variant.color}`] = variant.price || null;
+        } else if (variant.size) {
+          data[`${variant.size}`] = variant.price || null;
+        } else if (variant.color) {
+          data[`${variant.color}`] = variant.price || null;
+        }
+      })
+      return data;
+    },
   },
   methods: {
     get_product() {
@@ -245,6 +296,15 @@ export default {
       }).catch(function () {
         that.loading = false
       })
+    },
+    cancelEditVariant() {
+      let that = this;
+      that.product.variants = JSON.parse(JSON.stringify(that.backup_product.variants));
+      that.variants = that.product.variants;
+      that.product.enable_size = that.backup_product.enable_size;
+      that.product.enable_color = that.backup_product.enable_color;
+      that.set_active_sizes_and_color(that.product);
+      that.dialogVisible = false;
     },
     set_active_sizes_and_color(product) {
       // eslint-disable-next-line no-debugger
@@ -452,27 +512,27 @@ export default {
       if (this.product.enable_color && this.product.enable_size) {
         if (this.active_colors.length > 0 && that.active_sizes.length == 0) {
           this.active_colors.forEach(function (color) {
-            variants.push({color: color});
+            variants.push({color: color, price: that.price_variants[color] || null});
           })
         } else if (this.active_colors.length == 0 && that.active_sizes.length > 0) {
           this.active_sizes.forEach(function (size) {
-            variants.push({size: size});
+            variants.push({size: size, price: that.price_variants[size] || null});
           })
         } else {
           this.active_colors.forEach(function (color) {
             that.active_sizes.forEach(function (size) {
-              variants.push({size: size, color: color});
+              variants.push({size: size, color: color, price: that.price_variants[`${size}:${color}`] || null});
             })
           })
         }
       } else if (!this.product.enable_color && this.product.enable_size) {
         this.active_sizes.forEach(function (size) {
-          variants.push({size: size});
+          variants.push({size: size, price: that.price_variants[size] || null});
         })
 
       } else if (this.product.enable_color && !this.product.enable_size) {
         this.active_colors.forEach(function (color) {
-          variants.push({color: color});
+          variants.push({color: color, price: that.price_variants[color] || null});
         })
       }
       return variants;
@@ -486,14 +546,17 @@ export default {
         variants: this.getVariants()
       }
       that.$set(that.saving, attr, true);
+      console.log(data.variants)
       axios.patch(`/api/shop/product/attribute/${this.product.uuid}/`, data).then(function (res) {
         that.$set(that.saving, attr, false);
-        that.$set(that.edit, attr, false);
+        // that.$set(that.edit, attr, false);
+        that.dialogVisible = false;
         that.product.variants = res.data.variants;
-        that.backup_product.variants = res.data.variants;
+        that.variants = res.data.variants;
+        that.backup_product.variants = JSON.parse(JSON.stringify(res.data.variants));
         that.backup_product.enable_color = res.data.enable_color;
         that.backup_product.enable_size = res.data.enable_size;
-        that.set_active_sizes_and_color(this.product);
+        that.set_active_sizes_and_color(that.product);
       }).catch(function (err) {
         that.$set(that.saving, attr, false);
         console.log(err);
@@ -643,6 +706,7 @@ export default {
     .product-size {
       cursor: pointer;
       padding: 0.4em 0.5em;
+      margin-bottom: 5px;
     }
     .error {
       font-size: 11px;

@@ -27,7 +27,7 @@
               <el-rate v-model="product.rating" show-score disabled text-color="#000" score-template="({value})"></el-rate>
             </div>
             <div class="form-group mb-4">
-              <h4 class="text-1 color-1"><span>${{product.price}}</span></h4>
+              <h4 class="text-1 color-1"><span>${{product_price}}</span></h4>
             </div>
             <div class="form-group">
               <h5 class="text-2">Product Description</h5>
@@ -151,6 +151,21 @@ export default {
     ...mapState(
         ['colors', 'sizes', 'categories']
     ),
+    product_price() {
+      let price = this.product.price;
+      let variant = {};
+      if (this.product.enable_size) {
+        variant['size'] =  this.active_size;
+      }
+      if (this.product.enable_color) {
+        variant['color'] =  this.active_color;
+      }
+      let price_variant = _.find(this.variants, variant);
+      if (price_variant && price_variant.price > 0) {
+        price = price_variant.price;
+      }
+      return price
+    }
   },
   methods: {
     get_product() {

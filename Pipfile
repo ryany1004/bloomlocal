@@ -67,6 +67,8 @@ google-auth-httplib2 = "*"
 six = "*"
 Django = "==3.1.4"
 shopifyapi = "==8.2.0"
+geopy = "*"
+shipstation="*"
 
 [requires]
 python_version = "3.9"

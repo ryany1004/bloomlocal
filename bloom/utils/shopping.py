@@ -1,6 +1,10 @@
 import json
+import os
+import urllib
 
-from bloom.shop.models import Product
+from django.core.files.base import File
+
+from bloom.shop.models import Product, ImageStorage, ProductImage, ProductVariant
 
 
 def get_product_data(product, domain):
@@ -145,3 +149,116 @@ def delete_products_to_gmc(products, domain, service, merchant_id):
             print('There was an error. Response: %s' % result)
     else:
         print("**************** No any product to delete **********************")
+
+
+def save_product_data(p, data):
+    p.title = data['title']
+    p.description = data['description']
+    p.price = data['price']
+    p.stock = data['stock']
+    p.status = data['status']
+    p.enable_color = data['enable_color']
+    p.enable_size = data['enable_size']
+
+    for field in ['length', 'width', 'height', 'dimension_unit', 'weight', 'weight_unit']:
+        if field in data:
+            setattr(p, field, data[field])
+
+    if data['thumbnail']:
+        result = urllib.request.urlretrieve(data['thumbnail'])
+        p.thumbnail.save(os.path.basename(data['thumbnail'].split("?")[0]), File(open(result[0], 'rb')))
+    p.save()
+
+    images = []
+    count = 1
+    for img in data['images']:
+        temp = ImageStorage()
+        result = urllib.request.urlretrieve(img['src'])
+        filename = os.path.basename(img['src'].split("?")[0])
+        temp.image.save(filename, File(open(result[0], 'rb')))
+        images.append({'url': str(temp.image), 'name': filename, 'uid': count})
+        count += 1
+
+    if images:
+        product_img = ProductImage.objects.get_or_create(product=p)[0]
+        product_img.images = images
+        product_img.save()
+
+    if data['variants']:
+        variant = ProductVariant.objects.get_or_create(product=p)[0]
+        variant.values = data['variants']
+        variant.save()
+
+
+def get_variant(row, enable_color, enable_size):
+    variant = None
+    price = float(row[4]) if is_isdigit(row[4]) else 0
+    if row[2] and enable_color and row[3] and enable_size:
+        variant = {'color': row[2], 'size': row[3], 'price': price}
+    elif row[2] and enable_color:
+        variant = {'color': row[2], 'price': price}
+    elif row[3] and enable_size:
+        variant = {'size': row[3], 'price': price}
+    return variant
+
+
+def is_isdigit(s):
+    """ Returns True is string is a number. """
+    return s.replace('.', '', 1).isdigit()
+
+
+def convert_to_product_data(rows):
+    products = []
+    title = None
+    variants = []
+    images = []
+    product = None
+    for row in rows:
+        if row[0] != "" and row[0] != title:
+            if product:
+                product['variants'] = variants
+                product['images'] = images
+                products.append(product)
+
+            title = row[0]
+            enable_color = True if row[2] else False
+            enable_size = True if row[3] else False
+            variants = []
+            variant = get_variant(row, enable_color, enable_size)
+            if variant:
+                variants.append(variant)
+
+            images = [{'src': row[5]}] if row[5] else []
+            product = {
+                'title': row[0],
+                'description': row[1],
+                'price': float(row[4]) if is_isdigit(row[4]) else 0,
+                'enable_color': enable_color,
+                'enable_size': enable_size,
+                'status': 0 if row[12] == 'active' else 1,
+                'variants': variants,
+                'thumbnail': row[5] if row[5] else None,
+                'images': images,
+                'categories': [],
+                'stock': 0,
+                'length': float(row[6]) if is_isdigit(row[6]) else None,
+                'width': float(row[7]) if is_isdigit(row[7]) else None,
+                'height': float(row[8]) if is_isdigit(row[8]) else None,
+                'dimension_unit': row[9] if row[9] else '',
+                'weight': float(row[10]) if is_isdigit(row[10]) else None,
+                'weight_unit': row[11] if row[11] else '',
+            }
+        else:
+            if row[5]:
+                images.append({'src': row[5]})
+                product['images'] = images
+
+            variant = get_variant(row, product['enable_color'], product['enable_size'])
+            if variant:
+                variants.append(variant)
+                product['variants'] = variants
+
+    if product:
+        products.append(product)
+
+    return products
