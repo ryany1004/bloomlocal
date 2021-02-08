@@ -4,6 +4,9 @@
     <i class="fas fa-user"></i> <a href="{% url 'users:detail' %}"><span>Your profile</span></a>
   </li>
   {% if user.role_type == '1' %}
+  <li role="menuitem" tabindex="-1" class="el-menu-item {% if page == 'shop' %}is-active{% endif %}" style="padding-left: 20px;">
+    <i class="fas fa-store"></i> <a href="{% url 'users:shop' %}"><span>Shop</span></a>
+  </li>
   <li role="menuitem" tabindex="-1" class="el-menu-item {% if page == 'stripe' %}is-active{% endif %}" style="padding-left: 20px;">
     <i class="fab fa-stripe-s"></i> <a href="{% url 'users:stripe-integration' %}"><span>Stripe integration</span></a>
   </li>

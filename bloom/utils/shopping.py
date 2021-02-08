@@ -8,7 +8,7 @@ from bloom.shop.models import Product, ImageStorage, ProductImage, ProductVarian
 
 
 def get_product_data(product, domain):
-    offer_id = 'product#{}'.format(product.id)
+    offer_id = '{}'.format(product.id)
     # categories = [c.name for c in product.categories.all()]
     p = {
         'offerId':
@@ -20,7 +20,7 @@ def get_product_data(product, domain):
         'link':
             domain + product.get_absolute_url(),
         'imageLink':
-            product.thumbnail.url,
+            product.thumbnail.url if product.thumbnail else None,
         'contentLanguage':
             'en',
         'targetCountry':
@@ -65,7 +65,7 @@ def insert_products_to_gmc(products, domain, service, merchant_id):
                 if product:
                     print('Product "%s" with offerId "%s" was created.' %
                           (product['id'], product['offerId']))
-                    product_ids.append(product['offerId'].split("#")[1])
+                    product_ids.append(product['offerId'])
                 elif errors:
                     print('Errors for batch entry %d:' % entry['batchId'])
                     print(json.dumps(errors, sort_keys=True, indent=2,
@@ -73,7 +73,7 @@ def insert_products_to_gmc(products, domain, service, merchant_id):
 
             products = Product.objects.filter(id__in=product_ids)
             for p in products:
-                p.content_product_id = 'online:en:US:product#{}'.format(p.id)
+                p.content_product_id = 'online:en:US:{}'.format(p.id)
 
             Product.objects.bulk_update(products, fields=['content_product_id'])
         else:
@@ -104,7 +104,7 @@ def update_products_to_gmc(products, domain, service, merchant_id):
                 if product:
                     print('Product "%s" with offerId "%s" was updated.' %
                           (product['id'], product['offerId']))
-                    product_ids.append(product['offerId'].split("#")[1])
+                    product_ids.append(product['offerId'])
                 elif errors:
                     print('Errors for batch entry %d:' % entry['batchId'])
                     print(json.dumps(errors, sort_keys=True, indent=2,
@@ -141,7 +141,7 @@ def delete_products_to_gmc(products, domain, service, merchant_id):
                     print('Deletion of product %s (batch entry %d) successful.' %
                           (batch['entries'][entry['batchId']]['productId'],
                            entry['batchId']))
-                    product_ids.append(batch['entries'][entry['batchId']]['productId'].split('#')[1])
+                    product_ids.append(batch['entries'][entry['batchId']]['productId'].split(":")[-1])
 
             Product.objects.filter(id__in=product_ids).update(content_product_id="")
 

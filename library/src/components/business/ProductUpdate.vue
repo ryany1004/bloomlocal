@@ -2,7 +2,7 @@
   <div v-loading.fullscreen="loading" class="product-update" >
     <form v-if="product.id">
       <div class="row">
-        <div class="col-md-4 col-12">
+        <div class="col-md-5 col-12">
           <el-upload
             class="product-uploader"
             action=""
@@ -45,7 +45,7 @@
             <button class="btn btn-secondary btn-sm ml-3" type="button" @click="hide_edit_images()"><i class="fas fa-times"></i></button>
           </div>
         </div>
-        <div class="col-md-8 col-12">
+        <div class="col-md-7 col-12">
           <div>
             <div class="form-group mb-4">
               <div v-if="edit.title" class="form-inline">
@@ -77,13 +77,13 @@
                   <button class="btn btn-secondary btn-sm ml-3" type="button" @click="hide_edit('description')"><i class="fas fa-times"></i></button>
                 </div>
               </div>
-              <div style="white-space: pre-line;" v-else>
+              <div class="text-2" style="white-space: pre-line;" v-else>
                 {{product.description}}
               </div>
             </div>
             <div class="form-group d-flex justify-content-between">
               <div class="d-flex align-items-center">
-                <label class="mr-3 mb-0" :class="{disabled: !product.enable_color || active_colors.length == 0}">Color:</label>
+                <label class="mr-3 mb-0 text-2" :class="{disabled: !product.enable_color || active_colors.length == 0}">Color:</label>
                 <div v-if="edit.color" class="form-inline">
                   <span :class="{disabled: !product.enable_color}">
                     <span class="c-circle" :style="{backgroundColor: color}" v-for="color in colors" :key="color"
@@ -102,7 +102,7 @@
               </div>
             </div>
             <div class="form-group d-flex align-items-center">
-              <label class="mr-2 mb-0">Categories:</label>
+              <label class="mr-2 mb-0 text-2">Categories:</label>
               <div v-if="edit.categories" class="form-inline">
                 <el-select v-model="product.categories" collapse-tags multiple placeholder="Categories" :class="{'is-invalid': errs.categories}">
                   <el-option
@@ -115,11 +115,11 @@
                 <button class="btn btn-primary btn-sm mx-3" type="button" :disabled="saving.categories" @click="saveProduct('categories')"><i class="fas fa-check"></i></button>
                 <button class="btn btn-secondary btn-sm" type="button" @click="hide_edit('categories')"><i class="fas fa-times"></i></button>
               </div>
-              <div v-else><span>{{product.category_names.join(", ")}}</span> <a href="javascript:void(0)" @click="enable_edit('categories')"><i class="fas fa-edit edit-icon"></i></a></div>
+              <div v-else><span class=" text-2">{{product.category_names.join(", ")}}</span> <a href="javascript:void(0)" @click="enable_edit('categories')"><i class="fas fa-edit edit-icon"></i></a></div>
             </div>
             <div class="form-group d-flex justify-content-between">
               <div class="d-flex align-items-center">
-                <label class="mr-3 mb-0" :class="{disabled: !product.enable_size || active_sizes.length == 0}">Size:</label>
+                <label class="mr-3 mb-0 text-2" :class="{disabled: !product.enable_size || active_sizes.length == 0}">Size:</label>
                 <div v-if="edit.size">
                   <span :class="{disabled: !product.enable_size}">
                     <span @click="toggleSize(size)" :class="{'badge-secondary': active_sizes.indexOf(size) == -1, 'badge-primary': active_sizes.indexOf(size) != -1}" class="badge mr-1 product-size"
@@ -140,7 +140,7 @@
               </div>
             </div>
             <div class="form-group d-flex align-items-center">
-              <label class="mr-3 mb-0">Stock:</label>
+              <label class="mr-3 mb-0 text-2">Stock:</label>
               <div v-if="edit.stock" class="form-inline">
                 <ValidationProvider rules="positive" v-slot="{ errors }">
                 <input type="number" min="0" :class="{'is-invalid': errors.length > 0 || errs.stock }" v-model="product.stock" class="form-control form-control-sm input-w50"/>
@@ -657,7 +657,7 @@ export default {
       color: #8c939d;
       width: 100%;
       height: 100%;
-      line-height: 178px;
+      line-height: 350px;
       justify-content: center;
       display: flex;
     }
@@ -667,12 +667,12 @@ export default {
       position: absolute;
       background-color: #ccc;
       z-index: -1;
-      top: 31%;
+      top: 40.5%;
       border-radius: 50%;
     }
     .product-thumbnail {
       width: 100%;
-      height: 178px;
+      height: 350px;
       display: block;
       background-position: center;
       background-size: contain;
@@ -680,27 +680,28 @@ export default {
     }
     .product-images {
       .el-upload-list--picture-card .el-upload-list__item {
-        width: 60px;
-        height: 60px;
+        width: 80px;
+        height: 80px;
       }
       .el-upload-list__item-thumbnail {
-        height: 60px;
-        width: 60px;
+        height: 80px;
+        width: 80px;
         background-position: center;
         background-size: cover;
       }
       .el-upload--picture-card {
-        width: 60px;
-        height: 60px;
-        line-height: 60px;
+        width: 80px;
+        height: 80px;
+        line-height: 80px;
         float: left;
-        margin-right: 5px;
+        margin-right: 15px;
         i {
           font-size: 16px;
         }
       }
       .el-upload-list__item {
         transition: none;
+        margin: 0 15px 15px 0;
       }
     }
     .product-size {
@@ -721,7 +722,7 @@ export default {
       padding-left: 0;
       li {
         .customer {
-          font-size: 18px;
+          font-size: 15px;
         }
         .content {
           font-size: 12px;

@@ -8,7 +8,7 @@
       </div>
       <div class="col-8">
         <div class="row">
-          <div class="col-6">
+          <div class="col-4">
             <div class="order-received font-14" v-loading="loading">
               <p>Orders Received</p>
               <div class="d-flex justify-content-between align-items-center mt-5">
@@ -32,7 +32,7 @@
               </div>
             </div>
           </div>
-          <div class="col-6">
+          <div class="col-4">
             <div class="revenue" v-loading="loading">
               <p>Revenue</p>
               <div class="d-flex justify-content-between align-items-center mt-5">
@@ -56,11 +56,41 @@
               </div>
             </div>
           </div>
+          <div class="col-4">
+            <div class="per-order" style="height: 100%">
+              <ul class="store-summary">
+                <li>
+                  <strong>Avg. order amount:</strong> <span>80.5$</span>
+                </li>
+                <li>
+                  <strong>Number of product views:</strong> <span>10</span>
+                </li>
+                <li>
+                  <strong>View from Google <br/>Shopping: </strong> <span>4</span>
+                </li>
+                <li>
+                  <strong>Products live in Google Shopping:</strong> <span>6</span>
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
 
         <div class="product-sale-chart mt-4">
           <product-sales-chart></product-sales-chart>
         </div>
+      </div>
+    </div>
+
+    <div class="mt-4 row">
+      <div class="col-4">
+        <products-added-to-cart></products-added-to-cart>
+      </div>
+      <div class="col-4">
+        <most-view-products></most-view-products>
+      </div>
+      <div class="col-4">
+        <storefront-view></storefront-view>
       </div>
     </div>
   </div>
@@ -70,10 +100,16 @@
 import SalePieChart from "@/components/business/dashboard/SalePieChart";
 import ProductSalesChart from "@/components/business/dashboard/ProductSalesChart";
 import axios from "axios";
+import MostViewProducts from "@/components/business/dashboard/MostViewProducts";
+import StorefrontView from "./StorefrontView";
+import ProductsAddedToCart from "./ProductsAddedToCart";
 
 export default {
   name: "Dashboard",
   components: {
+    ProductsAddedToCart,
+    StorefrontView,
+    MostViewProducts,
     SalePieChart,
     ProductSalesChart,
   },
@@ -163,7 +199,7 @@ export default {
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.12);
     border-radius: 10px;
   }
-  .order-received, .revenue {
+  .order-received, .revenue, .per-order {
     padding: 20px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.12);
     border-radius: 10px;
@@ -176,6 +212,21 @@ export default {
   }
   .color-red {
     color: red;
+  }
+  .store-summary {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 0;
+    li {
+      display: flex;
+      margin-bottom: 10px;
+      span {
+        margin-left: auto !important;
+      }
+    }
+    li:last-child {
+      margin-bottom: 0;
+    }
   }
 }
 </style>

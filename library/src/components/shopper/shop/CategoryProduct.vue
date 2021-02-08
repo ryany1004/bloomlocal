@@ -6,9 +6,9 @@
         :items="objs"
         :options="{
           responsive: [
-            { end: 576, size: 2 },
-            { start: 576, end: 768, size: 3 },
-            { size: 5 },
+            { end: 576, size: 1 },
+            { start: 576, end: 768, size: 2 },
+            { size: 4 },
           ],
         }">
         <template v-slot:default="{item}">

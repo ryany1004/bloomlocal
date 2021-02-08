@@ -7,7 +7,7 @@
     </a>
     <article>
       <h2 :title="product.title" class="mt-2"><a :href="`/business/product/${product.uuid}/update/`">{{product.title}}</a></h2>
-      <p>{{product.description}}</p>
+<!--      <p>{{product.description}}</p>-->
     </article>
     <footer class="d-flex justify-content-between align-items-center">
       <span>Price: ${{product.price}}</span>

@@ -1,8 +1,8 @@
 <template>
   <div>
     <a v-if="isLoggedIn" href="javascript:void(0)" @click="dialogVisible = true">
-      <i class="fa-heart" :class="{'fas': user.wishlist_products.indexOf(product.id) != -1,
-        'far': user.wishlist_products.indexOf(product.id) == -1}" style="font-size: 10px"></i>
+      <i class="fa-heart box-shadow" :class="{'fas': user.wishlist_products.indexOf(product.id) != -1,
+        'far': user.wishlist_products.indexOf(product.id) == -1}"></i>
     </a>
     <el-dialog
       title="Add or remove the product to your Collections"
@@ -134,5 +134,10 @@ export default {
 <style scoped>
 .fa-heart.fas {
   color: #ED6B5E;
+}
+.box-shadow {
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
 }
 </style>

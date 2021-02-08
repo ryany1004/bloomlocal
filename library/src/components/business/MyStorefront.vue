@@ -148,52 +148,5 @@ export default {
         flex: 0 0 20%;
       }
     }
-    .product-card {
-      box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.12);
-      border-radius: 10px;
-      padding: 6px;
-      background-color: #fff;
-      .card-image {
-        height: 153px;
-        width: 100%;
-        background-size: contain;
-        background-position: center;
-        background-repeat: no-repeat;
-        border: 1px solid #f8f8f8;
-        border-top-right-radius: 10px;
-        border-top-left-radius: 10px;
-        position: relative;
-        .select-product {
-          position: absolute;
-          right: 10px;
-          top: 10px;
-        }
-      }
-      h2 {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        a {
-          font-size: 14px;
-          color: #0C242E;
-        }
-      }
-      p {
-        font-size: 11px;
-        height: 43px;
-        line-height: 14px;
-        overflow: hidden;
-        display: -webkit-box;
-        -webkit-line-clamp: 3;
-        -webkit-box-orient: vertical;
-        margin-bottom: 0.5rem;
-      }
-      footer {
-        font-size: 11px;
-        a {
-          font-size: 11px;
-        }
-      }
-    }
   }
 </style>

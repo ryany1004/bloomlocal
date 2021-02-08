@@ -3,7 +3,7 @@
   <div v-else class="product-upload">
     <form>
       <div class="row">
-        <div class="col-md-4 col-12">
+        <div class="col-md-5 col-12">
           <el-upload
             class="product-uploader"
             action=""
@@ -43,9 +43,9 @@
             </el-upload>
             <p class="error" v-if="errs.images">Images are required</p>
           </div>
-          <button type="button" class="btn btn-primary btn-block mt-3 mb-4" @click="uploadProduct"><i class="fas fa-upload"></i> Submit Product</button>
+          <button type="button" class="btn btn-primary btn-block mt-3 mb-4 btn-lg white" @click="uploadProduct"><i class="fas fa-upload"></i> Submit Product</button>
         </div>
-        <div class="col-md-8 col-12">
+        <div class="col-md-7 col-12">
           <div class="form-row">
             <div class="form-group col-md-8">
               <label for="product_tile">Product Title</label>
@@ -443,10 +443,11 @@ export default {
   }
   .product-upload {
     .el-upload-list__item-thumbnail {
-      height: 60px;
-      width: 60px;
+      height: 80px;
+      width: 80px;
       background-position: center;
-      background-size: cover;
+      background-size: contain;
+      background-repeat: no-repeat;
     }
     .form-inline .form-control.input-w50 {
       width: 60px;
@@ -488,7 +489,7 @@ export default {
       color: #8c939d;
       width: 100%;
       height: 100%;
-      line-height: 178px;
+      line-height: 350px;
       justify-content: center;
       display: flex;
     }
@@ -498,12 +499,12 @@ export default {
       position: absolute;
       background-color: #ccc;
       z-index: -1;
-      top: 31%;
+      top: 40.5%;
       border-radius: 50%;
     }
     .product-thumbnail {
       width: 100%;
-      height: 178px;
+      height: 350px;
       display: block;
       background-position: center;
       background-size: contain;
@@ -511,22 +512,23 @@ export default {
     }
     .product-images {
       .el-upload-list--picture-card .el-upload-list__item {
-        width: 60px;
-        height: 60px;
+        width: 80px;
+        height: 80px;
       }
 
       .el-upload--picture-card {
-        width: 60px;
-        height: 60px;
-        line-height: 60px;
+        width: 80px;
+        height: 80px;
+        line-height: 80px;
         float: left;
-        margin-right: 5px;
+        margin-right: 15px;
         i {
           font-size: 16px;
         }
       }
       .el-upload-list__item {
         transition: none;
+        margin: 0 15px 15px 0;
       }
     }
     .form-inline > span {

@@ -1,7 +1,7 @@
 <template>
   <div v-loading.fullscreen="loading">
     <div  class="row product-cards" v-if="products.length > 0">
-      <div class="col-lg-2 col-md-3 col-6 mb-5" v-for="product in data_products" :key="product.id">
+      <div class="col-lg-3 col-md-4 col-6 mb-5" v-for="product in data_products" :key="product.id">
         <product-card :product="product" :media-url="mediaUrl"></product-card>
       </div>
     </div >

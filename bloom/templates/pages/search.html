@@ -4,7 +4,7 @@
 
 {% block content %}
   <div class="container">
-    <search-page :media-url="media_url" :query="query" :type="search_type"></search-page>
+    <search-page :media-url="media_url" :query="query" :type="search_type" :limit-distance="limit_distance"></search-page>
   </div>
 {% endblock %}
 
@@ -17,7 +17,8 @@
       return {
         media_url: "{{ MEDIA_URL }}",
         query: "{{ query }}",
-        search_type: "{{ search_type }}"
+        search_type: "{{ search_type }}",
+        limit_distance: {{ SEARCH_DISTANCE_IN_KM }}
       }
     },
   });

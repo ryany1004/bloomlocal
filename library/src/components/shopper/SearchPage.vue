@@ -5,8 +5,8 @@
       <div class="form-check col-6">
         <input class="form-check-input" type="checkbox" v-model="nearest_by_me"
                id="defaultCheck1" :checked="nearest_by_me" @change="init_search_nearest()">
-        <label class="form-check-label" for="defaultCheck1">
-          Nearest by me
+        <label class="form-check-label font-14" for="defaultCheck1">
+          Nearest by me (within {{ limitDistance }}km from your current location)
         </label>
       </div>
     </div>
@@ -58,6 +58,10 @@ export default {
     query: {
       type: String,
       default: ""
+    },
+    limitDistance: {
+      type: Number,
+      default: 20
     }
   },
   data: function () {

@@ -2,7 +2,7 @@
   <div v-loading.fullscreen="loading" class="product-details" >
     <div v-if="product.id">
       <div class="row">
-        <div class="col-md-4 col-12">
+        <div class="col-md-5 col-12">
           <div>
             <div class="product-thumbnail" :style="{backgroundImage: `url('${mediaUrl}${thumbnail}')`}">
             </div>
@@ -18,38 +18,37 @@
             </div>
           </div>
         </div>
-        <div class="col-md-8 col-12">
+        <div class="col-md-7 col-12">
           <div>
             <div class="form-group mb-4">
-              <h3 class="text-1 color-1"><span>{{product.title}}</span></h3>
+              <h3 class="text-1 color-1 bolder"><span>{{product.title}}</span></h3>
             </div>
             <div class="mb-2">
               <el-rate v-model="product.rating" show-score disabled text-color="#000" score-template="({value})"></el-rate>
             </div>
             <div class="form-group mb-4">
-              <h4 class="text-1 color-1"><span>${{product_price}}</span></h4>
+              <h4 class="text-1 color-1 bolder"><span>${{product_price}}</span></h4>
             </div>
             <div class="form-group">
               <h5 class="text-2">Product Description</h5>
-              <div style="white-space: pre-line;">
-                {{product.description}}
+              <div class=" text-2" style="white-space: pre-line;" v-readMore:300="product.description">
               </div>
             </div>
             <div class="form-group" v-if="active_colors.length > 0">
               <div class="d-flex align-items-center">
-                <label class="mr-3 mb-0">Color:</label>
+                <label class="mr-3 mb-0 text-2">Color:</label>
                 <span class="d-flex align-items-center">
                   <span class="c-circle" :class="{active: color == active_color}" :style="{backgroundColor: color}" @click="active_color = color" v-show="active_colors.indexOf(color) != -1" v-for="color in colors" :key="color"></span>
                 </span>
               </div>
             </div>
             <div class="form-group d-flex align-items-center">
-              <label class="mr-2 mb-0">Categories:</label>
-              <div><span>{{product.category_names.join(", ")}}</span></div>
+              <label class="mr-2 mb-0 text-2">Categories:</label>
+              <div class="text-2"><span>{{product.category_names.join(", ")}}</span></div>
             </div>
             <div class="form-group" v-if="active_sizes.length > 0">
               <div class="d-flex align-items-center">
-                <label class="mr-3 mb-0">Size:</label>
+                <label class="mr-3 mb-0 text-2">Size:</label>
                 <span class="d-flex align-items-center">
                   <span class="badge mr-1 product-size white"
                         @click="active_size = size" v-show="active_sizes.indexOf(size) != -1" v-for="size in sizes"
@@ -306,7 +305,7 @@ export default {
 
     .product-thumbnail {
       width: 100%;
-      height: 200px;
+      height: 350px;
       display: block;
       background-position: center;
       background-size: contain;
@@ -319,29 +318,31 @@ export default {
     }
     .product-images {
       .el-upload-list--picture-card .el-upload-list__item {
-        width: 64px;
-        height: 64px;
+        width: 80px;
+        height: 80px;
         border: 1px solid #f9f9f9;
         background-color: transparent;
       }
       .el-upload-list__item-thumbnail {
-        height: 60px;
-        width: 60px;
+        height: 80px;
+        width: 80px;
         background-position: center;
         background-size: cover;
+        background-repeat: no-repeat;
       }
       .el-upload--picture-card {
-        width: 60px;
-        height: 60px;
-        line-height: 60px;
+        width: 80px;
+        height: 80px;
+        line-height: 80px;
         float: left;
-        margin-right: 5px;
+        margin-right: 15px;
         i {
           font-size: 16px;
         }
       }
       .el-upload-list__item {
         transition: none;
+        margin: 0 15px 15px 0;
       }
     }
     .product-size {
@@ -361,7 +362,7 @@ export default {
       padding-left: 0;
       li {
         .customer {
-          font-size: 18px;
+          font-size: 14px;
         }
         .content {
           font-size: 12px;

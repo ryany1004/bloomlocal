@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Shop Information{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <div class="mt-4 bg-white">
+      <div class="row">
+        <div class="col-md-3">
+          {% include 'users/navbar.html' %}
+        </div>
+        <div class="col-md-9">
+          <form action="." method="post" enctype="multipart/form-data" @submit="handleSubmit()"> {% csrf_token %}
+            <div class="row py-4 pr-3">
+              <div class="col-md-4 col-12">
+                <div>
+                  <div class="shop-thumbnail" style="background-image: url('{{ shop.shop_logo }}')" :style="{backgroundImage: `url('${shop_logo}')`}" @click="handleClick()">
+                    <input type="file" name="logo" ref="logo" accept="image/png,image/jpeg" class="hidden" @change="handleFileChange">
+                  </div>
+                  <button :disabled="loading" class="btn btn-primary btn-block white mt-2">Save</button>
+                </div>
+              </div>
+              <div class="col-md-8 col-12">
+                <div class="form-row">
+                  <div class="form-group col-md-6">
+                    <label for="shop_name" class="col-form-label font-14">Shop name:</label>
+                    <input type="text" class="form-control font-14" id="shop_name" name="name" value="{{ form.name.value }}" required maxlength="200">
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group col-md-12">
+                    <label for="shop_name" class="col-form-label font-14">Business Address:</label>
+                    <input type="text" class="form-control font-14" id="shop_name" required maxlength="250"
+                           name="business_address" value="{{ form.business_address.value }}">
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group col-md-8">
+                    <label for="shop_name" class="col-form-label font-14">Business Phone:</label>
+                    <international-phone-input v-model="business_phone"></international-phone-input>
+                    <input type="hidden" :value="business_phone" name="business_phone">
+                  </div>
+                  <div class="form-group col-md-4">
+                    <label for="shop_name" class="col-form-label font-14">Store Type:</label>
+                    <select class="form-control font-14" name="store_type" style="height: 40px">
+                      {% for value, text in store_types %}
+                      <option value="{{ value }}" {% if value == shop.store_type %}selected{% endif %}>{{ text }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}
+
+{% block main_vue %}
+  <script>
+  let main = new Vue({
+    el: '#app',
+    delimiters: ["[{", "}]"],
+    data: function () {
+      return {
+        media_url: "{{ MEDIA_URL }}",
+        loading: false,
+        business_phone: "{{ form.business_phone.value }}",
+        shop_logo: "{{ shop.shop_logo }}"
+      }
+    },
+    methods: {
+      onUpdate(payload) {
+        this.shipping_address.phone_number = payload.formatInternational || '';
+      },
+      handleSubmit() {
+        this.loading = true;
+      },
+      handleClick() {
+        this.$refs.logo.click()
+      },
+      handleFileChange(event) {
+        let file = event.target.files[0]
+        if (['image/jpeg', "image/png", "image/webp"].indexOf(file.type) == -1) {
+          alert("Image must be JPG, PNG format!");
+          return;
+        }
+        if (file.size / 1024 / 1024 > 2) {
+          alert("Image size can not exceed 2MB!");
+          return;
+        }
+        let reader = new FileReader(), that = this;
+        reader.onload = function(event) {
+          that.shop_logo = event.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+  });
+  </script>
+{% endblock %}

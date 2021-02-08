@@ -17,6 +17,8 @@ from django.utils.translation import gettext_lazy as _
 from django.views.generic import DetailView, RedirectView, UpdateView
 from django.views.generic.base import View
 
+from bloom.forms import ShopForm
+from bloom.shop.models import Shop
 from bloom.users.forms import ShopifyConfigForm
 from bloom.users.models import ShopifyConfig
 from bloom.users.shopify import create_session, create_permission_url
@@ -188,3 +190,20 @@ class ShopifyCallbackView(View):
         return redirect(reverse('users:shopify-integration'))
 
 
+class ShopInformation(LoginRequiredMixin, UpdateView):
+    model = Shop
+    form_class = ShopForm
+    template_name = "users/shop.html"
+    context_object_name = "shop"
+
+    def get_object(self, queryset=None):
+        return self.request.user.get_shop()
+
+    def get_context_data(self, **kwargs):
+        context = super(ShopInformation, self).get_context_data(**kwargs)
+        context["page"] = 'shop'
+        context["store_types"] = Shop.STORE_TYPES
+        return context
+
+    def get_success_url(self) -> str:
+        return reverse("users:shop")

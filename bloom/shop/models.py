@@ -2,6 +2,7 @@ import traceback
 
 import uuid as uuid
 from autoslug import AutoSlugField
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.gis.db.models.fields import PointField
 from django.contrib.gis.geos.point import Point
@@ -78,6 +79,11 @@ class Shop(BaseModelMixin, models.Model):
         if self.business_address:
             self.update_location_by_address()
         super(Shop, self).save(**kwargs)
+
+    def shop_logo(self):
+        if self.logo:
+            return self.logo.url
+        return "{}{}".format(settings.STATIC_URL, "images/sample-image.jpg")
 
 
 class Category(models.Model):

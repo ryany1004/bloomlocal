@@ -12,8 +12,10 @@ import VueCookies from 'vue-cookies'
 import axios from "axios";
 import VueAxios from "vue-axios";
 import moment from "vue-moment";
-import { SidebarPlugin } from 'bootstrap-vue'
-import vueCountryRegionSelect from 'vue-country-region-select'
+import { SidebarPlugin } from 'bootstrap-vue';
+import vueCountryRegionSelect from 'vue-country-region-select';
+import ReadMore from 'vue-read-more';
+
 
 import 'vue-phone-number-input/dist/vue-phone-number-input.css';
 import 'bootstrap-vue/dist/bootstrap-vue.css'
@@ -26,6 +28,7 @@ Vue.use(VueAxios, axios);
 Vue.use(moment);
 Vue.use(SidebarPlugin);
 Vue.use(vueCountryRegionSelect)
+Vue.use(ReadMore);
 
 // import App from './App.vue'
 import './store';
@@ -76,6 +79,7 @@ import ShopperInfo from "@/components/business/orders/ShopperInfo";
 import Dashboard from "@/components/business/dashboard/Dashboard";
 import ProductsUpload from "@/components/business/ProductsUpload";
 import ProductsFileImport from "@/components/business/ProductsFileImport";
+import InternationalPhoneInput from "@/components/common/InternationalPhoneInput";
 
 Vue.config.productionTip = false
 
@@ -132,6 +136,7 @@ const Components = {
     Dashboard,
     ProductsUpload,
     ProductsFileImport,
+    InternationalPhoneInput
 }
 Object.keys(Components).forEach(name => {
     // console.info('name: '+ name);

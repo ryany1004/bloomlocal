@@ -1,5 +1,5 @@
 <template>
-  <div class="product-upload">
+  <div class="s-product-upload">
     <form>
       <div class="row">
         <div class="col-md-4 col-12">
@@ -320,7 +320,7 @@ export default {
     pointer-events: none;
     opacity: 0.5;
   }
-  .product-upload {
+  .s-product-upload {
     .el-upload-list__item-thumbnail {
       height: 60px;
       width: 60px;

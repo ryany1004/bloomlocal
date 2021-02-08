@@ -32,7 +32,7 @@
         <el-button type="primary" size="mini" @click="add_to_cart()">confirm</el-button>
       </div>
     </div>
-    <a slot="reference" href="javascript:void(0)" @click="handleClick()" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Add to cart</a>
+    <a slot="reference" href="javascript:void(0)" @click="handleClick()" class="btn btn-primary btn-sm white"><i class="fas fa-plus"></i> Add to cart</a>
   </el-popover>
 </template>
 

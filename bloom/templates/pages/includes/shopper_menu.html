@@ -36,11 +36,11 @@
           <ol class="breadcrumb" style="background-color: transparent;margin-bottom: 0;padding-left: 0">
             <li class="breadcrumb-item"><a href="/" class="font-14">Category</a></li>
             {% if page == 'shop_details' %}
-            <li class="breadcrumb-item active font-14" aria-current="page">{{ shop.name}}</li>
+            <li class="breadcrumb-item active font-14 d-flex align-items-center" aria-current="page">{{ shop.name}}</li>
             {% endif %}
             {% if page == 'product' %}
               <li class="breadcrumb-item"><a class="font-14" href="{% url 'shop:shop-details' product.shop.slug %}">{{ product.shop.name }}</a></li>
-              <li class="breadcrumb-item active font-14" aria-current="page">{{ product.title }}</li>
+              <li class="breadcrumb-item active d-flex align-items-center font-14" aria-current="page">{{ product.title }}</li>
             {% endif %}
           </ol>
       </nav>

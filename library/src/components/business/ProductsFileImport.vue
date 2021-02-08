@@ -6,7 +6,7 @@
         <div class="d-flex justify-content-center align-items-start file-import">
           <div class="d-flex flex-column justify-content-center align-items-center">
             <el-upload
-              class="csv-import"
+              class="csv-import d-flex"
               drag
               :show-file-list="false"
               :http-request="handleCSVUpload"
@@ -14,7 +14,7 @@
               <i class="el-icon-upload"></i>
               <div class="el-upload__text">Upload CSV file</div>
             </el-upload>
-            <a href="/static/files/product_template.csv" class="font-12 mt-2" download><i class="fas fa-file-csv"></i> Sample CSV template</a>
+            <a href="/static/files/product_template.csv" class="font-12 mt-3" download><i class="fas fa-file-csv"></i> Sample CSV template</a>
           </div>
           <div class="d-flex flex-column justify-content-center align-items-center ml-3" @click="dialogURLVisible = true">
             <div class="google-sheet d-flex flex-column justify-content-center align-items-center">
@@ -22,7 +22,7 @@
               <p class="gs-text">From Google Spreadsheet</p>
             </div>
             <a href="https://docs.google.com/spreadsheets/d/1zbYx3OjDVaJMxJlFnUb80ClhAU7oUV_Z_xqG2IWplys/edit?usp=sharing"
-               target="_blank" class="font-12" style="margin-top: 15px"><i class="fas fa-file-spreadsheet"></i> Google Spreadsheet template</a>
+               target="_blank" class="font-12 mt-3"><i class="fas fa-file-spreadsheet"></i> Google Spreadsheet template</a>
           </div>
         </div>
       </div>
@@ -196,7 +196,7 @@ export default {
       this.dialogVisible = true;
     },
     beforeUpload: function (file) {
-      const isCSV = ['application/vnd.ms-excel'].indexOf(file.type) != -1;
+      const isCSV = file.name.toLowerCase().endsWith(".csv");
       const isLt1M = file.size / 1024 / 1024 <= 1;
 
       if (!isCSV) {
