@@ -1,6 +1,6 @@
 <template>
   <div v-loading="loading" style="padding: 20px">
-    <line-chart :chart-data="chartData" :options="options" style="height: 270px"></line-chart>
+    <line-chart :chart-data="chartData" :options="options" style="height: 215px"></line-chart>
   </div>
 </template>
 
@@ -18,7 +18,10 @@ export default {
       chartData: null,
       options: {
         maintainAspectRatio:false,
-        responsive: true
+        responsive: true,
+        legend: {
+          display: false
+        }
       },
       loading: false
     }

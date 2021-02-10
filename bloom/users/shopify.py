@@ -11,7 +11,7 @@ def create_session(shop_url, api_key, secret_key):
 
 
 def create_permission_url(shop, state, redirect_uri):
-    session = create_session(shop.shop_url, shop.api_key, shop.secret_key)
+    session = create_session(shop.shop_url, settings.SHOPIFY_APP_API_KEY, settings.SHOPIFY_APP_SECRET_KEY)
     return session.create_permission_url(settings.SHOPIFY_API_SCOPE, redirect_uri, state)
 
 

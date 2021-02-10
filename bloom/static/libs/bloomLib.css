@@ -5001,7 +5001,7 @@ input[type=color].form-control:disabled {
 }
 .product-details .product-thumbnail {
   width: 100%;
-  height: 350px;
+  height: 571px;
   display: block;
   background-position: center;
   background-size: contain;
@@ -5019,7 +5019,7 @@ input[type=color].form-control:disabled {
   height: 80px;
   width: 80px;
   background-position: center;
-  background-size: cover;
+  background-size: contain;
   background-repeat: no-repeat;
 }
 .product-details .product-images .el-upload--picture-card {
@@ -5591,15 +5591,131 @@ input[type=color].form-control:disabled {
       border-bottom: none;
 }
 
+.active-month[data-v-37660aa3] {
+  font-size: 16px;
+  color: #4FC5E9;
+}
+.month-normal[data-v-37660aa3] {
+  font-size: 12px;
+  color: #8D9AA9;
+}
+.titles[data-v-37660aa3] {
+  list-style: none;
+  padding-left: 0;
+  margin-top: 50px;
+}
+.titles li[data-v-37660aa3] {
+    margin-bottom: 15px;
+}
+.titles .circle-chart[data-v-37660aa3] {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 10px;
+}
+
+
+.top-products[data-v-23502cfc] {
+  list-style: none;
+}
+
+
+.top-products[data-v-20e36bbe] {
+  list-style: none;
+}
+
+
+.top-products[data-v-af573eda] {
+  list-style: none;
+}
+
+.report-box[data-v-358b69e8] {
+  background: #FFFFFF;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.12);
+}
+.report-box .popular-products[data-v-358b69e8] {
+    list-style: none;
+    padding-left: 0;
+}
+.report-box .popular-products li[data-v-358b69e8] {
+      margin-bottom: 35px;
+      padding-right: 20px;
+}
+.report-box .popular-products li img[data-v-358b69e8] {
+        width: 56px;
+        height: 56px;
+}
+.report-box .popular-products li[data-v-358b69e8]:last-child {
+      margin-bottom: 0;
+}
+
+.store-summary[data-v-5fa6c4d8] {
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 0;
+}
+.store-summary li[data-v-5fa6c4d8] {
+    display: flex;
+    margin-bottom: 10px;
+}
+.store-summary li span[data-v-5fa6c4d8] {
+      margin-left: auto !important;
+}
+.store-summary li[data-v-5fa6c4d8]:last-child {
+    margin-bottom: 0;
+}
+
 .dashboard[data-v-500cb20c] {
   margin-bottom: 20px;
+}
+.dashboard .slide-section[data-v-500cb20c] {
+    background-color: #6C5DD3;
+    height: 300px;
+    width: 100%;
+    border-radius: 24px;
+    z-index: 1;
+}
+.dashboard .slide-section .close-btn[data-v-500cb20c] {
+      right: 10px;
+      top: 10px;
+}
+@media (max-width: 414px) {
+.dashboard .slide-section[data-v-500cb20c] {
+      height: auto !important;
+}
+.dashboard .c-1[data-v-500cb20c] {
+      order: 1;
+      margin: 15px 0;
+}
+.dashboard .c-2[data-v-500cb20c] {
+      order: 2;
+      margin: 15px 0;
+}
+}
+.dashboard .report-box2[data-v-500cb20c] {
+    border-radius: 24px;
+    padding: 5px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.12);
+}
+.dashboard .bg-bottom[data-v-500cb20c] {
+    position: absolute;
+    left: 2%;
+    right: 2%;
+    top: 4.9%;
+    bottom: -3.18%;
+    background: #CFC8FF;
+    border-radius: 24px;
+    z-index: -1;
 }
 .dashboard .pie-chart[data-v-500cb20c] {
     min-height: 50px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.12);
     border-radius: 10px;
 }
-.dashboard .order-received[data-v-500cb20c], .dashboard .revenue[data-v-500cb20c], .dashboard .per-order[data-v-500cb20c] {
+.dashboard .order-received[data-v-500cb20c], .dashboard .revenue[data-v-500cb20c], .dashboard .per-order[data-v-500cb20c], .dashboard .charts[data-v-500cb20c] {
     padding: 20px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.12);
     border-radius: 10px;
@@ -5612,21 +5728,6 @@ input[type=color].form-control:disabled {
 }
 .dashboard .color-red[data-v-500cb20c] {
     color: red;
-}
-.dashboard .store-summary[data-v-500cb20c] {
-    list-style: none;
-    padding-left: 0;
-    margin-bottom: 0;
-}
-.dashboard .store-summary li[data-v-500cb20c] {
-      display: flex;
-      margin-bottom: 10px;
-}
-.dashboard .store-summary li span[data-v-500cb20c] {
-        margin-left: auto !important;
-}
-.dashboard .store-summary li[data-v-500cb20c]:last-child {
-      margin-bottom: 0;
 }
 
 .product-import .file-import .csv-import .el-upload-dragger {

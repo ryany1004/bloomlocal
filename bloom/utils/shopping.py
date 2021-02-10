@@ -153,7 +153,7 @@ def delete_products_to_gmc(products, domain, service, merchant_id):
 
 def save_product_data(p, data):
     p.title = data['title']
-    p.description = data['description']
+    p.description = data['description'].strip()
     p.price = data['price']
     p.stock = data['stock']
     p.status = data['status']
@@ -192,7 +192,7 @@ def save_product_data(p, data):
 
 def get_variant(row, enable_color, enable_size):
     variant = None
-    price = float(row[4]) if is_isdigit(row[4]) else 0
+    price = float(row[4]) if isdigit(row[4]) else 0
     if row[2] and enable_color and row[3] and enable_size:
         variant = {'color': row[2], 'size': row[3], 'price': price}
     elif row[2] and enable_color:
@@ -202,7 +202,7 @@ def get_variant(row, enable_color, enable_size):
     return variant
 
 
-def is_isdigit(s):
+def isdigit(s):
     """ Returns True is string is a number. """
     return s.replace('.', '', 1).isdigit()
 
@@ -231,8 +231,8 @@ def convert_to_product_data(rows):
             images = [{'src': row[5]}] if row[5] else []
             product = {
                 'title': row[0],
-                'description': row[1],
-                'price': float(row[4]) if is_isdigit(row[4]) else 0,
+                'description': row[1].strip(),
+                'price': float(row[4]) if isdigit(row[4]) else 0,
                 'enable_color': enable_color,
                 'enable_size': enable_size,
                 'status': 0 if row[12] == 'active' else 1,
@@ -241,11 +241,11 @@ def convert_to_product_data(rows):
                 'images': images,
                 'categories': [],
                 'stock': 0,
-                'length': float(row[6]) if is_isdigit(row[6]) else None,
-                'width': float(row[7]) if is_isdigit(row[7]) else None,
-                'height': float(row[8]) if is_isdigit(row[8]) else None,
+                'length': float(row[6]) if isdigit(row[6]) else None,
+                'width': float(row[7]) if isdigit(row[7]) else None,
+                'height': float(row[8]) if isdigit(row[8]) else None,
                 'dimension_unit': row[9] if row[9] else '',
-                'weight': float(row[10]) if is_isdigit(row[10]) else None,
+                'weight': float(row[10]) if isdigit(row[10]) else None,
                 'weight_unit': row[11] if row[11] else '',
             }
         else:

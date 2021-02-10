@@ -6,7 +6,7 @@
   {% include "pages/includes/shopper_menu.html" %}
 
   <div class="container">
-    <shop-details :media-url="media_url" :shop-id="shopId" :shop-name="shop_name"></shop-details>
+    <shop-details :media-url="media_url" :shop-id="shopId" :shop-name="shop_name" :uuid="uuid"></shop-details>
   </div>
 {% endblock %}
 
@@ -19,7 +19,8 @@
       return {
         media_url: "{{ MEDIA_URL }}",
         shop_id: "{{ shop.id }}",
-        shop_name: "{{ shop.name }}"
+        shop_name: "{{ shop.name }}",
+        uuid: "{{ shop.uuid }}"
       }
     },
     computed: {

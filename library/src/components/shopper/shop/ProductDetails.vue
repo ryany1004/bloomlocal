@@ -2,9 +2,10 @@
   <div v-loading.fullscreen="loading" class="product-details" >
     <div v-if="product.id">
       <div class="row">
-        <div class="col-md-5 col-12">
+        <div class="col-md-6 col-12">
           <div>
-            <div class="product-thumbnail" :style="{backgroundImage: `url('${mediaUrl}${thumbnail}')`}">
+            <div class=" ml-3">
+              <img :src="`${mediaUrl}${thumbnail}`" style="width: 100%">
             </div>
 
             <div class="product-images mt-4">
@@ -18,7 +19,7 @@
             </div>
           </div>
         </div>
-        <div class="col-md-7 col-12">
+        <div class="col-md-6 col-12">
           <div>
             <div class="form-group mb-4">
               <h3 class="text-1 color-1 bolder"><span>{{product.title}}</span></h3>
@@ -116,6 +117,10 @@ export default {
     },
     productId: {
       required: true
+    },
+    uuid: {
+      type: String,
+      required: true
     }
   },
   components: {
@@ -145,6 +150,8 @@ export default {
     this.$store.dispatch('get_colors');
     this.$store.dispatch('get_sizes');
     this.$store.dispatch('get_categories');
+
+    axios.post(`/api/analytics/product/${this.uuid}/`, {'channel': 'website'})
   },
   computed: {
     ...mapState(
@@ -305,7 +312,7 @@ export default {
 
     .product-thumbnail {
       width: 100%;
-      height: 350px;
+      height: 571px;
       display: block;
       background-position: center;
       background-size: contain;
@@ -327,7 +334,7 @@ export default {
         height: 80px;
         width: 80px;
         background-position: center;
-        background-size: cover;
+        background-size: contain;
         background-repeat: no-repeat;
       }
       .el-upload--picture-card {

@@ -60,6 +60,12 @@ class ProductModelSerializer(ProductModelSimpleSerializer):
     def get_category_names(self, obj):
         return [c.name for c in obj.categories.all()]
 
+    def update(self, instance, validated_data):
+        if 'description' in validated_data:
+            validated_data['description'] = validated_data['description'].strip()
+            print (validated_data['description'])
+        return super(ProductModelSerializer, self).update(instance, validated_data)
+
 
 class ProductSearchSerializer(ProductModelSerializer):
     distance = serializers.SerializerMethodField()
@@ -104,7 +110,7 @@ class ProductSerializer(serializers.Serializer):
         p.title = validated_data['title']
         p.price = validated_data['price']
         p.thumbnail = validated_data['thumbnail']
-        p.description = validated_data['description']
+        p.description = validated_data['description'].strip()
         p.length = validated_data['length']
         p.width = validated_data['width']
         p.height = validated_data['height']

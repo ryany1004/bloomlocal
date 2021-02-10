@@ -473,6 +473,9 @@ export default {
         that.errs = {}
         that.$set(that.saving, field, false);
         that.edit[field] = false;
+        // eslint-disable-next-line no-debugger
+        debugger
+        that.product.description = res.data.description
         if (field == 'categories') {
           that.product.category_names = res.data.category_names;
         }

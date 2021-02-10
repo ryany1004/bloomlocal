@@ -26,7 +26,7 @@
     <div v-if="type == 'all' || type == 'product'">
       <h3 class="group-title">Products:</h3>
       <div  class="row product-cards" v-if="products.length > 0">
-        <div class="col-lg-2 col-md-3 col-6 mb-5" v-for="product in data_products" :key="product.id">
+        <div class="col-lg-3 col-md-4 col-6 mb-5" v-for="product in data_products" :key="product.id">
           <business-product-card v-if="user.role_type == '1'" :product="product" :media-url="mediaUrl"></business-product-card>
           <product-card v-else :product="product" :media-url="mediaUrl"></product-card>
         </div>

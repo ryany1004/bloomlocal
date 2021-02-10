@@ -8,7 +8,7 @@ from django.contrib.auth.forms import UsernameField
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
-from bloom.users.models import ShopifyConfig
+from bloom.users.models import ShopifyApp
 
 User = get_user_model()
 
@@ -72,20 +72,7 @@ class VendorSignUpForm(forms.Form):
     store_type = forms.ChoiceField(choices=STORE_TYPES)
 
 
-class ShopifyConfigForm(forms.ModelForm):
+class ShopifyAppForm(forms.ModelForm):
     class Meta:
-        model = ShopifyConfig
-        fields = ['shop_url', 'api_key', 'secret_key']
-
-    def clean(self):
-        shop_url = self.cleaned_data['shop_url']
-        secret_key = self.cleaned_data['secret_key']
-        session = shopify.Session(shop_url, settings.SHOPIFY_API_VERSION, secret_key)
-        shopify.ShopifyResource.activate_session(session)
-        try:
-            products = shopify.Product.find(limit=10)
-        except Exception as e:
-            raise forms.ValidationError("Unable to verify your key. Please check it again.")
-        finally:
-            shopify.ShopifyResource.clear_session()
-        return self.cleaned_data
+        model = ShopifyApp
+        fields = ['shop_url']

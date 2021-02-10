@@ -83,6 +83,7 @@ LOCAL_APPS = [
     # Your stuff: custom apps go here
     'bloom.shop.apps.ShopConfig',
     'bloom.order.apps.OrderConfig',
+    'bloom.analytics.apps.AnalyticsConfig',
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -385,3 +386,6 @@ SPREADSHEET_CREDENTIALS = env("SPREADSHEET_CREDENTIALS")
 
 SHIP_STATION_KEY = env("SHIP_STATION_KEY")
 SHIP_STATION_SECRET_KEY = env("SHIP_STATION_SECRET_KEY")
+
+SHOPIFY_APP_API_KEY = env("SHOPIFY_APP_API_KEY")
+SHOPIFY_APP_SECRET_KEY = env("SHOPIFY_APP_SECRET_KEY")

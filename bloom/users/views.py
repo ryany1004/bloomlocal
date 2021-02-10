@@ -19,8 +19,8 @@ from django.views.generic.base import View
 
 from bloom.forms import ShopForm
 from bloom.shop.models import Shop
-from bloom.users.forms import ShopifyConfigForm
-from bloom.users.models import ShopifyConfig
+from bloom.users.forms import ShopifyAppForm
+from bloom.users.models import ShopifyApp
 from bloom.users.shopify import create_session, create_permission_url
 
 User = get_user_model()
@@ -122,9 +122,9 @@ class StripeSettingView(LoginRequiredMixin, View):
 
 
 class ShopifySettingView(LoginRequiredMixin, UpdateView):
-    model = ShopifyConfig
+    model = ShopifyApp
     template_name = 'users/connect_shopify.html'
-    form_class = ShopifyConfigForm
+    form_class = ShopifyAppForm
     context_object_name = 'shopify'
 
     def get_object(self, queryset=None):
@@ -136,21 +136,22 @@ class ShopifySettingView(LoginRequiredMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super(ShopifySettingView, self).get_context_data(**kwargs)
         context["page"] = 'shopify'
-        context['redirect_url'] = self.request.build_absolute_uri(reverse("users:shopify-callback"))
         return context
 
-    def form_valid(self, form):
-        form.save()
-        messages.info(self.request, "Your key is verified.")
-        return redirect(self.get_success_url())
+    def get_initial(self):
+        initial = super(ShopifySettingView, self).get_initial()
+        if 'shop' in self.request.GET:
+            initial['shop_url'] = "https://{}".format(self.request.GET['shop'])
 
-    # def form_valid(self, form):
-    #     obj = form.save()
-    #     redirect_uri = self.request.build_absolute_uri(reverse('users:shopify-callback'))
-    #     state = binascii.b2a_hex(os.urandom(15)).decode("utf-8")
-    #     self.request.session['shopify_oauth_state_param'] = state
-    #     url = create_permission_url(obj, state=state, redirect_uri=redirect_uri)
-    #     return redirect(url)
+        return initial
+
+    def form_valid(self, form):
+        obj = form.save()
+        redirect_uri = self.request.build_absolute_uri(reverse('users:shopify-callback'))
+        state = binascii.b2a_hex(os.urandom(15)).decode("utf-8")
+        self.request.session['shopify_oauth_state_param'] = state
+        url = create_permission_url(obj, state=state, redirect_uri=redirect_uri)
+        return redirect(url)
 
 
 class ShopifyCallbackView(View):
@@ -162,8 +163,7 @@ class ShopifyCallbackView(View):
             messages.error(request, 'Anti-forgery state token does not match the initial request.')
             return redirect(reverse('users:shopify-integration'))
         else:
-            # request.session.pop('shopify_oauth_state_param', None)
-            pass
+            request.session.pop('shopify_oauth_state_param', None)
 
         myhmac = params.pop('hmac')
 
@@ -171,17 +171,19 @@ class ShopifyCallbackView(View):
             '%s=%s' % (key, value)
             for key, value in sorted(params.items())
         ])
-        h = hmac.new(config.secret_key.encode('utf-8'), line.encode('utf-8'), hashlib.sha256)
+        h = hmac.new(settings.SHOPIFY_APP_SECRET_KEY.encode('utf-8'), line.encode('utf-8'), hashlib.sha256)
         if not hmac.compare_digest(h.hexdigest(), myhmac):
             messages.error(request, "Could not verify a secure login")
             return redirect(reverse('users:shopify-integration'))
-        session = create_session(config.shop_url, config.api_key, config.secret_key)
+        session = create_session(config.shop_url, settings.SHOPIFY_APP_API_KEY, settings.SHOPIFY_APP_SECRET_KEY)
         try:
             access_token = session.request_token(request.GET)
             config.access_token = access_token
+            config.is_verified = True
             config.save()
         except Exception:
             config.access_token = None
+            config.is_verified = False
             config.save()
             messages.error(request, "Could not verify a secure login")
             return redirect(reverse('users:shopify-integration'))

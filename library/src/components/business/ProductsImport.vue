@@ -11,10 +11,13 @@
       </div>
     </div>
 
-    <div class="row product-cards">
+    <div class="row product-cards" v-if="products.length > 0">
       <div class="col-lg-2 col-md-3 col-6 mb-5" v-for="product in products" :key="product.id">
         <shopify-product-card v-loading="product.loading" element-loading-background="rgba(0, 0, 0, 0.8)" :product="product" :handle-click="handleClick"></shopify-product-card>
       </div>
+    </div>
+    <div v-else>
+      {{ loading ? "Loading...": "No data" }}
     </div>
 
     <el-dialog title="Preview imported products to Shopify" :close-on-click-modal="false" :visible.sync="visible" width="95%">

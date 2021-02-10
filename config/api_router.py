@@ -6,6 +6,7 @@ from rest_framework.routers import DefaultRouter, SimpleRouter
 from bloom.users.api import views
 from bloom.shop.api import views as shop_views
 from bloom.order.api import views as order_views
+from bloom.analytics.api import views as analytics_apis
 
 if settings.DEBUG:
     router = DefaultRouter()
@@ -55,11 +56,26 @@ urlpatterns += [
 # Business API
 urlpatterns += [
     path('business/my-orders/', order_views.BusinessMyOrdersAPI.as_view(), name="my-orders"),
-    path('shopify/retrieve-products/', order_views.ShopifyRetrieveProductAPI.as_view(), name="shopify-retrieve-product"),
+    path('shopify/retrieve-products/', order_views.ShopifyRetrieveProductAPI.as_view(),
+         name="shopify-retrieve-product"),
     path('shopify/import-product/', shop_views.ImportProductStorefront.as_view(), name="shopify-import-product"),
     path('file/import-product/', shop_views.FileImportProductStorefront.as_view(), name="file-import-product"),
-    path('spreadsheet/authorization-url/', shop_views.SpreadsheetPermissionURL.as_view(), name="spreadsheet-permission-url"),
+    path('spreadsheet/authorization-url/', shop_views.SpreadsheetPermissionURL.as_view(),
+         name="spreadsheet-permission-url"),
     path('statistic/order-revenue/by-month/', order_views.OrderRevenueMonthAPI.as_view(), name="order-revenue-month"),
     path('statistic/order-revenue/by-year/', order_views.OrderRevenueYearAPI.as_view(), name="order-revenue-year"),
+]
 
+# Analytics API
+urlpatterns += [
+    path('analytics/storefront/<uuid>/', analytics_apis.StorefrontViewAPI.as_view(), name="track-storefront-view"),
+    path('analytics/product/<uuid>/', analytics_apis.ProductViewAPI.as_view(), name="track-product-view"),
+    path('analytics/product-view/', analytics_apis.ProductViewData.as_view(), name="product-view-report"),
+    path('analytics/storefront-view/', analytics_apis.StorefrontViewData.as_view(), name="storefront-view-report"),
+    path('analytics/product-added-to-cart/', analytics_apis.ProductAddedToCartData.as_view(), name="product-added-to-cart-report"),
+    path('analytics/shop-revenue/', analytics_apis.ShopRevenueData.as_view(), name="shop-revenue-report"),
+    path('analytics/order/', analytics_apis.ShopOrderData.as_view(), name="shop-order-report"),
+    path('analytics/popular-products-sale-and-view/', analytics_apis.ShopPopularProductsData.as_view(), name="shop-popular-products-report"),
+    path('analytics/sale-pie-chart/', analytics_apis.SalePieChartData.as_view(), name="sale-pie-chart-report"),
+    path('analytics/other-data-report/', analytics_apis.OtherDataReport.as_view(), name="other-data-report"),
 ]

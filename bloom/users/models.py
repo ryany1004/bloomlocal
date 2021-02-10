@@ -66,10 +66,10 @@ class User(AbstractUser):
         return shop
 
     def get_shopify_config(self):
-        return ShopifyConfig.objects.get_or_create(user=self)[0]
+        return ShopifyApp.objects.get_or_create(user=self)[0]
 
     def enable_shopify_import(self):
-        return ShopifyConfig.objects.filter(user=self).exclude(secret_key="").exists()
+        return ShopifyApp.objects.filter(user=self, is_verified=True).exists()
 
 
 class MyCollection(BaseModelMixin, models.Model):
@@ -99,11 +99,10 @@ class RecentViewedShop(models.Model):
         unique_together = [['user', 'shop']]
 
 
-class ShopifyConfig(models.Model):
+class ShopifyApp(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    shop_url = models.URLField(blank=True, )
-    api_key = models.CharField(max_length=200, blank=True)
-    secret_key = models.CharField(max_length=200, blank=True)
+    shop_url = models.URLField(blank=True)
+    is_verified = models.BooleanField(default=False)
     access_token = models.CharField(max_length=200, blank=True, editable=False)
 
     def __str__(self):

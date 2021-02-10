@@ -22,6 +22,7 @@ from bloom.order.cart import Cart
 from bloom.order.models import Order, OrderItem
 from bloom.shop.models import Product, Attribute
 from bloom.utils.pagination import StandardResultsSetPagination
+from bloom.utils.shopping import isdigit
 
 
 class CartAddAPI(APIView):
@@ -138,7 +139,7 @@ class BusinessMyOrdersAPI(ListAPIView):
 class ShopifyRetrieveProductAPI(APIView):
     def get(self, request, *args, **kwargs):
         config = request.user.get_shopify_config()
-        session = shopify.Session(config.shop_url, settings.SHOPIFY_API_VERSION, config.secret_key)
+        session = shopify.Session(config.shop_url, settings.SHOPIFY_API_VERSION, config.access_token)
         shopify.ShopifyResource.activate_session(session)
         try:
             products = self.get_all_resources(shopify.Product)
@@ -225,8 +226,8 @@ class ShopifyRetrieveProductAPI(APIView):
 
         prices = {}
         for v in var_objs:
-            price = float(v['price']) if v['price'] and v['price'].isdigit() else None
-            price = price if price > 0 else None
+            price = float(v['price']) if v['price'] and isdigit(v['price']) else None
+            price = price if price and price > 0 else None
             if size_option and color_option:
                 key = "{}:{}".format(v[size_option], v[color_option])
                 prices[key] = price

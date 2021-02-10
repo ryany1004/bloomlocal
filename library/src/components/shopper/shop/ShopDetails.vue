@@ -50,6 +50,10 @@ export default {
       type: Number,
       required: true
     },
+    uuid: {
+      type: String,
+      required: true
+    },
     shopName: {
       type: String
     }
@@ -85,6 +89,8 @@ export default {
     this.$store.dispatch("get_user");
     this.$store.dispatch("get_sizes");
     this.$store.dispatch("get_colors");
+
+    axios.post(`/api/analytics/storefront/${this.uuid}/`)
   },
   methods: {
     toggleFollow(shopId) {

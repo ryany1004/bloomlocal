@@ -162,11 +162,11 @@ class Product(BaseModelMixin, models.Model):
         price = self.price
         variants = self.get_product_variants()
         v = None
-        if self.enable_size and self.enable_color:
+        if self.enable_size and self.enable_color and variants:
             v = next(filter(lambda x: x['size'] == size and x['color'] == color, variants))
-        elif self.enable_size:
+        elif self.enable_size and variants:
             v = next(filter(lambda x: x['size'] == size, variants))
-        elif self.enable_color:
+        elif self.enable_color and variants:
             v = next(filter(lambda x: x['color'] == color, variants))
 
         if v and v.get('price') and v.get('price') > 0:

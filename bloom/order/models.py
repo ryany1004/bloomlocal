@@ -43,6 +43,12 @@ class Order(BaseModelMixin, models.Model):
         (Status.SHIPPED, "Shipped"),
         (Status.CANCELLED, "Cancelled"),
     )
+    SOURCE_CHOICES = (
+        ("native", "Native Search"),
+        ("facebook", "Facebook"),
+        ("bing", "Bing Search"),
+        ("google_shopping", "Google Shopping"),
+    )
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     tax = models.FloatField(default=0)
     total_price = models.FloatField()
@@ -52,6 +58,7 @@ class Order(BaseModelMixin, models.Model):
     shopper_sms_update = models.BooleanField(default=False)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=Status.AWAITING_PAYMENT)
     payment_intent = models.CharField(max_length=255, blank=True, editable=False, db_index=True)
+    source = models.CharField(max_length=50, blank=True, default="native")
 
     def __str__(self):
         return "Order: #{}".format(self.id)

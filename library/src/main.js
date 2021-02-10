@@ -15,6 +15,8 @@ import moment from "vue-moment";
 import { SidebarPlugin } from 'bootstrap-vue';
 import vueCountryRegionSelect from 'vue-country-region-select';
 import ReadMore from 'vue-read-more';
+import ZoomOnHover from "vue-zoom-on-hover";
+import VueSlimScroll from 'vue-slimscroll';
 
 
 import 'vue-phone-number-input/dist/vue-phone-number-input.css';
@@ -29,6 +31,8 @@ Vue.use(moment);
 Vue.use(SidebarPlugin);
 Vue.use(vueCountryRegionSelect)
 Vue.use(ReadMore);
+Vue.use(ZoomOnHover);
+Vue.use(VueSlimScroll);
 
 // import App from './App.vue'
 import './store';

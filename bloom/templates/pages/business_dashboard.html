@@ -4,7 +4,7 @@
   {% include 'pages/includes/bis_menu.html' %}
 
   <div class="container">
-    <dashboard></dashboard>
+    <dashboard :media-url="mediaUrl"></dashboard>
   </div>
 {% endblock %}
 
@@ -13,6 +13,11 @@
   let main = new Vue({
     el: '#app',
     delimiters: ["[{", "}]"],
+    data() {
+      return {
+        mediaUrl: "{{ MEDIA_URL }}"
+      }
+    }
   });
   </script>
 {% endblock %}

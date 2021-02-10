@@ -4,6 +4,7 @@ from django.contrib.sites.models import Site
 from django.db import transaction
 from django.urls import reverse
 
+from bloom.analytics.api.views import product_added_to_cart_log
 from bloom.order.models import Order, OrderItem
 from bloom.shop.models import Product
 
@@ -39,6 +40,8 @@ class Cart(object):
         if update_quantity:
             self.cart[product_key]['quantity'] = quantity
         else:
+            if self.cart[product_key]['quantity'] == 0:
+                product_added_to_cart_log(product)
             self.cart[product_key]['quantity'] += quantity
         self.save()
 
