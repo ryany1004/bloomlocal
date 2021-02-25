@@ -2,18 +2,18 @@
   <div class="revenue" v-loading="loading">
     <p>Orders Received</p>
     <div class="d-flex justify-content-between align-items-center mt-5">
-      <div>{{ percent_increase.toFixed(0) }}%</div>
+      <div>{{ percent_increase.toFixed(0) }}% <span title="Month-over-Month (MoM) is a comparison of current month performance to the previous month performance" v-b-tooltip.hover>MoM</span></div>
       <div>
         This month
         <div class="d-flex justify-content-between align-items-center mt-2">
-          <i :title="`${amount_increase}`" class="fas"
+          <i :title="`${amount_increase >0 ? '+': ''}${amount_increase}`" v-b-tooltip.hover class="fas"
              :class="{
               'fa-arrow-up': amount_increase > 0,
               'fa-arrow-down': amount_increase < 0,
               'fa-horizontal-rule': amount_increase == 0,
               'color-1': amount_increase >= 0,
               'color-red': amount_increase < 0,}"></i>
-          <span>${{ total_amount | numFormat }}</span>
+          <span>{{ total_amount | numFormat }}</span>
         </div>
       </div>
     </div>

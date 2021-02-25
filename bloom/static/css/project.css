@@ -15794,3 +15794,13 @@ readers do not read off random characters that represent icons */
   cursor: pointer;
   border: 1px solid #f1f1f1;
   border-radius: 10px; }
+
+.b-tooltip {
+  font-size: 11px; }
+
+.capitalize {
+  text-transform: capitalize; }
+
+#collapseManual .card-body {
+  border: none;
+  padding: 0; }

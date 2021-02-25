@@ -33,7 +33,7 @@
           class-name="text-center"
         label="Total Price">
         <template slot-scope="scope">
-          ${{ scope.row.price *  scope.row.quantity }}
+          ${{ scope.row.price *  scope.row.quantity | numFormat("0.00") }}
         </template>
       </el-table-column>
       <el-table-column
@@ -48,7 +48,7 @@
           class-name="text-center"
         label="Total Commission Fee">
         <template slot-scope="scope">
-          ${{ (scope.row.commission_rate * scope.row.price *  scope.row.quantity / 100).toFixed(1) }}
+          ${{ (scope.row.commission_rate * scope.row.price *  scope.row.quantity / 100) | numFormat("0.00") }}
         </template>
       </el-table-column>
       <el-table-column

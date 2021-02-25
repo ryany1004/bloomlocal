@@ -17,7 +17,7 @@ from django.views.generic.base import View
 from django.views.generic.detail import DetailView
 
 from bloom.shop.models import Shop, Product
-from bloom.users.models import UserRole
+from bloom.users.models import UserRole, ShopifyApp
 from bloom.users.shopify import save_shopify_product
 from bloom.utils.shopping import insert_products_to_gmc, update_products_to_gmc, delete_products_to_gmc, \
     convert_to_product_data
@@ -240,3 +240,36 @@ class SpreadsheetCallback(View):
         request.session['products'] = json.dumps(products)
         return redirect(reverse("shop:file-import-products"))
 
+
+@method_decorator(csrf_exempt, name='dispatch')
+class CustomersRedactView(View):
+    def post(self, request, *args, **kwargs):
+        try:
+            data = json.loads(request.body)
+            print(data)
+        except:
+            print(traceback.format_exc())
+        return HttpResponse(status=200)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class ShopRedactView(View):
+    def post(self, request, *args, **kwargs):
+        try:
+            data = json.loads(request.body)
+            shop_domain = data['shop_domain']
+            ShopifyApp.objects.filter(shop_url__icontains=shop_domain).delete()
+        except:
+            print(traceback.format_exc())
+        return HttpResponse(status=200)
+
+
+@method_decorator(csrf_exempt, name='dispatch')
+class CustomersDataRequestView(View):
+    def post(self, request, *args, **kwargs):
+        try:
+            data = json.loads(request.body)
+            print(data)
+        except:
+            print(traceback.format_exc())
+        return HttpResponse(status=200)

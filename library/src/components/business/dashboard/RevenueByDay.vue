@@ -21,6 +21,13 @@ export default {
         responsive: true,
         legend: {
           display: false
+        },
+        scales: {
+          yAxes: [{
+            ticks: {
+              beginAtZero: true
+            }
+          }]
         }
       },
       loading: false,
@@ -41,7 +48,7 @@ export default {
       axios.get('/api/analytics/shop-revenue/').then(res => {
         let labels = []
         let dataset = {
-          label: 'Revenue per Day',
+          label: 'Revenue by Day',
           data: []
         }
         res.data.forEach(item => {

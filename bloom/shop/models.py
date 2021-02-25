@@ -1,5 +1,7 @@
 import traceback
+from urllib.parse import quote
 
+import requests
 import uuid as uuid
 from autoslug import AutoSlugField
 from django.conf import settings
@@ -66,10 +68,18 @@ class Shop(BaseModelMixin, models.Model):
     def update_location_by_address(self, commit=False):
         if self.business_address:
             try:
-                from geopy.geocoders import Nominatim
-                geolocator = Nominatim(user_agent="google maps")
-                location = geolocator.geocode(self.business_address)
-                self.location = Point((location.latitude, location.longitude))
+                url = 'https://maps.googleapis.com/maps/api/geocode/json?address={}&key={}'.format(quote(self.business_address), settings.GOOGLE_MAPS_API_KEY)
+                response = requests.get(url)
+                res = response.json()
+                if res['results'] and len(res['results']) > 0:
+                    location = res['results'][0]['geometry']['location']
+                    print(location)
+                    self.location = Point((location['lat'], location['lng']))
+                else:
+                    from geopy.geocoders import Nominatim
+                    geolocator = Nominatim(user_agent="google maps")
+                    location = geolocator.geocode(self.business_address)
+                    self.location = Point((location.latitude, location.longitude))
                 if commit:
                     self.save()
             except:
@@ -163,11 +173,11 @@ class Product(BaseModelMixin, models.Model):
         variants = self.get_product_variants()
         v = None
         if self.enable_size and self.enable_color and variants:
-            v = next(filter(lambda x: x['size'] == size and x['color'] == color, variants))
+            v = next(filter(lambda x: x.get('size') == size and x.get('color') == color, variants), None)
         elif self.enable_size and variants:
-            v = next(filter(lambda x: x['size'] == size, variants))
+            v = next(filter(lambda x: x.get('size') == size, variants), None)
         elif self.enable_color and variants:
-            v = next(filter(lambda x: x['color'] == color, variants))
+            v = next(filter(lambda x: x.get('color') == color, variants), None)
 
         if v and v.get('price') and v.get('price') > 0:
             price = v['price']

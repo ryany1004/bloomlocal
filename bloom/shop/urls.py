@@ -2,6 +2,9 @@ from django.urls import path
 from . import views
 app_name = "shop"
 urlpatterns = [
+    path("customers/redact/", views.CustomersRedactView.as_view(), name="customers-redact"),
+    path("shop/redact/", views.ShopRedactView.as_view(), name="shop-redact"),
+    path("customers/data_request/", views.CustomersDataRequestView.as_view(), name="customers-data-request"),
     path("shop/<slug:slug>/", views.ShopDetails.as_view(), name="shop-details"),
     path("my-shops/", views.MyShopsView.as_view(), name="my-shops"),
     path("my-purchase/", views.MyPurchaseView.as_view(), name="my-purchase"),

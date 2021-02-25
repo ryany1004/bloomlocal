@@ -1,11 +1,14 @@
 <template>
   <div class="report-box" style="height: 100%" v-loading="loading">
-    <p class="font-14">Popular Products View and Sale</p>
+    <p class="font-14">Popular Products</p>
     <ul class="popular-products mb-0" v-if="products.length > 0" v-slimscroll="{height: '270px'}">
       <li class="d-flex align-items-center" v-for="product in products" :key="product.id">
-        <div class="d-flex">
+        <div class="d-flex align-items-center">
           <img :src="`${mediaUrl}${product.thumbnail}`">
-          <strong class="ml-3">{{ product.title }}</strong>
+          <div class="d-flex flex-column">
+            <strong class="ml-3">{{ product.title }}</strong>
+            <span class="ml-3 font-10"><span>Views: {{ product.views_count }}</span> <span class="ml-3">Sales: {{ product.sales_count }}</span></span>
+          </div>
         </div>
         <a class="ml-auto" style="color: #333" :href="product.url"><i class="far fa-chevron-right"></i></a>
       </li>

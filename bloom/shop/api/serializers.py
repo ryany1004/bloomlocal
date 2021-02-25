@@ -13,13 +13,15 @@ class CategorySerializer(serializers.ModelSerializer):
 
 class ProductModelSimpleSerializer(serializers.ModelSerializer):
     url = serializers.SerializerMethodField()
+    views_count = serializers.SerializerMethodField()
+    sales_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
         fields = ['id', 'uuid', 'title', 'thumbnail', 'price', 'description', 'length', 'width', 'height', 'status',
                   'weight', 'weight_unit', 'stock', 'delivery_type', 'enable_color', 'enable_size', 'shop_id',
                   'archived', 'slug', 'created_at', 'updated_at',
-                  'dimension_unit', 'url']
+                  'dimension_unit', 'url', 'views_count', 'sales_count']
 
     def to_representation(self, instance):
         response = super(ProductModelSimpleSerializer, self).to_representation(instance)
@@ -29,6 +31,16 @@ class ProductModelSimpleSerializer(serializers.ModelSerializer):
 
     def get_url(self, product):
         return product.get_absolute_url()
+
+    def get_views_count(self, product):
+        if hasattr(product, 'views_count'):
+            return product.views_count or 0
+        return 0
+
+    def get_sales_count(self, product):
+        if hasattr(product, 'sales_count'):
+            return product.sales_count or 0
+        return 0
 
 
 class ProductModelSerializer(ProductModelSimpleSerializer):

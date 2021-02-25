@@ -24,7 +24,7 @@
               <div class="product-details d-flex align-items-center">
                 <div>
                   <div class="product-title">{{item.product.title}}</div>
-                  <div class="product-price">US ${{item.quantity * item.price}}</div>
+                  <div class="product-price">US ${{item.quantity * item.price | numFormat("0.00")}}</div>
                   <div class="shop-name">{{item.product.shop_name}}</div>
                   <div class="form-row product-qty">
                     <div class="col-2 d-flex align-items-center justify-content-end">Qty</div>
@@ -62,17 +62,24 @@
           <div class="form-row">
             <div class="form-group col-md-6">
               <label for="first_name">First name</label>
-              <input type="text" class="form-control" id="first_name" name="first_name" v-model="shipping_address.first_name" :class="{'is-invalid': errors.first_name}">
+              <input type="text" class="form-control capitalize" id="first_name" name="first_name" v-model="shipping_address.first_name" :class="{'is-invalid': errors.first_name}">
             </div>
             <div class="form-group col-md-6">
               <label for="last_name">Last name</label>
-              <input type="text" class="form-control" id="last_name" name="last_name" v-model="shipping_address.last_name" :class="{'is-invalid': errors.last_name}">
+              <input type="text" class="form-control capitalize" id="last_name" name="last_name" v-model="shipping_address.last_name" :class="{'is-invalid': errors.last_name}">
             </div>
           </div>
           <div class="form-row">
             <div class="form-group col-md-6">
               <label for="first_name">Street Address</label>
-              <input type="text" class="form-control" id="street_address" name="street_address" v-model="shipping_address.street_address" :class="{'is-invalid': errors.street_address}">
+<!--              <input type="text" class="form-control" id="street_address" name="street_address" v-model="shipping_address.street_address" :class="{'is-invalid': errors.street_address}">-->
+              <place-autocomplete-field ref="input_address"
+                      v-model="shipping_address.street_address" placeholder="" class="form-group" :class="{'is-invalid': errors.street_address}"
+                      name="street_address" :api-key="googleMapApiKey"
+                      v-place-autofill:street="shipping_address.street_address"
+                      v-place-autofill:city="shipping_address.city"
+                      v-place-autofill:state="shipping_address.state"
+                      v-place-autofill:zipcode="shipping_address.zip_code"></place-autocomplete-field>
             </div>
             <div class="form-group col-md-6">
               <label for="last_name">Street Address 2 (Optional)</label>
@@ -116,7 +123,7 @@
       <div class="col-3">
         <div class="order-summary">
           <div class="d-flex justify-content-between mb-1">
-            <span>Items ({{ cart_items.length }})</span><span>US ${{ total_price }}</span>
+            <span>Items ({{ cart_items.length }})</span><span>US ${{ total_price | numFormat("0.00") }}</span>
           </div>
           <div class="d-flex justify-content-between mb-1">
             <span>Shipping</span><span>Free</span>
@@ -126,7 +133,7 @@
           </div>
           <hr style="margin: 10px 0;border-color: #4F4F4F"/>
           <div class="d-flex justify-content-between">
-            <span>Order total</span><span>{{ total_price }}</span>
+            <span>Order total</span><span>{{ total_price | numFormat("0.00") }}</span>
           </div>
           <div class="mt-4">
             <button :disabled="loading || cart_items.length == 0" class="btn btn-primary btn-block white" type="button" @click="orderConfirm()">Confirm & Pay</button>
@@ -143,6 +150,14 @@
         <el-button @click="dialogVisible = false">Close</el-button>
       </span>
     </el-dialog>
+
+    <el-dialog
+      title="Pay your order"
+      :visible.sync="dialogPaymentVisible" width="40%" :close-on-click-modal="false">
+      <payment-request-button :client-secret="clientSecret" :publishable-key="stripePublishableKey"
+        :total-price="total_price"
+        :success-url="success_url"></payment-request-button>
+    </el-dialog>
   </div>
 </template>
 
@@ -151,10 +166,12 @@ import {mapState} from "vuex";
 import axios from "axios";
 import SavedAddresses from "@/components/shopper/account/SavedAddresses";
 import { parsePhoneNumberFromString } from 'libphonenumber-js';
+import PaymentRequestButton from "./PaymentRequestButton";
 
 export default {
   name: "OrderOverview",
   components: {
+    PaymentRequestButton,
     SavedAddresses,
   },
   props: {
@@ -163,6 +180,10 @@ export default {
       required: true
     },
     stripePublishableKey: {
+      type: String,
+      required: true
+    },
+    googleMapApiKey: {
       type: String,
       required: true
     }
@@ -188,7 +209,11 @@ export default {
       errors: {},
       valid_shipping: false,
       loading: false,
-      dialogVisible: false
+      dialogVisible: false,
+      querySearch: "",
+      dialogPaymentVisible: false,
+      clientSecret: "",
+      success_url: ""
     }
   },
   computed: {
@@ -232,6 +257,7 @@ export default {
       this.$refs.phone_input.countryCode = parsed.country;
       this.$refs.phone_input.phoneNumber = address.phone_number;
       this.dialogVisible = false;
+
     },
     productVariant(item) {
       let variants = [];
@@ -289,19 +315,24 @@ export default {
     },
     orderConfirm() {
       let data = this.shipping_address, that = this;
-      if (confirm("Are you sure?")) {
+      if (this.isLoggedIn && confirm("Are you sure?")) {
         data.sms_update = that.sms_update
         data.shopper_share_info = that.shopper_share_info
         that.loading = true;
         axios.post("/api/order/confirm/", data).then((res) => {
-          let strip = window.Stripe(this.stripePublishableKey);
-          strip.redirectToCheckout({sessionId: res.data.session.id})
-          setTimeout(() => that.loading = false, 1000);
+          // let strip = window.Stripe(this.stripePublishableKey);
+          // strip.redirectToCheckout({sessionId: res.data.session.id})
+          that.clientSecret = res.data.clientSecret;
+          that.dialogPaymentVisible = true;
+          that.success_url = res.data.success_url;
+          setTimeout(() => that.loading = false, 100);
           console.log(res);
         }).catch((err) => {
           that.loading = false;
           if (err.response.data) {
             that.errors = err.response.data;
+          } else {
+            alert("Something went wrong. Please try again!")
           }
         })
       }
@@ -314,6 +345,14 @@ export default {
 .order-overview {
   .form-check-inline {
     font-size: 12px;
+  }
+  .is-invalid .form-group-inner .form-control {
+      border-color: #dc3545;
+      padding-right: calc(1.5em + 0.75rem);
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%23dc3545' viewBox='-2 -2 7 7'%3e%3cpath stroke='%23dc3545' d='M0 0l3 3m0-3L0 3'/%3e%3ccircle r='.5'/%3e%3ccircle cx='3' r='.5'/%3e%3ccircle cy='3' r='.5'/%3e%3ccircle cx='3' cy='3' r='.5'/%3e%3c/svg%3E");
+      background-repeat: no-repeat;
+      background-position: center right calc(0.375em + 0.1875rem);
+      background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
   }
   .shipping-title {
     color: #4FC5E9;

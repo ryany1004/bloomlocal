@@ -185,8 +185,33 @@ class Cart(object):
             checkout_items.append(obj)
 
         OrderItem.objects.bulk_create(items)
-        session = self.create_session(checkout_items, order)
-        return order, session
+        # session = self.create_session(checkout_items, order)
+        intent = stripe.PaymentIntent.create(
+            amount=int(order.total_price * 100),
+            currency="usd",
+            transfer_group=order.get_order_id(),
+            description="Payment for the order #{}".format(order.id),
+            shipping={
+                "address": {
+                    'line1': shipping.street_address,
+                    'city': shipping.city,
+                    'country': shipping.country,
+                    'state': shipping.state,
+                    'postal_code': shipping.zip_code
+                },
+                "name": "{} {}".format(shipping.first_name, shipping.last_name) ,
+                "phone": shipping.phone_number,
+            }
+        )
+        order.payment_intent = intent.id
+        order.save()
+
+        site = Site.objects.get_current()
+        domain = "{}://{}".format('https' if settings.SECURE_SSL_REDIRECT else "http", site.domain)
+        success_url = domain + reverse("order:order-success", kwargs={'uuid': order.uuid})
+        cancel_url = domain + reverse("order:order-canceled", kwargs={'uuid': order.uuid})
+
+        return order, intent, success_url, cancel_url
 
     def create_session(self, items, order):
         site = Site.objects.get_current()

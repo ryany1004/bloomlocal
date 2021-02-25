@@ -33,7 +33,7 @@
     "vue-month-picker": "^1.4.0",
     "vue-password-strength-meter": "^1.7.2",
     "vue-phone-number-input": "^1.1.10",
-    "vue-place-autocomplete": "^0.5.3",
+    "vue-place-autocomplete": "git://github.com/CSalih/vue-place-autocomplete.git#refactor-input-field",
     "vue-read-more": "^1.1.1",
     "vue-router": "^3.4.9",
     "vue-slimscroll": "^1.0.1",

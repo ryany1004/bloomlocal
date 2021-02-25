@@ -23,8 +23,8 @@ class ShippingAddressSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         shipping = ShippingAddress()
         shipping.country = validated_data['country']
-        shipping.first_name = validated_data['first_name']
-        shipping.last_name = validated_data['last_name']
+        shipping.first_name = validated_data['first_name'].title()
+        shipping.last_name = validated_data['last_name'].title()
         shipping.city = validated_data['city']
         shipping.state = validated_data['state']
         shipping.zip_code = validated_data['zip_code']

@@ -75,4 +75,22 @@ class VendorSignUpForm(forms.Form):
 class ShopifyAppForm(forms.ModelForm):
     class Meta:
         model = ShopifyApp
-        fields = ['shop_url']
+        fields = ['shop_url', 'api_key', 'password', 'config_type']
+
+    def clean(self):
+        if self.instance.is_verified and self.cleaned_data['config_type'] != self.instance.config_type:
+            raise forms.ValidationError("Already integrated.")
+
+        if self.cleaned_data['config_type'] == "manual":
+            shop_url = self.cleaned_data['shop_url']
+            secret_key = self.cleaned_data['password']
+            session = shopify.Session(shop_url, settings.SHOPIFY_API_VERSION, secret_key)
+            shopify.ShopifyResource.activate_session(session)
+            try:
+                products = shopify.Product.find(limit=10)
+            except Exception as e:
+                raise forms.ValidationError("Unable to verify your key. Please check it again.")
+            finally:
+                shopify.ShopifyResource.clear_session()
+
+        return self.cleaned_data

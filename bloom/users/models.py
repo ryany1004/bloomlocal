@@ -100,10 +100,17 @@ class RecentViewedShop(models.Model):
 
 
 class ShopifyApp(models.Model):
+    TYPE_CHOICES = (
+        ('app', 'App'),
+        ('manual', 'Manual'),
+    )
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     shop_url = models.URLField(blank=True)
     is_verified = models.BooleanField(default=False)
     access_token = models.CharField(max_length=200, blank=True, editable=False)
+    config_type = models.CharField(max_length=10, choices=TYPE_CHOICES, default='app')
+    api_key = models.CharField(max_length=200, blank=True)
+    password = models.CharField(max_length=200, blank=True)
 
     def __str__(self):
         return self.user.__str__()

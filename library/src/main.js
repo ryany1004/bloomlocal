@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import HelloWorld from "@/components/HelloWorld";
 import PasswordMeter from "@/components/PasswordMeter";
-import {PlaceAutocompleteField} from 'vue-place-autocomplete';
+import VuePlaceAutocomplete from 'vue-place-autocomplete';
 import VuePhoneNumberInput from 'vue-phone-number-input';
 import Avatar from 'vue-avatar';
 import Switches from 'vue-switches';
@@ -12,7 +12,7 @@ import VueCookies from 'vue-cookies'
 import axios from "axios";
 import VueAxios from "vue-axios";
 import moment from "vue-moment";
-import { SidebarPlugin } from 'bootstrap-vue';
+import { SidebarPlugin, TooltipPlugin, SpinnerPlugin } from 'bootstrap-vue';
 import vueCountryRegionSelect from 'vue-country-region-select';
 import ReadMore from 'vue-read-more';
 import ZoomOnHover from "vue-zoom-on-hover";
@@ -29,10 +29,13 @@ Vue.use(ElementUI, {locale});
 Vue.use(VueAxios, axios);
 Vue.use(moment);
 Vue.use(SidebarPlugin);
+Vue.use(TooltipPlugin);
+Vue.use(SpinnerPlugin);
 Vue.use(vueCountryRegionSelect)
 Vue.use(ReadMore);
 Vue.use(ZoomOnHover);
 Vue.use(VueSlimScroll);
+Vue.use(VuePlaceAutocomplete);
 
 // import App from './App.vue'
 import './store';
@@ -90,7 +93,6 @@ Vue.config.productionTip = false
 const Components = {
     HelloWorld,
     PasswordMeter,
-    PlaceAutocompleteField,
     VuePhoneNumberInput,
     Avatar,
     Switches,

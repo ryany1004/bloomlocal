@@ -25,7 +25,7 @@
               <a href="javascript:void(0)" @click="increate_quantity(item)"><i class="fal fa-plus color4f"></i></a>
             </div>
             <div class="col-3 d-flex align-items-center justify-content-end">
-              <span class="font12">${{ item.quantity * item.price }}</span>
+              <span class="font12">${{ item.quantity * item.price | numFormat("0.00") }}</span>
             </div>
             <div class="col-2 d-flex align-items-center justify-content-end">
               <a href="javascript:void(0)" @click="delete_product(item)"><i class="fal fa-times"></i></a>
@@ -36,7 +36,7 @@
     </ul>
 
     <div class="d-flex mt-4" v-if="cart_items.length > 0">
-      <span class="ml-auto">Total: ${{ total_price | numFormat }}</span>
+      <span class="ml-auto">Total: ${{ total_price | numFormat("0.00") }}</span>
     </div>
     <div class="mt-2" v-else>
       No product here.

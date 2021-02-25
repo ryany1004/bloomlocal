@@ -4,7 +4,7 @@
 {% block title %}Shopify Integration{% endblock %}
 
 {% block content %}
-  <div class="container">
+  <div class="container font-14">
     <div class="mt-4 bg-white">
       <div class="row">
         <div class="col-md-3">
@@ -17,7 +17,7 @@
             <p style="padding-bottom: 1em"><span class="hint">Don&rsquo;t have a shop to install this app in handy? <a href="https://www.shopify.com/signup">Create a shop.</a></span></p>
 
 
-            {% if form.non_field_errors %}
+            {% if form.non_field_errors and form.config_type.value == 'app' %}
               <div class="non-field-errors">
                 {% for err in form.non_field_errors %}
                   <p class="form-error">{{ err }}</p>
@@ -28,24 +28,75 @@
               <div class="form-group row">
                 <label for="shop_url" class="col-sm-2 col-form-label font-14">Shop URL</label>
                 <div class="col-6">
-                  <input type="url" class="form-control font-14 {% if shopify.is_verified %}is-valid{% endif %}" id="shop_url" required name="shop_url" value="{{ form.shop_url.value }}" placeholder="https://myshop.myshopify.com">
-                  {% if shopify.is_verified %}
+                  <input type="url" class="form-control font-14 {% if shopify.is_verified and shopify.config_type == 'app' %}is-valid{% endif %}" id="shop_url" required name="shop_url" value="{{ form.shop_url.value }}" placeholder="https://myshop.myshopify.com">
+                  {% if shopify.is_verified and shopify.config_type == 'app' %}
                   <div class="valid-feedback">
-                    The app is installed to Shopify store
+                    <i class="fas fa-check font-16"></i> The app is installed to Shopify store
                   </div>
                   {% endif %}
                 </div>
               </div>
               <div class="form-group row">
                 <div class="col-6 offset-2">
-                  {% if shopify.is_verified %}
+                  {% if shopify.is_verified and shopify.config_type == "app" %}
                     <button class="btn btn-primary white" type="submit" v-html="loading ? 'Reinstalling...' : 'Reinstall'">Reinstall</button>
                   {% else %}
                     <button class="btn btn-primary white" type="submit" v-html="loading ? 'Installing...' : 'Install'">Install</button>
                   {% endif %}
                 </div>
+                <input type="hidden" name="config_type" value="app">
               </div>
             </form>
+          </div>
+
+          <a class="mt-3" href="#collapseManual" role="button" data-toggle="collapse"
+             aria-expanded="{% if form.config_type.value == 'manual' or shopify.config_type == 'manual' %}true{% else %}false{% endif %}"
+             aria-controls="collapseManual">Manual Setup</a>
+          <div class="pr-3 collapse {% if form.config_type.value == 'manual' or shopify.config_type == 'manual' %}show{% endif %}" id="collapseManual">
+            <div class="card card-body">
+              <h4 class="font-14 mt-4">Provide your App credentials:</h4>
+
+              {% if form.non_field_errors and form.config_type.value == 'manual' %}
+                <div class="non-field-errors">
+                  {% for err in form.non_field_errors %}
+                    <p class="form-error">{{ err }}</p>
+                  {% endfor %}
+                </div>
+              {% endif %}
+
+              <form method="post" action=".">  {% csrf_token %}
+                <div class="form-group row">
+                  <label for="shop_url" class="col-sm-2 col-form-label font-14">Shop URL</label>
+                  <div class="col-6">
+                    <input type="url" class="form-control font-14" id="shop_url" required name="shop_url" value="{{ form.shop_url.value }}" placeholder="https://myshop.myshopify.com">
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="api_key" class="col-sm-2 col-form-label font-14">API Key</label>
+                  <div class="col-6">
+                    <input type="text" class="form-control font-14" id="api_key" required name="api_key" placeholder="API key" value="{{ shopify.api_key }}">
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <label for="api_password" class="col-sm-2 col-form-label  font-14">Password</label>
+                  <div class="col-6">
+                    <input type="password" class="form-control font-14" id="api_password" required name="password" value="{{ shopify.password }}" placeholder="Password">
+                  </div>
+                </div>
+                <div class="form-group row">
+                  <div class="col-6 offset-2">
+                    <button class="btn btn-primary white" type="submit">Save</button>
+
+                    {% if shopify.config_type == 'manual' and shopify.is_verified %}
+                      <span class="ml-2" style="color: #28a745;font-size: 80%">
+                        <i class="fas fa-check font-16"></i> Connected to shopify Store
+                      </span>
+                    {% endif %}
+                  </div>
+                </div>
+                <input type="hidden" name="config_type" value="manual">
+              </form>
+            </div>
           </div>
         </div>
       </div>

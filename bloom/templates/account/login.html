@@ -1,6 +1,6 @@
 {% extends "account/base.html" %}
 
-{% load i18n %}
+{% load i18n static %}
 {% load account socialaccount %}
 {% load crispy_forms_tags %}
 
@@ -11,7 +11,7 @@
   {% get_providers as socialaccount_providers %}
   <div class="col-md-10">
     <h3 class="mb-5 text-center color-1">{% trans "Login to your account" %}</h3>
-    <form class="login" method="POST" action="{% url 'account_login' %}">
+    <form class="login mb-5" method="POST" action="{% url 'account_login' %}">
       <div class="mt-4 mb-2">
         {% if socialaccount_providers %}
           <div class="socialaccount_ballot">
@@ -61,8 +61,8 @@
 
 </div>
 
-<div class="col-md-6" style="background-color: #ccc">
-
+<div class="col-md-6 d-flex align-items-center">
+  <img src="{% static 'images/open-shop.png' %}" class="img-fluid" alt="Open Shop">
 </div>
 {% endblock %}
 

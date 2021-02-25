@@ -2,10 +2,10 @@
   <div class="per-order" style="height: 100%" v-loading="loading">
     <ul class="store-summary">
       <li>
-        <strong>Avg. order amount:</strong> <span>{{ data.avg_order_amount }}$</span>
+        <strong>Avg. order amount:</strong> <span>${{ data.avg_order_amount | numFormat("0.00") }}</span>
       </li>
-      <li>
-        <strong>Avg. products purchased per order:</strong> <span>{{ data.avg_product_per_order }}</span>
+      <li class="d-flex align-items-center">
+        <strong>Avg. product count per order:</strong> <span>{{ data.avg_product_per_order }}</span>
       </li>
     </ul>
   </div>

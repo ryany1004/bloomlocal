@@ -6,7 +6,7 @@
   {% include "pages/includes/shopper_menu.html" %}
 
   <div class="container">
-    <order-overview :media-url="media_url" :stripe-publishable-key="stripePublishableKey"></order-overview>
+    <order-overview :media-url="media_url" :stripe-publishable-key="stripePublishableKey" :google-map-api-key="googleMapApiKey"></order-overview>
   </div>
 {% endblock %}
 
@@ -18,7 +18,8 @@
     data: function () {
       return {
         media_url: "{{ MEDIA_URL }}",
-        stripePublishableKey: "{{ STRIPE_PUBLISHABLE_KEY }}"
+        stripePublishableKey: "{{ STRIPE_PUBLISHABLE_KEY }}",
+        googleMapApiKey: "{{ GOOGLE_MAPS_API_KEY }}"
       }
     },
     created() {

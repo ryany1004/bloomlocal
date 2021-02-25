@@ -3,7 +3,7 @@
     <div class="order-details mb-5 col-12 col-md-12 col-lg-9" v-for="order in orders" :key="order.id">
       <div class="d-flex justify-content-between order-header mb-3">
         <span>Order #{{ order.order_no }}</span>
-        <span>Total price = ${{ order.total_price }}</span>
+        <span>Total price = ${{ order.total_price | numFormat("0.00") }}</span>
       </div>
       <div class="order-items row">
         <div class="col-6 d-flex mb-4" v-for="item in order.order_items" :key="item.id">

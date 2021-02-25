@@ -3428,9 +3428,8 @@ input[type=color].form-control:disabled {
     max-height: none !important;
   }
 }
-@supports ((position: -webkit-sticky) or (position: sticky)) {
+@supports (position: sticky) {
   .b-table-sticky-header > .table.b-table > thead > tr > th {
-    position: -webkit-sticky;
     position: sticky;
     top: 0;
     z-index: 2;
@@ -3445,7 +3444,6 @@ input[type=color].form-control:disabled {
 [class*=table-responsive-] > .table.b-table > thead > tr > .b-table-sticky-column,
 [class*=table-responsive-] > .table.b-table > tbody > tr > .b-table-sticky-column,
 [class*=table-responsive-] > .table.b-table > tfoot > tr > .b-table-sticky-column {
-    position: -webkit-sticky;
     position: sticky;
     left: 0;
   }
@@ -4779,7 +4777,7 @@ input[type=color].form-control:disabled {
 .shop-cards .shop-card .card-image {
     height: 153px;
     width: 100%;
-    background-size: cover;
+    background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
     border: 1px solid #f8f8f8;
@@ -5169,8 +5167,35 @@ input[type=color].form-control:disabled {
       background-color: #F2F2F2;
 }
 
+
+[data-v-181aef93]:root {
+  --accent-color: #0a721b;
+}
+.sr-combo-inputs-row[data-v-181aef93] {
+  margin-bottom: 20px;
+  background: #fff;
+  box-shadow: 0 1px 3px 0 rgb(50 50 93 / 15%), 0 4px 6px 0 rgb(112 157 199 / 15%);
+  border-radius: 4px;
+  border: none;
+  padding: 10px;
+}
+.sr-field-error[data-v-181aef93] {
+  color: red;
+}
+#button-text[data-v-181aef93] {
+  margin-left: 10px;
+}
+
 .order-overview .form-check-inline {
   font-size: 12px;
+}
+.order-overview .is-invalid .form-group-inner .form-control {
+  border-color: #dc3545;
+  padding-right: calc(1.5em + 0.75rem);
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%23dc3545' viewBox='-2 -2 7 7'%3e%3cpath stroke='%23dc3545' d='M0 0l3 3m0-3L0 3'/%3e%3ccircle r='.5'/%3e%3ccircle cx='3' r='.5'/%3e%3ccircle cy='3' r='.5'/%3e%3ccircle cx='3' cy='3' r='.5'/%3e%3c/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center right calc(0.375em + 0.1875rem);
+  background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
 }
 .order-overview .shipping-title {
   color: #4FC5E9;
@@ -5668,8 +5693,16 @@ input[type=color].form-control:disabled {
     margin-bottom: 0;
 }
 
+
+.top-products[data-v-72bfba92] {
+  list-style: none;
+}
+
 .dashboard[data-v-500cb20c] {
   margin-bottom: 20px;
+}
+.dashboard .widget-list > div[data-v-500cb20c] {
+    margin-bottom: 25px;
 }
 .dashboard .slide-section[data-v-500cb20c] {
     background-color: #6C5DD3;
@@ -5714,17 +5747,20 @@ input[type=color].form-control:disabled {
     min-height: 50px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.12);
     border-radius: 10px;
+    background-color: #fff;
 }
 .dashboard .order-received[data-v-500cb20c], .dashboard .revenue[data-v-500cb20c], .dashboard .per-order[data-v-500cb20c], .dashboard .charts[data-v-500cb20c] {
     padding: 20px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.12);
     border-radius: 10px;
     font-size: 12px;
+    background-color: #fff;
 }
 .dashboard .product-sale-chart[data-v-500cb20c] {
     min-height: 50px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.12);
     border-radius: 10px;
+    background-color: #fff;
 }
 .dashboard .color-red[data-v-500cb20c] {
     color: red;

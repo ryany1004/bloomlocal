@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib import admin
+from mapwidgets import GooglePointFieldWidget
 
 from bloom.shop import models
 
@@ -11,6 +12,9 @@ class AttributeAdmin(admin.ModelAdmin):
 
 @admin.register(models.Shop)
 class ShopAdmin(admin.ModelAdmin):
+    formfield_overrides = {
+        models.PointField: {"widget": GooglePointFieldWidget}
+    }
     list_display = ('name', 'owner', 'business_address', 'business_phone')
 
 

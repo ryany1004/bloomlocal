@@ -76,16 +76,20 @@ class OrderConfirm(APIView):
             shipping = data.save()
             cart = Cart(request)
             user = request.user if request.user.is_authenticated else None
-            order, session = cart.confirm_order(shopper=user, shipping=shipping,
+            order, intent, success_url, cancel_url = cart.confirm_order(shopper=user, shipping=shipping,
                                                 sms_update=request.data['sms_update'],
                                                 shopper_share_info=request.data['shopper_share_info'])
         else:
             return Response(data=data.errors, status=status.HTTP_400_BAD_REQUEST)
 
         data = {
-            'session': {
-                'id': session.id
-            }
+            # 'session': {
+            #     'id': session.id
+            # },
+            'publishableKey': settings.STRIPE_PUBLISHABLE_KEY,
+            'clientSecret': intent.client_secret,
+            'success_url': success_url,
+            'cancel_url': cancel_url
         }
         return Response(data=data, status=status.HTTP_200_OK)
 

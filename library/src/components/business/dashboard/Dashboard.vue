@@ -1,42 +1,44 @@
 <template>
   <div class="dashboard">
     <div class="row">
-      <div class="col-md-4 col-sm-12">
+      <div class="col-md-4 col-sm-12 mb-4">
         <sale-pie-chart></sale-pie-chart>
       </div>
       <div class="col-md-8 col-sm-12">
-        <div class="row">
-          <div class="col-md-4 col-sm-12">
+        <div class="row widget-list">
+          <div class="col-md-6 col-sm-12">
             <order-by-month></order-by-month>
           </div>
-          <div class="col-md-4 col-sm-12">
+          <div class="col-md-6 col-sm-12">
             <revenue-by-month></revenue-by-month>
           </div>
           <div class="col-md-4 col-sm-12">
             <other-data-report></other-data-report>
           </div>
-        </div>
 
-        <div class="mt-4">
-          <div class="row">
-            <div class="col-md-4 col-sm-12">
-              <products-added-to-cart-by-month></products-added-to-cart-by-month>
-            </div>
-            <div class="col-md-4 col-sm-12">
-              <products-view-by-month></products-view-by-month>
-            </div>
-            <div class="col-md-4 col-sm-12">
-              <storefront-view-by-month></storefront-view-by-month>
-            </div>
+          <div class="col-md-4 col-sm-12">
+            <products-added-to-cart-by-month></products-added-to-cart-by-month>
+          </div>
+
+          <div class="col-md-4 col-sm-12">
+            <products-view-by-month></products-view-by-month>
+          </div>
+
+          <div class="col-md-6 col-sm-12">
+            <storefront-view-by-month></storefront-view-by-month>
+          </div>
+
+          <div class="col-md-6 col-sm-12">
+            <products-view-channels-by-month></products-view-channels-by-month>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="row mt-4">
+    <div class="row widget-list mt-4">
       <div class="col-md-4 col-sm-12">
         <div class="charts">
-          <p class="bolder font-14" style="margin: 0px 0 0 15px">Order by Day</p>
+          <p class="bolder font-14" style="margin: 0px 0 0 15px">Orders by Day</p>
           <order-by-day></order-by-day>
         </div>
       </div>
@@ -49,8 +51,7 @@
       <div class="col-md-4 col-sm-12">
         <popular-product-view-sale :media-url="mediaUrl"></popular-product-view-sale>
       </div>
-    </div>
-    <div class="mt-4 row">
+
       <div class="col-md-4 col-sm-12">
         <div class="charts">
           <p class="bolder font-14" style="margin: 0px 0 0 15px">Products Added To Cart</p>
@@ -59,7 +60,7 @@
       </div>
       <div class="col-md-4 col-sm-12">
         <div class="charts">
-          <p class="bolder font-14" style="margin: 0px 0 0 15px">Top Viewed Products</p>
+          <p class="bolder font-14" style="margin: 0px 0 0 15px">Product Views by Day</p>
           <products-view-by-day></products-view-by-day>
         </div>
       </div>
@@ -69,13 +70,19 @@
           <storefront-view-by-day></storefront-view-by-day>
         </div>
       </div>
+
+      <div class="col-md-4 col-sm-12">
+        <div class="charts">
+          <p class="bolder font-14" style="margin: 0px 0 0 15px">Product Views from Channels</p>
+          <products-view-channels-by-day></products-view-channels-by-day>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import SalePieChart from "@/components/business/dashboard/SalePieChart";
-import axios from "axios";
 import ProductsViewByDay from "@/components/business/dashboard/ProductsViewByDay";
 import StorefrontViewByDay from "./StorefrontViewByDay";
 import ProductsAddedToCartByDay from "./ProductsAddedToCartByDay";
@@ -88,10 +95,14 @@ import OrderByMonth from "./OrderByMonth";
 import RevenueByMonth from "./RevenueByMonth";
 import PopularProductViewSale from "./PopularProductViewSale";
 import OtherDataReport from "./OtherDataReport";
+import ProductsViewChannelsByMonth from "./ProductsViewChannelsByMonth";
+import ProductsViewChannelsByDay from "./ProductsViewChannelsByDay";
 
 export default {
   name: "Dashboard",
   components: {
+    ProductsViewChannelsByDay,
+    ProductsViewChannelsByMonth,
     OtherDataReport,
     PopularProductViewSale,
     RevenueByMonth,
@@ -119,27 +130,23 @@ export default {
     }
   },
   created() {
-    this.get_order_revenue();
+
   },
   computed: {
   },
   methods: {
-    get_order_revenue() {
-      let that = this;
-      that.loading = true
-      axios.get('/api/statistic/order-revenue/by-month/').then(res => {
-        that.order_data = res.data;
-        that.loading = false;
-      }).catch(() => {
-        that.loading = false;
-      })
-    }
+
   }
 }
 </script>
 
 <style scoped lang="scss">
 .dashboard {
+  .widget-list {
+    > div {
+      margin-bottom: 25px;
+    }
+  }
   .slide-section {
     background-color: #6C5DD3;
     height: 300px;
@@ -185,17 +192,20 @@ export default {
     min-height: 50px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.12);
     border-radius: 10px;
+    background-color: #fff;
   }
   .order-received, .revenue, .per-order, .charts {
     padding: 20px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.12);
     border-radius: 10px;
     font-size: 12px;
+    background-color: #fff;
   }
   .product-sale-chart {
     min-height: 50px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.12);
     border-radius: 10px;
+    background-color: #fff;
   }
   .color-red {
     color: red;

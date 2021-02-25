@@ -71,6 +71,7 @@ urlpatterns += [
     path('analytics/storefront/<uuid>/', analytics_apis.StorefrontViewAPI.as_view(), name="track-storefront-view"),
     path('analytics/product/<uuid>/', analytics_apis.ProductViewAPI.as_view(), name="track-product-view"),
     path('analytics/product-view/', analytics_apis.ProductViewData.as_view(), name="product-view-report"),
+    path('analytics/product-view-channels/', analytics_apis.ProductViewChannelsData.as_view(), name="product-view-channels-report"),
     path('analytics/storefront-view/', analytics_apis.StorefrontViewData.as_view(), name="storefront-view-report"),
     path('analytics/product-added-to-cart/', analytics_apis.ProductAddedToCartData.as_view(), name="product-added-to-cart-report"),
     path('analytics/shop-revenue/', analytics_apis.ShopRevenueData.as_view(), name="shop-revenue-report"),

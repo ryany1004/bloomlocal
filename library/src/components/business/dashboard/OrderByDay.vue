@@ -22,6 +22,14 @@ export default {
         responsive: true,
         legend: {
           display: false
+        },
+        scales: {
+          yAxes: [{
+            ticks: {
+              beginAtZero: true,
+              callback: function(value) {if (value % 1 === 0) {return value;}}
+            }
+          }]
         }
       },
       loading: false,
@@ -42,7 +50,7 @@ export default {
       axios.get('/api/analytics/order/').then(res => {
         let labels = []
         let dataset = {
-          label: 'Order per Day',
+          label: 'Orders by Day',
           data: []
         }
         res.data.forEach(item => {

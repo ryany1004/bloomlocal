@@ -86,6 +86,7 @@ def _generate_account_link(account_id, origin):
 
 
 class StripConnectView(LoginRequiredMixin, View):
+
     def post(self, request, *args, **kwargs):
         account = stripe.Account.create(type='express')
         # Store the account ID.
@@ -105,6 +106,7 @@ class StripConnectView(LoginRequiredMixin, View):
 
 
 class StripAccountRefreshView(LoginRequiredMixin, View):
+
     def get(self, request, *args, **kwargs):
         if 'account_id' not in request.session:
             return redirect('/')
@@ -117,6 +119,7 @@ class StripAccountRefreshView(LoginRequiredMixin, View):
 
 
 class StripeSettingView(LoginRequiredMixin, View):
+
     def get(self, request, *args, **kwargs):
         return render(request, 'users/connect_stripe.html', context={"page": 'stripe'})
 
@@ -136,6 +139,10 @@ class ShopifySettingView(LoginRequiredMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super(ShopifySettingView, self).get_context_data(**kwargs)
         context["page"] = 'shopify'
+        form = context['form']
+        self.object.refresh_from_db()
+        if "Already integrated." in form.non_field_errors():
+            messages.info(self.request, "Already integrated.")
         return context
 
     def get_initial(self):
@@ -147,14 +154,36 @@ class ShopifySettingView(LoginRequiredMixin, UpdateView):
 
     def form_valid(self, form):
         obj = form.save()
+        if obj.config_type == "manual":
+            obj.is_verified = True
+            obj.save()
+            messages.info(self.request, "Your key is verified.")
+            return redirect(self.get_success_url())
+        else:
+            url = self.get_permission_url(obj)
+            return redirect(url)
+
+    def get_permission_url(self, obj):
         redirect_uri = self.request.build_absolute_uri(reverse('users:shopify-callback'))
         state = binascii.b2a_hex(os.urandom(15)).decode("utf-8")
         self.request.session['shopify_oauth_state_param'] = state
         url = create_permission_url(obj, state=state, redirect_uri=redirect_uri)
-        return redirect(url)
+        return url
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if 'shop' in self.request.GET:
+            shop_url = "https://{}".format(self.request.GET['shop'])
+            self.object.shop_url = shop_url
+            self.object.config_type = "app"
+            self.object.save()
+            url = self.get_permission_url(self.object)
+            return redirect(url)
+        return super().get(request, *args, **kwargs)
 
 
 class ShopifyCallbackView(View):
+
     def get(self, request, *args, **kwargs):
         config = self.request.user.get_shopify_config()
 

@@ -76,6 +76,7 @@ THIRD_PARTY_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
     "corsheaders",
+    "mapwidgets",
 ]
 
 LOCAL_APPS = [
@@ -364,7 +365,7 @@ MCvfSGuE
     }
 }
 
-GOOGLE_MAPS_API_KEY = 'AIzaSyAhSv9zWvisiTXRPRw6K8AE0DCmrRMpQcU'
+GOOGLE_MAPS_API_KEY = env.str('GOOGLE_MAPS_API_KEY', 'AIzaSyAhSv9zWvisiTXRPRw6K8AE0DCmrRMpQcU')
 
 from google.oauth2 import service_account
 
@@ -389,3 +390,14 @@ SHIP_STATION_SECRET_KEY = env("SHIP_STATION_SECRET_KEY")
 
 SHOPIFY_APP_API_KEY = env("SHOPIFY_APP_API_KEY")
 SHOPIFY_APP_SECRET_KEY = env("SHOPIFY_APP_SECRET_KEY")
+
+ENABLE_DUMMY_DATA = env.bool('ENABLE_DUMMY_DATA', False)
+
+MAP_WIDGETS = {
+    "GooglePointFieldWidget": (
+        ("zoom", 15),
+        ("mapCenterLocationName", 'Canada'),
+        ("markerFitZoom", 12),
+    ),
+    "GOOGLE_MAP_API_KEY": env.str('GOOGLE_MAPS_API_KEY', 'AIzaSyAhSv9zWvisiTXRPRw6K8AE0DCmrRMpQcU')
+}
