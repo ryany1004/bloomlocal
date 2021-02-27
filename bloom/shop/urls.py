@@ -17,5 +17,7 @@ urlpatterns = [
     path("business/product/<uuid>/update/", views.ProductUpdate.as_view(), name="product_update_page"),
     path("business/products/shopify/import/", views.ImportProductsShopifyView.as_view(), name="shopify-import-products"),
     path("business/products/file/import/", views.ImportProductsFileView.as_view(), name="file-import-products"),
+    path("business/products/wordpress/import/", views.ImportProductsWordpressView.as_view(),
+         name="wordpress-import-products"),
     path("business/google-merchant/upload/", views.ThirdPartyProductUpoadView.as_view(), name="google-merchant-upload"),
 ]

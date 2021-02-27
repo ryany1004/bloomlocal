@@ -15,7 +15,7 @@
             <h3 class="font-14 product-title mt-1">{{ item.product.title }}</h3>
             <p class="font-10 product-desc mt-2" style="white-space: pre-line">{{ item.product.description }}</p>
             <div class="d-flex align-items-center mt-3">
-              <span class="item-status mr-4">Received</span>
+              <span class="item-status mr-4">{{ order.order_status}}</span>
               <a class="btn btn-primary btn-sm font-10 white" :href="item.product.url">Buy it again</a>
             </div>
           </div>

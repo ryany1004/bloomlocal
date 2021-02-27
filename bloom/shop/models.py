@@ -1,4 +1,6 @@
+import string
 import traceback
+import random
 from urllib.parse import quote
 
 import requests
@@ -144,12 +146,28 @@ class Product(BaseModelMixin, models.Model):
     unit_price = models.CharField(max_length=20, blank=True)
     shipment_id = models.IntegerField(blank=True, null=True)
     archived = models.BooleanField(default=False)
+    brand = models.CharField(max_length=500, blank=True)
+    gtin = models.CharField(max_length=100, blank=True)
+    mpn = models.CharField(max_length=100, blank=True)
     shop = models.ForeignKey('shop.Shop', on_delete=models.CASCADE, null=True)
     content_product_id = models.CharField(max_length=50, blank=True, editable=False)
     shopify_product_id = models.BigIntegerField(null=True, blank=True, editable=False)
+    wp_product_id = models.IntegerField(null=True, blank=True, editable=False)
 
     def __str__(self):
         return self.title
+
+    def save(self, **kwargs):
+        if not self.gtin:
+            self.gtin = ''.join(["{}".format(random.randint(0, 9)) for num in range(0, 12)])
+
+        if not self.mpn:
+            self.mpn = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
+
+        if not self.brand:
+            self.brand = self.shop.name
+
+        super(Product, self).save(**kwargs)
 
     def get_image_url(self):
         if not self.image:

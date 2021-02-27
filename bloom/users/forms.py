@@ -7,8 +7,9 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UsernameField
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
+from woocommerce import API
 
-from bloom.users.models import ShopifyApp
+from bloom.users.models import ShopifyShop, WordpressShop
 
 User = get_user_model()
 
@@ -72,9 +73,9 @@ class VendorSignUpForm(forms.Form):
     store_type = forms.ChoiceField(choices=STORE_TYPES)
 
 
-class ShopifyAppForm(forms.ModelForm):
+class ShopifyShopForm(forms.ModelForm):
     class Meta:
-        model = ShopifyApp
+        model = ShopifyShop
         fields = ['shop_url', 'api_key', 'password', 'config_type']
 
     def clean(self):
@@ -94,3 +95,23 @@ class ShopifyAppForm(forms.ModelForm):
                 shopify.ShopifyResource.clear_session()
 
         return self.cleaned_data
+
+
+class WordpressShopForm(forms.ModelForm):
+    class Meta:
+        model = WordpressShop
+        fields = ['shop_url', 'api_key', 'secret_key']
+
+    def clean(self):
+        wcapi = API(
+            url=self.cleaned_data['shop_url'],
+            consumer_key=self.cleaned_data['api_key'],
+            consumer_secret=self.cleaned_data['secret_key'],
+            version="wc/v3"
+        )
+        res = wcapi.get('products')
+        if res.status_code != 200:
+            raise forms.ValidationError("Unable access your store.")
+
+        return self.cleaned_data
+

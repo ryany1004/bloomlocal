@@ -17,7 +17,7 @@ from django.views.generic.base import View
 from django.views.generic.detail import DetailView
 
 from bloom.shop.models import Shop, Product
-from bloom.users.models import UserRole, ShopifyApp
+from bloom.users.models import UserRole, ShopifyShop
 from bloom.users.shopify import save_shopify_product
 from bloom.utils.shopping import insert_products_to_gmc, update_products_to_gmc, delete_products_to_gmc, \
     convert_to_product_data
@@ -151,34 +151,18 @@ class ImportProductsFileView(View):
         return JsonResponse(data=products, safe=False)
 
 
+class ImportProductsWordpressView(View):
+
+    def get(self, request, *args, **kwargs):
+        return render(request, "pages/business/products-wordpress-import.html")
+
+
 class ThirdPartyProductUpoadView(View):
 
     def get(self, request, *args, **kwargs):
         return render(request, "pages/business/products-upload.html")
 
     def post(self, request, *args, **kwargs):
-        product_ids = json.loads(request.body)['product_ids']
-        products = Product.objects.filter(id__in=product_ids, shop=request.user.get_shop())
-
-        config = self.request.user.get_shopify_config()
-        session = shopify.Session(config.shop_url, settings.SHOPIFY_API_VERSION, config.access_token)
-        shopify.ShopifyResource.activate_session(session)
-        try:
-            for p in products:
-                if p.shopify_product_id and shopify.Product.exists(p.shopify_product_id):
-                    product = shopify.Product()
-                    product.id = p.shopify_product_id
-                else:
-                    product = shopify.Product()
-                save_shopify_product(product, p)
-        except Exception as e:
-            print(traceback.format_exc())
-        finally:
-            shopify.ShopifyResource.clear_session()
-
-        return render(request, "pages/business/products-upload.html")
-
-    def put(self, request, *args, **kwargs):
         from shopping.content import common
 
         product_ids = json.loads(request.body)['product_ids']
@@ -258,7 +242,7 @@ class ShopRedactView(View):
         try:
             data = json.loads(request.body)
             shop_domain = data['shop_domain']
-            ShopifyApp.objects.filter(shop_url__icontains=shop_domain).delete()
+            ShopifyShop.objects.filter(shop_url__icontains=shop_domain).delete()
         except:
             print(traceback.format_exc())
         return HttpResponse(status=200)

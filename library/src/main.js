@@ -80,13 +80,13 @@ import SearchPage from "./components/shopper/SearchPage";
 import MyOrders from "./components/business/orders/MyOrders";
 import ProductsImport from "./components/business/ProductsImport";
 import ShopifyProductCard from "./components/business/ShopifyProductCard";
-import ShopifyProductEdit from "@/components/business/ShopifyProductEdit";
 import Receipt from "@/components/business/orders/Receipt";
 import ShopperInfo from "@/components/business/orders/ShopperInfo";
 import Dashboard from "@/components/business/dashboard/Dashboard";
 import ProductsUpload from "@/components/business/ProductsUpload";
 import ProductsFileImport from "@/components/business/ProductsFileImport";
 import InternationalPhoneInput from "@/components/common/InternationalPhoneInput";
+import ProductsWordpressImport from "@/components/business/ProductsWordpressImport";
 
 Vue.config.productionTip = false
 
@@ -136,13 +136,13 @@ const Components = {
     MyOrders,
     ProductsImport,
     ShopifyProductCard,
-    ShopifyProductEdit,
     Receipt,
     ShopperInfo,
     Dashboard,
     ProductsUpload,
     ProductsFileImport,
-    InternationalPhoneInput
+    InternationalPhoneInput,
+    ProductsWordpressImport
 }
 Object.keys(Components).forEach(name => {
     // console.info('name: '+ name);

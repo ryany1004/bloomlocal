@@ -3,9 +3,14 @@ import os
 import urllib
 
 from django.core.files.base import File
+from django.db import models
+from django.db.models.expressions import Value, F
+from django.db.models.functions import Concat
 
 from bloom.shop.models import Product, ImageStorage, ProductImage, ProductVariant
 
+contentLanguage = 'en'
+targetCountry = "CA"
 
 def get_product_data(product, domain):
     offer_id = '{}'.format(product.id)
@@ -22,22 +27,52 @@ def get_product_data(product, domain):
         'imageLink':
             product.thumbnail.url if product.thumbnail else None,
         'contentLanguage':
-            'en',
+            contentLanguage,
         'targetCountry':
-            'US',
+            targetCountry,
         'channel':
             'online',
         'availability':
             'in stock',
         'condition':
             'new',
-        # 'googleProductCategory':
-        #     ", ".join(categories),
+        'identifier_exists': 'no',
+        #'gtin': product.gtin,
+        'mpn': product.mpn,
+        'brand': product.brand,
         'price': {
             'value': product.price,
-            'currency': 'USD'
-        }
+            'currency': 'CAD'
+        },
+        'shipping': [{
+            'country': targetCountry,
+            'service': 'Standard shipping'
+        }],
     }
+    if product.weight:
+        p['shippingWeight'] = {
+            'value': product.weight,
+            'unit': product.weight_unit
+        }
+
+    if product.length:
+        p['shippingLength'] = {
+            'value': product.length,
+            'unit': product.dimension_unit
+        }
+
+    if product.width:
+        p['shippingWidth'] = {
+            'value': product.width,
+            'unit': product.dimension_unit
+        }
+
+    if product.height:
+        p['shippingHeight'] = {
+            'value': product.height,
+            'unit': product.dimension_unit
+        }
+
     if product.content_product_id:
         p['id'] = product.content_product_id
     return p
@@ -71,11 +106,17 @@ def insert_products_to_gmc(products, domain, service, merchant_id):
                     print(json.dumps(errors, sort_keys=True, indent=2,
                                      separators=(',', ': ')))
 
-            products = Product.objects.filter(id__in=product_ids)
-            for p in products:
-                p.content_product_id = 'online:en:US:{}'.format(p.id)
-
-            Product.objects.bulk_update(products, fields=['content_product_id'])
+            new_content_id = Concat(
+                Value('online:'),
+                Value(contentLanguage),
+                Value(":"),
+                Value(targetCountry),
+                Value(":"),
+                'id',
+                output_field=models.CharField()
+            )
+            products = Product.objects.filter(id__in=product_ids) \
+                .update(content_product_id=new_content_id)
         else:
             print('There was an error. Response: %s' % result)
     else:
@@ -105,6 +146,17 @@ def update_products_to_gmc(products, domain, service, merchant_id):
                     print('Product "%s" with offerId "%s" was updated.' %
                           (product['id'], product['offerId']))
                     product_ids.append(product['offerId'])
+                    new_content_id = Concat(
+                        Value('online:'),
+                        Value(contentLanguage),
+                        Value(":"),
+                        Value(targetCountry),
+                        Value(":"),
+                        'id',
+                        output_field=models.CharField()
+                    )
+                    Product.objects.filter(id__in=product_ids) \
+                        .update(content_product_id=new_content_id)
                 elif errors:
                     print('Errors for batch entry %d:' % entry['batchId'])
                     print(json.dumps(errors, sort_keys=True, indent=2,
@@ -204,6 +256,8 @@ def get_variant(row, enable_color, enable_size):
 
 def isdigit(s):
     """ Returns True is string is a number. """
+    if s is None:
+        return False
     return s.replace('.', '', 1).isdigit()
 
 

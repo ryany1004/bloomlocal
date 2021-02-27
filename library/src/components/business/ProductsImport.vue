@@ -20,7 +20,7 @@
       {{ loading ? "Loading...": "No data" }}
     </div>
 
-    <el-dialog title="Preview imported products to Shopify" :close-on-click-modal="false" :visible.sync="visible" width="95%">
+    <el-dialog title="Preview imported products" :close-on-click-modal="false" :visible.sync="visible" width="95%">
       <div class="row product-cards">
         <div class="col-lg-2 col-md-3 col-6 mb-5" v-for="product in selected_products" :key="product.id">
           <shopify-product-card v-loading="product.loading" element-loading-background="rgba(0, 0, 0, 0.8)" :product="product" :handle-click="handleClick"></shopify-product-card>
@@ -36,7 +36,7 @@
       title="Edit product"
       :visible.sync="dialogVisible"
       width="80%">
-      <shopify-product-edit v-if="edit_product" :product.sync="edit_product"></shopify-product-edit>
+      <import-product-edit v-if="edit_product" :product.sync="edit_product"></import-product-edit>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="dialogVisible = false">Close</el-button>
       </span>
@@ -47,11 +47,13 @@
 <script>
 import axios from "axios";
 import pLimit from "p-limit";
+import ImportProductEdit from "@/components/business/ImportProductEdit";
 
 const limit = pLimit(2);
 
 export default {
   name: "ProductsImport",
+  components: {ImportProductEdit},
   props: {
     mediaUrl: {
       type: String,

@@ -148,7 +148,7 @@
                 <button class="btn btn-primary btn-sm mx-3" type="button" :disabled="saving.stock" @click="saveProduct('stock')"><i class="fas fa-check"></i></button>
                 <button class="btn btn-secondary btn-sm" type="button" @click="hide_edit('stock')"><i class="fas fa-times"></i></button>
               </div>
-              <div v-else><span class="white bg-1 p-stock">{{product.stock}}</span> <a href="javascript:void(0)" @click="enable_edit('stock')"><i class="fas fa-edit edit-icon"></i></a></div>
+              <div v-else><span class="white bg-1 p-stock">{{product.stock}}</span> <a class="ml-3" href="javascript:void(0)" @click="enable_edit('stock')"><i class="fas fa-edit edit-icon"></i></a></div>
             </div>
           </div>
           <h3 class="color-1 text-2 mt-5">Customer's Feedback (0)</h3>

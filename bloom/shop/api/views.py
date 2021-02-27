@@ -268,16 +268,34 @@ class ShopSearch(ListAPIView):
         return queryset[:50]
 
 
-class ImportProductStorefront(APIView):
+class ShopifyImportProduct(APIView):
 
     @method_decorator(transaction.atomic)
     def post(self, request, *args, **kwargs):
         data = request.data
-        p = Product.objects.filter(shopify_product_id=data['id'], shop=request.user.get_shop()).first()
+        shop = request.user.get_shop()
+        p = Product.objects.filter(shopify_product_id=data['id'], shop=shop).first()
         if not p:
             p = Product()
             p.shopify_product_id = data['id']
-            p.shop = request.user.get_shop()
+            p.shop = shop
+
+        save_product_data(p, data)
+
+        return Response(status=status.HTTP_200_OK)
+
+
+class WordpressImportProduct(APIView):
+
+    @method_decorator(transaction.atomic)
+    def post(self, request, *args, **kwargs):
+        data = request.data
+        shop = request.user.get_shop()
+        p = Product.objects.filter(wp_product_id=data['id'], shop=shop).first()
+        if not p:
+            p = Product()
+            p.wp_product_id = data['id']
+            p.shop = shop
 
         save_product_data(p, data)
 

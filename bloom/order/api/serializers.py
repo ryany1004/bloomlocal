@@ -51,15 +51,19 @@ class OrderSerializer(serializers.ModelSerializer):
     shipping_address = ShippingAddressSerializer(read_only=True)
     order_items = OrderItemSerializer(many=True)
     order_no = serializers.SerializerMethodField()
+    order_status = serializers.SerializerMethodField()
 
     class Meta:
         model = Order
         fields = ['id', 'uuid', 'tax', 'total_price', 'shopper', 'shipping_address', 'shopper_share_info',
-                  'shopper_sms_update', 'order_items', 'order_no']
+                  'shopper_sms_update', 'order_items', 'order_no', 'order_status']
         depth = 1
 
     def get_order_no(self, obj):
         return obj.get_order_no()
+
+    def get_order_status(self, obj):
+        return obj.get_status_display()
 
 
 class BusinessOrderSerializer(serializers.ModelSerializer):

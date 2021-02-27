@@ -15,6 +15,7 @@ from rest_framework import status
 from rest_framework.generics import get_object_or_404, RetrieveAPIView, ListAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from woocommerce import API
 
 from bloom.order.api.serializers import ShippingAddressSerializer, OrderSerializer, BusinessOrderItemSerializer, \
     BusinessOrderSerializer
@@ -143,7 +144,8 @@ class BusinessMyOrdersAPI(ListAPIView):
 class ShopifyRetrieveProductAPI(APIView):
     def get(self, request, *args, **kwargs):
         config = request.user.get_shopify_config()
-        session = shopify.Session(config.shop_url, settings.SHOPIFY_API_VERSION, config.access_token)
+        token = config.access_token if config.config_type == 'app' else config.password
+        session = shopify.Session(config.shop_url, settings.SHOPIFY_API_VERSION, token)
         shopify.ShopifyResource.activate_session(session)
         try:
             products = self.get_all_resources(shopify.Product)
@@ -196,9 +198,9 @@ class ShopifyRetrieveProductAPI(APIView):
         images = []
         for img in (product.get('images') or []):
             if img['src']:
-                images.append(img['src'])
+                images.append({'src': img['src']})
 
-        return [{'src': img} for img in images]
+        return images
 
     def get_variants(self, product):
         enable_color = False
@@ -216,8 +218,8 @@ class ShopifyRetrieveProductAPI(APIView):
         for opt in options:
             if opt['name'] == "Size":
                 for v in opt['values']:
-                    if v not in attr_size.values:
-                        attr_size.values.append(v)
+                    if v.capitalize() not in attr_size.values:
+                        attr_size.values.append(v.capitalize())
                 attr_size.save()
                 size_option = 'option{}'.format(count)
             elif opt['name'] == "Color":
@@ -331,3 +333,110 @@ class OrderRevenueYearAPI(APIView):
             .annotate(total=Sum(F("price") * F("quantity"), output_field=models.FloatField()))
 
         return Response(data=list(data), status=status.HTTP_200_OK)
+
+
+class WordpressRetrieveProductAPI(APIView):
+    def get(self, request, *args, **kwargs):
+        config = request.user.get_wordpress_shop()
+        try:
+            products = self.get_all_resources(config)
+        except Exception as e:
+            print(e)
+            raise Exception(e)
+
+        return Response(data=products, status=status.HTTP_200_OK)
+
+    def get_all_resources(self, config):
+        wcapi = API(
+            url=config.shop_url,
+            consumer_key=config.api_key,
+            consumer_secret=config.secret_key,
+            version="wc/v3"
+        )
+        res = wcapi.get('products')
+        products = []
+        if res.status_code == 200:
+            data = res.json()
+            for obj in data:
+                variants, enable_size, enable_color = self.get_variants(obj, wcapi)
+                product = {
+                    'id': obj['id'],
+                    'title': obj['name'],
+                    'description': strip_tags(obj.get('description') or '').strip(),
+                    'price': float(obj['price']) if isdigit(obj['price']) else 0,
+                    'enable_color': enable_color,
+                    'enable_size': enable_size,
+                    'status': 0 if obj.get('status') == 'publish' else 1,
+                    'variants': variants,
+                    'thumbnail': obj['images'][0]['src'] if len(obj['images']) > 0 else None,
+                    'images': self.get_images(obj),
+                    'categories': [],
+                    'stock': obj['stock_quantity']
+                }
+                if isdigit(obj.get('weight')):
+                    product['weight'] = float(obj['weight'])
+                    product['weight_unit'] = "kg"
+
+                if obj.get('dimensions') and float(obj['dimensions']['length']) > 0:
+                    product['length'] = float(obj['dimensions']['length'])
+                    product['width'] = float(obj['dimensions']['width'])
+                    product['height'] = float(obj['dimensions']['height'])
+                    product['dimension_unit'] = 'cm'
+
+                products.append(product)
+
+        return products
+
+    def get_variants(self, obj, wcapi):
+        variants = []
+        enable_size = False
+        enable_color = False
+
+        if obj['type'] == 'variable' and obj.get('variations'):
+            attr_size = Attribute.objects.get(attribute_code='size')
+            attr_color = Attribute.objects.get(attribute_code='color')
+
+            attributes = obj.get('attributes')
+            for attr in attributes:
+                if attr['name'].capitalize() == "Color":
+                    enable_color = True
+                    colors = attr['options']
+                    for v in colors:
+                        if v.capitalize() not in attr_color.values:
+                            attr_color.values.append(v.capitalize())
+                    attr_color.save()
+                elif attr['name'].capitalize() == "Size":
+                    enable_size = True
+                    sizes = attr['options']
+                    for v in sizes:
+                        if v.capitalize() not in attr_size.values:
+                            attr_size.values.append(v.capitalize())
+                    attr_size.save()
+
+            if enable_size or enable_color:
+                url = "products/{}/variations".format(obj['id'])
+                res = wcapi.get(url)
+                data = res.json()
+                for item in data:
+                    variant = {}
+                    for attr in item['attributes']:
+                        if attr['name'].capitalize() == "Size":
+                            variant['size'] = attr['option'].capitalize()
+                        elif attr['name'].capitalize() == "Color":
+                            variant['color'] = attr['option'].capitalize()
+
+                    if item['price']:
+                        variant['price'] = float(item['price'])
+
+                    if variant:
+                        variants.append(variant)
+
+        return variants, enable_size, enable_color
+
+    def get_images(self, product):
+        images = []
+        for img in (product.get('images') or []):
+            if img['src']:
+                images.append({'src': img['src']})
+
+        return images

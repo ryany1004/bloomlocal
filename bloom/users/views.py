@@ -19,8 +19,8 @@ from django.views.generic.base import View
 
 from bloom.forms import ShopForm
 from bloom.shop.models import Shop
-from bloom.users.forms import ShopifyAppForm
-from bloom.users.models import ShopifyApp
+from bloom.users.forms import ShopifyShopForm, WordpressShopForm
+from bloom.users.models import ShopifyShop, WordpressShop
 from bloom.users.shopify import create_session, create_permission_url
 
 User = get_user_model()
@@ -125,9 +125,9 @@ class StripeSettingView(LoginRequiredMixin, View):
 
 
 class ShopifySettingView(LoginRequiredMixin, UpdateView):
-    model = ShopifyApp
+    model = ShopifyShop
     template_name = 'users/connect_shopify.html'
-    form_class = ShopifyAppForm
+    form_class = ShopifyShopForm
     context_object_name = 'shopify'
 
     def get_object(self, queryset=None):
@@ -238,3 +238,25 @@ class ShopInformation(LoginRequiredMixin, UpdateView):
 
     def get_success_url(self) -> str:
         return reverse("users:shop")
+
+
+class WordpressSettingView(LoginRequiredMixin, UpdateView):
+    model = WordpressShop
+    form_class = WordpressShopForm
+    template_name = "users/connect_wordpress.html"
+    context_object_name = 'shop'
+
+    def get_object(self, queryset=None):
+        return self.request.user.get_wordpress_shop()
+
+    def get_context_data(self, **kwargs):
+        context = super(WordpressSettingView, self).get_context_data(**kwargs)
+        context["page"] = 'wordpress'
+        return context
+
+    def form_valid(self, form):
+        messages.info(self.request, "Your key is verified.")
+        return super(WordpressSettingView, self).form_valid(form)
+
+    def get_success_url(self) -> str:
+        return reverse("users:wordpress-integration")

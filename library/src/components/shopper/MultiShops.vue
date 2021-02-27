@@ -107,7 +107,7 @@ export default {
     .card-image {
       height: 153px;
       width: 100%;
-      background-size: contain;
+      background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
       border: 1px solid #f8f8f8;

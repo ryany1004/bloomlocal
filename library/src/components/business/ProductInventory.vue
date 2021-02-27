@@ -14,6 +14,7 @@
           <div class="dropdown-menu" aria-labelledby="dropdownImportButton">
             <a class="dropdown-item font-14" href="/business/products/shopify/import/">Shopify</a>
             <a class="dropdown-item font-14" href="/business/products/file/import/">CSV or Google Spreadsheet</a>
+            <a class="dropdown-item font-14" href="/business/products/wordpress/import/">Wordpress</a>
           </div>
         </div>
         <div class="dropdown mx-4">

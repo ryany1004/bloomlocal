@@ -65,11 +65,17 @@ class User(AbstractUser):
             shop = Shop.objects.create(owner=self, name='My Shop')
         return shop
 
+    def get_wordpress_shop(self):
+        return WordpressShop.objects.get_or_create(user=self)[0]
+
     def get_shopify_config(self):
-        return ShopifyApp.objects.get_or_create(user=self)[0]
+        return ShopifyShop.objects.get_or_create(user=self)[0]
 
     def enable_shopify_import(self):
-        return ShopifyApp.objects.filter(user=self, is_verified=True).exists()
+        return ShopifyShop.objects.filter(user=self, is_verified=True).exists()
+
+    def enable_wordpress_import(self):
+        return WordpressShop.objects.filter(user=self).exclude(secret_key='').exists()
 
 
 class MyCollection(BaseModelMixin, models.Model):
@@ -99,7 +105,7 @@ class RecentViewedShop(models.Model):
         unique_together = [['user', 'shop']]
 
 
-class ShopifyApp(models.Model):
+class ShopifyShop(models.Model):
     TYPE_CHOICES = (
         ('app', 'App'),
         ('manual', 'Manual'),
@@ -111,6 +117,16 @@ class ShopifyApp(models.Model):
     config_type = models.CharField(max_length=10, choices=TYPE_CHOICES, default='app')
     api_key = models.CharField(max_length=200, blank=True)
     password = models.CharField(max_length=200, blank=True)
+
+    def __str__(self):
+        return self.user.__str__()
+
+
+class WordpressShop(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    shop_url = models.URLField(blank=True)
+    api_key = models.CharField(max_length=200, blank=True)
+    secret_key = models.CharField(max_length=200, blank=True)
 
     def __str__(self):
         return self.user.__str__()

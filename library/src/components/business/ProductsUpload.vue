@@ -24,7 +24,7 @@
       </div>
       <div slot="footer" class="dialog-footer">
         <el-button @click="visibleDlg = false">Cancel</el-button>
-        <el-button type="primary" @click="importGoogleMerchant()">Upload</el-button>
+        <el-button type="primary" @click="uploadGoogleMerchant()">Upload</el-button>
       </div>
     </el-dialog>
   </div>
@@ -95,28 +95,7 @@ export default {
           this.$set(p, 'checked', this.checked_all);
         })
     },
-    importShopify() {
-      let product_ids = []
-      this.selected_products.forEach(p => {
-        if (p.checked) {
-          product_ids.push(p.id);
-        }
-      })
-      let that = this;
-      that.loading = true;
-      if (product_ids.length > 0) {
-        axios.post("/business/google-merchant/upload/", {product_ids: product_ids}).then(() => {
-          that.loading = false;
-          that.visible = false;
-          setTimeout(() => {
-            alert("Selected product(s) successfully posted to google shopping")
-          }, 1000)
-        }).catch(() => {
-          that.loading = false;
-        })
-      }
-    },
-    importGoogleMerchant() {
+    uploadGoogleMerchant() {
       let product_ids = []
       if (confirm("Are you sure?")) {
         this.selected_products.forEach(p => {
@@ -127,9 +106,11 @@ export default {
         let that = this;
         that.loading = true;
         if (product_ids.length > 0) {
-          axios.put("/business/google-merchant/upload/", {product_ids: product_ids}).then(() => {
+          axios.post("/business/google-merchant/upload/", {product_ids: product_ids}).then(() => {
             that.loading = false;
-            that.visibleDlg = false;
+            setTimeout(() => {
+              that.visibleDlg = false;
+            }, 200);
             alert("Selected product(s) successfully posted to google shopping")
           }).catch(() => {
             that.loading = false;

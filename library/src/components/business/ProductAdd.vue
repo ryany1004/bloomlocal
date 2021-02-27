@@ -137,6 +137,7 @@
                 </ValidationProvider>
                 <select class="form-control form-control-sm input-w50" v-model="product.weight_unit">
                   <option value="lb">lb</option>
+                  <option value="kg">kg</option>
                 </select>
               </div>
             </div>
