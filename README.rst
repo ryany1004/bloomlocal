@@ -18,6 +18,41 @@ Moved to settings_.
 
 .. _settings: http://cookiecutter-django.readthedocs.io/en/latest/settings.html
 
+
+Setup project
+--------------
+* Run this command to install requirement packages:
+
+    $ pipenv install
+
+* Active your python environment:
+
+    $ pipenv shell
+
+* Update DATABASE_URL in **.env** file like this format:
+
+    postgres://<user>:<password>@<host>:<port>/<database_name>
+
+Note: <database_name> should exist in database server before run next command
+
+* Create database tables, use this command::
+
+    $ python manage.py migrate
+
+* To compile scss project, run this command at root project::
+
+    $ npm run dev
+
+* To compile vue components, run this command::
+
+    $ cd library
+    $ npm run dev
+
+* To run local server, use this command::
+
+    $ python manage.py runserver --settings=config.settings.local
+
+
 Basic Commands
 --------------
 
