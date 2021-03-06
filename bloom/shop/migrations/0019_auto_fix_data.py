@@ -45,6 +45,7 @@ def fix_data_product(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
+        ('order', '0008_auto_20201228_1149'),
         ('shop', '0018_auto_20210109_1713'),
     ]
 
