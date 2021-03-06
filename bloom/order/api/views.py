@@ -59,6 +59,8 @@ class CartAPI(APIView):
 
 
 class ValidShippingAddress(APIView):
+    permission_classes = []
+
     def post(self, request, *args, **kwargs):
         data = ShippingAddressSerializer(data=request.data, context={"request": request})
         if data.is_valid():
@@ -163,6 +165,9 @@ class ShopifyRetrieveProductAPI(APIView):
         products = []
         for obj in resources:
             draft = json.loads(obj.to_json())['product']
+            if draft.get('status') != "active":
+                continue
+
             variants, enable_size, enable_color = self.get_variants(draft)
             images = self.get_images(draft)
             product = {

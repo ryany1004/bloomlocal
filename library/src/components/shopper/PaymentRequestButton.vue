@@ -1,7 +1,7 @@
 <template>
   <div class="sr-root">
     <div class="sr-main">
-      <h3 class="font-16">PAYMENT INFORMATION</h3>
+      <h3 class="font-16">Payment Method</h3>
       <form id="payment-form" class="sr-payment-form mt-3" @submit="handleSubmit">
         <div class="sr-combo-inputs-row">
           <div class="sr-input sr-card-element" id="card-element"></div>

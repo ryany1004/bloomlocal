@@ -355,7 +355,7 @@ SOCIALACCOUNT_PROVIDERS = {
             "key": "3W3GAVC73Y",
 
             # The certificate you downloaded when generating the key.
-            "certificate": """-----BEGIN PRIVATE KEY-----
+            "certificate_key": """-----BEGIN PRIVATE KEY-----
 MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgpEpZsQk2cBnfslTm
 LGx8icIvKylzSPANifQVXdA/9ISgCgYIKoZIzj0DAQehRANCAAT8GZSdmp7b/8wL
 1EJv5TCNepBx5USo/OnFSvtaXU2JBkrwHYkX7ftD1i8JhruMl9mNoYDOBzgzurbg

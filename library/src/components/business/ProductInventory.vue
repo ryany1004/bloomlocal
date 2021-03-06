@@ -73,11 +73,11 @@
                 <input type="number" min="0" v-model="scope.row.edit_price" class="form-control" :class="{'is-invalid': errors.length > 0 || (errs[scope.row.id] && errs[scope.row.id].price)}"/>
                 </ValidationProvider>
                 <div class="mt-3" style="text-align: right;">
-                  <el-button size="mini" type="text" @click="scope.row.price_visible = false">cancel</el-button>
+                  <el-button size="mini" type="text" @click="hideEditPrice(scope.row)">cancel</el-button>
                   <el-button type="primary" size="mini" @click="saveAttribute(scope.row, 'price')">confirm</el-button>
                 </div>
               </div>
-              <a slot="reference" class="icon-edit" href="javascript:void(0)" @click="scope.row.price_visible=true;scope.row.edit_price=scope.row.price"><i class="fas fa-pencil-alt"></i></a>
+              <a slot="reference" class="icon-edit" href="javascript:void(0)" @click="showEditPrice(scope.row)"><i class="fas fa-pencil-alt"></i></a>
             </el-popover>
           </div>
         </template>
@@ -105,11 +105,11 @@
                 <input type="number" min="0" v-model="scope.row.edit_stock" class="form-control" :class="{'is-invalid': errors.length > 0 || (errs[scope.row.id] && errs[scope.row.id].stock)}"/>
                 </ValidationProvider>
                 <div class="mt-3" style="text-align: right;">
-                  <el-button size="mini" type="text" @click="scope.row.stock_visible = false">cancel</el-button>
+                  <el-button size="mini" type="text" @click="hideEditStock(scope.row)">cancel</el-button>
                   <el-button type="primary" size="mini" @click="saveAttribute(scope.row, 'stock')">confirm</el-button>
                 </div>
               </div>
-              <a slot="reference" class="icon-edit" href="javascript:void(0)" @click="scope.row.stock_visible=true;scope.row.edit_stock=scope.row.stock"><i class="fas fa-pencil-alt"></i></a>
+              <a slot="reference" class="icon-edit" href="javascript:void(0)" @click="showEditStock(scope.row)"><i class="fas fa-pencil-alt"></i></a>
             </el-popover>
           </div>
         </template>
@@ -238,6 +238,20 @@ export default {
     },
   },
   methods: {
+    showEditStock(row) {
+      this.$set(row, 'stock_visible', true);
+      this.$set(row, 'edit_stock', row.stock);
+    },
+    hideEditStock(row) {
+      this.$set(row, 'stock_visible', false);
+    },
+    showEditPrice(row) {
+      this.$set(row, 'price_visible', true);
+      this.$set(row, 'edit_price', row.price);
+    },
+    hideEditPrice(row) {
+      this.$set(row, 'price_visible', false);
+    },
     changeViewMode(mode) {
       this.$emit("changeViewMode", mode);
     },

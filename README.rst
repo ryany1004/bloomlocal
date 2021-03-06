@@ -33,7 +33,7 @@ Setup project
 
     postgres://<user>:<password>@<host>:<port>/<database_name>
 
-Note: <database_name> should exist in database server before run next command
+Note: <database_name> must exist in database server before you run next command
 
 * Create database tables, use this command::
 

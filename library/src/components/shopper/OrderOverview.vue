@@ -61,11 +61,11 @@
           </div>
           <div class="form-row">
             <div class="form-group col-md-6">
-              <label for="first_name">First name</label>
+              <label for="first_name">First Name</label>
               <input type="text" class="form-control capitalize" id="first_name" name="first_name" v-model="shipping_address.first_name" :class="{'is-invalid': errors.first_name}">
             </div>
             <div class="form-group col-md-6">
-              <label for="last_name">Last name</label>
+              <label for="last_name">Last Name</label>
               <input type="text" class="form-control capitalize" id="last_name" name="last_name" v-model="shipping_address.last_name" :class="{'is-invalid': errors.last_name}">
             </div>
           </div>
@@ -129,11 +129,11 @@
             <span>Shipping</span><span>Free</span>
           </div>
           <div class="d-flex justify-content-between mb-1">
-            <span>Discount</span><span>0</span>
+            <span>Discount</span><span>$0.00</span>
           </div>
           <hr style="margin: 10px 0;border-color: #4F4F4F"/>
           <div class="d-flex justify-content-between">
-            <span>Order total</span><span>{{ total_price | numFormat("0.00") }}</span>
+            <span>Order Total</span><span>${{ total_price | numFormat("0.00") }}</span>
           </div>
           <div class="mt-4">
             <button :disabled="loading || cart_items.length == 0" class="btn btn-primary btn-block white" type="button" @click="orderConfirm()">Confirm & Pay</button>
@@ -152,7 +152,7 @@
     </el-dialog>
 
     <el-dialog
-      title="Pay your order"
+      title="Place Order"
       :visible.sync="dialogPaymentVisible" width="40%" :close-on-click-modal="false">
       <payment-request-button :client-secret="clientSecret" :publishable-key="stripePublishableKey"
         :total-price="total_price"
@@ -251,7 +251,7 @@ export default {
       this.shipping_address.phone_number = payload.formatInternational || '';
     },
     handleSelect(address) {
-      this.shipping_address = address;
+      this.shipping_address = JSON.parse(JSON.stringify(address));
       this.shipping_address.confirm_email = address.email;
       let parsed = parsePhoneNumberFromString(address.phone_number);
       this.$refs.phone_input.countryCode = parsed.country;
@@ -315,7 +315,7 @@ export default {
     },
     orderConfirm() {
       let data = this.shipping_address, that = this;
-      if (this.isLoggedIn && confirm("Are you sure?")) {
+      if (confirm("Are you sure?")) {
         data.sms_update = that.sms_update
         data.shopper_share_info = that.shopper_share_info
         that.loading = true;
@@ -372,7 +372,7 @@ export default {
     padding: 15px;
     font-size: 14px;
   }
-  .is-invalid .input-tel__input {
+  .is-invalid .input-tel__input, .is-invalid .form-control {
       border-color: #dc3545;
       padding-right: calc(1.5em + 0.75rem);
       background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%23dc3545' viewBox='-2 -2 7 7'%3e%3cpath stroke='%23dc3545' d='M0 0l3 3m0-3L0 3'/%3e%3ccircle r='.5'/%3e%3ccircle cx='3' r='.5'/%3e%3ccircle cy='3' r='.5'/%3e%3ccircle cx='3' cy='3' r='.5'/%3e%3c/svg%3E");
