@@ -1,6 +1,9 @@
 <template>
   <div class="report-box" style="height: 100%" v-loading="loading">
-    <p class="font-14">Popular Products</p>
+    <div class="d-flex justify-content-between">
+      <p class="font-14">Popular Products Highlights</p>
+      <time-filter v-model="filter_time"></time-filter>
+    </div>
     <ul class="popular-products mb-0" v-if="products.length > 0" v-slimscroll="{height: '270px'}">
       <li class="d-flex align-items-center" v-for="product in products" :key="product.id">
         <div class="d-flex align-items-center">
@@ -19,9 +22,11 @@
 
 <script>
 import axios from "axios";
+import TimeFilter from "@/components/business/dashboard/TimeFilter";
 
 export default {
   name: "PopularProductViewSale",
+  components: {TimeFilter},
   props: {
     mediaUrl: {
       type: String,
@@ -31,17 +36,25 @@ export default {
   data() {
     return {
       loading: false,
-      products: []
+      products: [],
+      filter_time: "today"
     }
   },
   created() {
     this.get_data()
   },
+  watch: {
+    filter_time: {
+      handler: function () {
+        this.get_data()
+      }
+    }
+  },
   methods: {
     get_data() {
       let that = this;
       that.loading = true
-      axios.get('/api/analytics/popular-products-sale-and-view/').then(res => {
+      axios.get(`/api/analytics/popular-products-sale-and-view/?type=${this.filter_time}`).then(res => {
         that.loading = false;
         that.products = res.data;
       }).catch(err => {

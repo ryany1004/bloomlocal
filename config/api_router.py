@@ -82,4 +82,10 @@ urlpatterns += [
     path('analytics/popular-products-sale-and-view/', analytics_apis.ShopPopularProductsData.as_view(), name="shop-popular-products-report"),
     path('analytics/sale-pie-chart/', analytics_apis.SalePieChartData.as_view(), name="sale-pie-chart-report"),
     path('analytics/other-data-report/', analytics_apis.OtherDataReport.as_view(), name="other-data-report"),
+
+    path('analytics/store-visit-count/', analytics_apis.StoreVisitView.as_view(), name="store-visit-count"),
+    path('analytics/product-view-count/', analytics_apis.ProductViewCount.as_view(), name="product-view-count"),
+    path('analytics/order-count/', analytics_apis.OrderCountView.as_view(), name="order-count"),
+    path('analytics/revenue-total/', analytics_apis.RevenueTotalView.as_view(), name="revenue-total"),
+
 ]

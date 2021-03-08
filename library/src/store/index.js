@@ -14,7 +14,29 @@ const vStore = new Vuex.Store({
     user: {},
     isLoggedIn: false,
     cart_items: [],
-    cartLoading: false
+    cartLoading: false,
+
+
+    tags: [
+      {id:1, name:'tshirts'},
+      {id:2, name:'Jeans'},
+      {id:3, name:'Bottoms'},
+      {id:4, name:'Shoes'},
+      {id:5, name:'Men'},
+      {id:6, name:'Women'}
+    ],
+    storeType: [
+      {id:1, name: 'Store 1'},
+      {id:2, name: 'Store 2'}
+    ],
+    isSignup: true,
+    isSignUpSteps: false,
+    signupSteps: 1,
+    forms: {
+      signUpFields: {},
+      storeInfo: {},
+      contactDetail: {}
+    }
   },
   getters: {
     colors: state => {
@@ -25,6 +47,31 @@ const vStore = new Vuex.Store({
     },
     shopCategories: state => {
       return state.shop_categories;
+    },
+
+    getTags: state=>{
+      return state.tags;
+    },
+    getStoreType: state =>{
+      return state.storeType;
+    },
+    isSignupForm: state => {
+      return state.isSignup;
+    },
+    isformSteps: state => {
+      return state.isSignUpSteps
+    },
+    formSteps: state => {
+      return state.signupSteps
+    },
+    signUpFormFields: state => {
+      return state.forms.signUpFields;
+    },
+    getStoreInfo: state => {
+      return state.forms.storeInfo;
+    },
+    getContactDetail: state => {
+      return state.forms.contactDetail;
     }
   },
   mutations: {
@@ -54,6 +101,29 @@ const vStore = new Vuex.Store({
     },
     setCartLoading(state, loading) {
       state.cartLoading = loading
+    },
+
+
+    signupformSteps(state, payload) {
+      if(payload == 'signup') {
+        state.isSignup = true;
+        state.isSignUpSteps = false
+      } else if(payload == 'steps'){
+        state.isSignup = false;
+        state.isSignUpSteps = true;
+      }
+    },
+    steps(state, payload) {
+      state.signupSteps = payload
+    },
+    signupFormFields( state, payload) {
+      state.forms.signUpFields = payload;
+    },
+    storeInfoFields( state, payload) {
+      state.forms.storeInfo = payload
+    },
+    contactDetail( state, payload) {
+      state.forms.contactDetail = payload
     }
   },
   actions: {
@@ -130,6 +200,22 @@ const vStore = new Vuex.Store({
     },
     strip_connect() {
       return axios.post('/users/stripe/connect/')
+    },
+
+    nextStep(context, payload) {
+      context.commit('signupformSteps', payload);
+    },
+    nextProcess( context, payload) {
+      context.commit('steps', payload);
+    },
+    singUpFormField( context, payload) {
+      context.commit('signupFormFields', payload);
+    },
+    storeInfoFields (context, payload) {
+      context.commit('storeInfoFields', payload);
+    },
+    contactDetail (context, payload) {
+      context.commit('contactDetail', payload);
     }
   },
   modules: {

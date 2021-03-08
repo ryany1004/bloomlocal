@@ -1,6 +1,28 @@
 <template>
   <div class="dashboard">
     <div class="row">
+      <div class="col-8 mb-4">
+        <welcome></welcome>
+      </div>
+      <div class="col-4 mb-4">
+        <earning></earning>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-3 mb-4">
+        <store-visit></store-visit>
+      </div>
+      <div class="col-3 mb-4">
+        <product-views></product-views>
+      </div>
+      <div class="col-3 mb-4">
+        <orders></orders>
+      </div>
+      <div class="col-3 mb-4">
+        <revenue></revenue>
+      </div>
+    </div>
+    <div class="row">
       <div class="col-md-4 col-sm-12 mb-4">
         <sale-pie-chart></sale-pie-chart>
       </div>
@@ -38,13 +60,11 @@
     <div class="row widget-list mt-4">
       <div class="col-md-4 col-sm-12">
         <div class="charts">
-          <p class="bolder font-14" style="margin: 0px 0 0 15px">Orders by Day</p>
           <order-by-day></order-by-day>
         </div>
       </div>
       <div class="col-md-4 col-sm-12">
         <div class="charts">
-          <p class="bolder font-14" style="margin: 0px 0 0 15px">Revenue by Day</p>
           <revenue-by-day></revenue-by-day>
         </div>
       </div>
@@ -54,26 +74,22 @@
 
       <div class="col-md-4 col-sm-12">
         <div class="charts">
-          <p class="bolder font-14" style="margin: 0px 0 0 15px">Products Added To Cart</p>
           <products-added-to-cart-by-day></products-added-to-cart-by-day>
         </div>
       </div>
       <div class="col-md-4 col-sm-12">
         <div class="charts">
-          <p class="bolder font-14" style="margin: 0px 0 0 15px">Product Views by Day</p>
           <products-view-by-day></products-view-by-day>
         </div>
       </div>
       <div class="col-md-4 col-sm-12">
         <div class="charts">
-          <p class="bolder font-14" style="margin: 0px 0 0 15px">Storefront views</p>
           <storefront-view-by-day></storefront-view-by-day>
         </div>
       </div>
 
       <div class="col-md-4 col-sm-12">
         <div class="charts">
-          <p class="bolder font-14" style="margin: 0px 0 0 15px">Product Views from Channels</p>
           <products-view-channels-by-day></products-view-channels-by-day>
         </div>
       </div>
@@ -97,10 +113,22 @@ import PopularProductViewSale from "./PopularProductViewSale";
 import OtherDataReport from "./OtherDataReport";
 import ProductsViewChannelsByMonth from "./ProductsViewChannelsByMonth";
 import ProductsViewChannelsByDay from "./ProductsViewChannelsByDay";
+import Earning from "@/components/business/dashboard/Earning";
+import Welcome from "@/components/business/dashboard/Welcome";
+import StoreVisit from "@/components/business/dashboard/StoreVisit";
+import ProductViews from "@/components/business/dashboard/ProductViews";
+import Orders from "@/components/business/dashboard/Orders";
+import Revenue from "@/components/business/dashboard/Revenue";
 
 export default {
   name: "Dashboard",
   components: {
+    Revenue,
+    Orders,
+    ProductViews,
+    StoreVisit,
+    Welcome,
+    Earning,
     ProductsViewChannelsByDay,
     ProductsViewChannelsByMonth,
     OtherDataReport,
@@ -140,8 +168,101 @@ export default {
 }
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 .dashboard {
+  .wbox {
+    background: #FFFFFF;
+    box-shadow: 0px 9px 35px rgba(0, 0, 0, 0.03);
+    border-radius: 24px;
+  }
+  .sm-box {
+    padding: 24px 15px;
+    .d-filter-opts {
+      font-size: 14px;
+      a {
+        font-size: 14px;
+        color: #919EAB;
+        text-decoration: none;
+      }
+      strong {
+        font-size: 18px;
+      }
+    }
+    .summary-st {
+      .a-icon {
+        width: 62px;
+        height: 62px;
+        display: inline-block;
+      }
+      .a-store {
+        background: url("../../../assets/icons/icon-d-store.png");
+      }
+      .a-product {
+        background: url("../../../assets/icons/icon-d-product.png");
+      }
+      .a-orders {
+        background: url("../../../assets/icons/icon-d-order.png");
+      }
+      .a-revenue {
+        background: url("../../../assets/icons/icon-d-revenue.png");
+      }
+      span {
+        font-weight: 900;
+        font-size: 32px;
+        margin-left: 16px;
+      }
+    }
+  }
+  .welcome {
+    padding: 32px;
+    .welcome-text {
+      margin-top: 30px;
+      font-style: normal;
+      font-weight: normal;
+      font-size: 22px;
+      color: #637381;
+    }
+    .m-icon {
+      width: 36px;
+      height: 36px;
+      display: inline-block;
+    }
+    .manage {
+      margin-bottom: 16px;
+    }
+    .btn-manage {
+      display: flex;
+      margin-left: 20px;
+      padding: 9px 0;
+      text-decoration: none;
+      .m-btn-text {
+        display: flex;
+        flex-direction: column;
+        margin-left: 1rem;
+        .m-text {
+          font-size: 16px;
+          color: #212B36;
+          line-height: 18px;
+        }
+        .m-sub-text {
+          color: #919EAB;
+          font-size: 14px
+        }
+      }
+      .m-orders {
+        background: url("../../../assets/icons/manage-order.png");
+      }
+      .m-products {
+        background: url("../../../assets/icons/manage-product.png");
+      }
+      .m-store {
+        background: url("../../../assets/icons/manage-store.png");
+      }
+      .m-notification {
+        background: url("../../../assets/icons/manage-notification.png");
+      }
+    }
+  }
   .widget-list {
     > div {
       margin-bottom: 25px;

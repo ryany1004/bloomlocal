@@ -1,31 +1,23 @@
 <template>
-  <div v-loading="loading">
-    <line-chart :chart-data="chartData" :options="options" style="height: 190px"></line-chart>
+  <div class="wbox earning" v-loading="loading">
+    <p class="head1 text-center mb-0">Your earning this month</p>
+    <p class="earning-num text-center mb-1">{{ total | numFormat("0.00") }}</p>
+    <p class="head2 text-center">Update your payout method in Settings</p>
+    <div class="d-flex justify-content-center">
+      <button class="btn btn-withdraw">Withdraw All Earning</button>
+    </div>
   </div>
 </template>
 
 <script>
-import LineChart from "@/components/charts/LineChart";
-import moment from "moment";
-
-let timeFormat = 'MMM D';
+import axios from "axios";
 
 export default {
   name: "Earning",
-  components: {
-    LineChart
-  },
   data() {
     return {
-      chartData: null,
-      options: {
-        maintainAspectRatio:false,
-        responsive: true,
-        legend: {
-          display: false
-        }
-      },
-      loading: false
+      loading: false,
+      total: 0
     }
   },
   created() {
@@ -34,46 +26,41 @@ export default {
   methods: {
     get_data() {
       let that = this;
-      that.loading = true
-      setTimeout(() => {
-        let labels = []
-        let dataset = {
-          label: '',
-          data: []
-        }
-        let data = []
-        data.forEach(item => {
-          labels.push(item.name);
-          dataset.data.push(item.total);
-        })
+      that.loading = true;
+      axios.get(`/api/analytics/revenue-total/?type=this_month`).then((res) => {
+        that.total = res.data.total;
         that.loading = false;
-        that.chartData = {
-          labels: [
-            "Oct",
-            "Nov",
-            "Dec",
-            "Jan",
-            "Feb",
-          ],
-          datasets: [{
-            label: 'Earning',
-            data: [3, 20, 15, 40, 25],
-            backgroundColor: 'rgba(108, 93, 211,0.3)',
-          }]
-        }
-      }, 1000);
-    },
-    newDate(days) {
-			return moment().add(days, 'd').toDate();
-		},
-
-		newDateString(days) {
-			return moment().add(days, 'd').format(timeFormat);
-		}
+      }).catch(() => {
+        that.loading = false;
+      })
+    }
   }
 }
 </script>
 
-<style scoped>
-
+<style lang="scss">
+  .earning {
+    padding: 32px;
+    .head1 {
+      font-weight: bold;
+      font-size: 18px;
+    }
+    .earning-num {
+      font-weight: 900;
+      font-size: 72px;
+      color: #00AEEF;
+    }
+    .head2 {
+      font-size: 14px;
+      color: #919EAB;
+    }
+    .btn-withdraw {
+      background: #F4F6F8;
+      border-radius: 16px;
+      font-weight: bold;
+      font-size: 14px;
+      color: #00AEEF;
+      padding: 16px 50px;
+    }
+  }
 </style>

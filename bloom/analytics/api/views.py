@@ -554,3 +554,217 @@ class OtherDataReport(APIView):
                 'avg_product_per_order': 2
             }
         return Response(data=data, status=status.HTTP_200_OK)
+
+
+class StoreVisitView(APIView):
+
+    def get(self, request, *args, **kwargs):
+        shop = request.user.get_shop()
+
+        if request.GET.get('type') == 'today':
+            data = self.get_data_by_day(request, shop)
+        elif request.GET.get('type') == 'this_week':
+            data = self.get_data_by_week(request, shop)
+        else:
+            data = self.get_data_by_month(request, shop)
+
+        return Response(data=data, status=status.HTTP_200_OK)
+
+    def get_data_by_day(self, request, shop):
+        today = datetime.date.today()
+
+        count = StorefrontView.objects.filter(shop=shop,
+                                              viewed_date=today) \
+           .aggregate(this_month_count=Sum('count'))['this_month_count'] or 0
+
+        return {"count": count}
+
+    def get_data_by_week(self, request, shop):
+        today = datetime.date.today()
+        this_week = today - datetime.timedelta(days=today.weekday())
+
+        count = StorefrontView.objects.filter(shop=shop,
+                                              viewed_date=this_week) \
+           .aggregate(this_month_count=Sum('count'))['this_month_count'] or 0
+
+        return {"count": count}
+
+    def get_data_by_month(self, request, shop):
+        today = datetime.date.today()
+
+        count = StorefrontView.objects.filter(shop=shop,
+                                              viewed_date__year=today.year,
+                                              viewed_date__month=today.month,) \
+           .aggregate(this_month_count=Sum('count'))['this_month_count'] or 0
+
+        return {"count": count}
+
+
+class ProductViewCount(APIView):
+
+    def get(self, request, *args, **kwargs):
+        shop = request.user.get_shop()
+
+        if request.GET.get('type') == 'today':
+            data = self.get_data_by_day(request, shop)
+        elif request.GET.get('type') == 'this_week':
+            data = self.get_data_by_week(request, shop)
+        else:
+            data = self.get_data_by_month(request, shop)
+
+        return Response(data=data, status=status.HTTP_200_OK)
+
+    def get_data_by_day(self, request, shop):
+        today = datetime.date.today()
+
+        count = ProductView.objects.filter(shop=shop,
+                                           viewed_date=today) \
+           .aggregate(this_month_count=Sum('count'))['this_month_count'] or 0
+
+        return {"count": count}
+
+    def get_data_by_week(self, request, shop):
+        today = datetime.date.today()
+        this_week = today - datetime.timedelta(days=today.weekday())
+
+        count = ProductView.objects.filter(shop=shop,
+                                           viewed_date__gte=this_week) \
+           .aggregate(this_month_count=Sum('count'))['this_month_count'] or 0
+
+        return {"count": count}
+
+    def get_data_by_month(self, request, shop):
+        today = datetime.date.today()
+
+        count = ProductView.objects.filter(shop=shop,
+                                           viewed_date__year__gte=today.year,
+                                           viewed_date__month__gte=today.month,) \
+           .aggregate(this_month_count=Sum('count'))['this_month_count'] or 0
+
+        return {"count": count}
+
+
+class OrderCountView(APIView):
+    def get(self, request, *args, **kwargs):
+        shop = request.user.get_shop()
+
+        if request.GET.get('type') == 'today':
+            data = self.get_data_by_day(request, shop)
+        elif request.GET.get('type') == 'this_week':
+            data = self.get_data_by_week(request, shop)
+        else:
+            data = self.get_data_by_month(request, shop)
+
+        return Response(data=data, status=status.HTTP_200_OK)
+
+    def get_data_by_day(self, request, shop):
+        today = datetime.date.today()
+
+        statuses = [
+            Order.Status.SHIPPED,
+            Order.Status.AWAITING_SHIPMENT,
+            Order.Status.ON_HOLD,
+        ]
+        count = OrderItem.objects.filter(order__status__in=statuses,
+                                         product__shop__owner=request.user,
+                                         created_at__day=today.day,
+                                         created_at__month=today.month,
+                                         created_at__year=today.year).values("order").distinct().count()
+
+        return {"count": count}
+
+    def get_data_by_week(self, request, shop):
+        today = datetime.date.today()
+        this_week = today - datetime.timedelta(days=today.weekday())
+
+        statuses = [
+            Order.Status.SHIPPED,
+            Order.Status.AWAITING_SHIPMENT,
+            Order.Status.ON_HOLD,
+        ]
+        count = OrderItem.objects.filter(order__status__in=statuses,
+                                         product__shop__owner=request.user,
+                                         created_at__gte=this_week).values("order").distinct().count()
+
+        return {"count": count}
+
+    def get_data_by_month(self, request, shop):
+        today = datetime.date.today()
+
+        statuses = [
+            Order.Status.SHIPPED,
+            Order.Status.AWAITING_SHIPMENT,
+            Order.Status.ON_HOLD,
+        ]
+        count = OrderItem.objects.filter(order__status__in=statuses,
+                                         product__shop__owner=request.user,
+                                         created_at__month=today.month,
+                                         created_at__year=today.year).values("order").distinct().count()
+
+        return {"count": count}
+
+
+class RevenueTotalView(APIView):
+    def get(self, request, *args, **kwargs):
+        shop = request.user.get_shop()
+
+        if request.GET.get('type') == 'today':
+            data = self.get_data_by_day(request, shop)
+        elif request.GET.get('type') == 'this_week':
+            data = self.get_data_by_week(request, shop)
+        else:
+            data = self.get_data_by_month(request, shop)
+
+        return Response(data=data, status=status.HTTP_200_OK)
+
+    def get_data_by_day(self, request, shop):
+        today = datetime.date.today()
+
+        statuses = [
+            Order.Status.SHIPPED,
+            Order.Status.AWAITING_SHIPMENT,
+            Order.Status.ON_HOLD,
+        ]
+        total = OrderItem.objects.filter(order__status__in=statuses,
+                                         product__shop__owner=request.user,
+                                         created_at__day=today.day,
+                                         created_at__month=today.month,
+                                         created_at__year=today.year) \
+            .aggregate(
+                total=Sum(F("price") * F('quantity'), output_field=models.FloatField()))['total'] or 0
+
+        return {"total": total}
+
+    def get_data_by_week(self, request, shop):
+        today = datetime.date.today()
+        this_week = today - datetime.timedelta(days=today.weekday())
+
+        statuses = [
+            Order.Status.SHIPPED,
+            Order.Status.AWAITING_SHIPMENT,
+            Order.Status.ON_HOLD,
+        ]
+        total = OrderItem.objects.filter(order__status__in=statuses,
+                                         product__shop__owner=request.user,
+                                         created_at__gte=this_week) \
+            .aggregate(
+                total=Sum(F("price") * F('quantity'), output_field=models.FloatField()))['total'] or 0
+
+        return {"total": total}
+
+    def get_data_by_month(self, request, shop):
+        today = datetime.date.today()
+
+        statuses = [
+            Order.Status.SHIPPED,
+            Order.Status.AWAITING_SHIPMENT,
+            Order.Status.ON_HOLD,
+        ]
+        total = OrderItem.objects.filter(order__status__in=statuses,
+                                         product__shop__owner=request.user,
+                                         created_at__month=today.month,
+                                         created_at__year=today.year) \
+            .aggregate(
+                total=Sum(F("price") * F('quantity'), output_field=models.FloatField()))['total'] or 0
+
+        return {"total": total}

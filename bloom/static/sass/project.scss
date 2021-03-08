@@ -5,6 +5,7 @@
 @import "solid";
 @import "light";
 @import "brands";
+@import "signup";
 
 // project specific CSS goes here
 
@@ -14,13 +15,6 @@
 
 // Alert colors
 
-$white: #fff;
-$mint-green: #d6e9c6;
-$black: #000;
-$pink: #f2dede;
-$dark-pink: #eed3d7;
-$red: #b94a48;
-$icon-color: #4f4f4f;
 
 ////////////////////////////////
 		//Alerts//
@@ -87,13 +81,13 @@ $icon-color: #4f4f4f;
   content: ">";
 }
 .color-1 {
-  color: #4FC5E9;
+  color: #00AEEF;
 }
 .white {
   color: #fff !important;
 }
 .bg-1 {
-  background-color: #4FC5E9;
+  background-color: #00AEEF;
 }
 .text-1 {
   font-size: 24px;
@@ -152,11 +146,11 @@ $icon-color: #4f4f4f;
   }
 }
 .navbar-light {
-  background-color: #FFFCFF;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.08);
-  -webkit-box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.08);
-  -o-box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.08);
-  -moz-box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.08);
+  background: #FDFDFD;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.0622169);
+  -webkit-box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.0622169);
+  -o-box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.0622169);
+  -moz-box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.0622169);
 }
 .font-12 {
   font-size: 12px;
@@ -231,4 +225,128 @@ $icon-color: #4f4f4f;
 #collapseManual .card-body {
   border: none;
   padding: 0;
+}
+
+#app {
+  .business {
+    .navbar {
+      min-height: 82px;
+    }
+    .navbar-nav {
+      li {
+        display: flex;
+        align-items: center;
+        a {
+          font-size: 14px;
+        }
+      }
+    }
+    .b-side-menu {
+      width: 270px;
+      flex: 0 0 0 200px;
+      background: #F9F9F9;
+      box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.10728);
+    }
+    .menu-items {
+      list-style: none;
+      padding-left: 0;
+      li {
+        padding: 18px 40px;
+        position: relative;
+        font-weight: 500;
+        a {
+          color: #212B36;
+          font-size: 14px;
+        }
+      }
+      li.active, li:hover {
+        background: #E7F1FD;
+      }
+      li.active:before {
+        content: " ";
+        width: 2.5px;
+        background: #0072EA;
+        border-radius: 2.5px;
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+      }
+    }
+
+    .bl-icon {
+      width: 14px;
+      height: 14px;
+      display: inline-block;
+      margin-right: 20px;
+    }
+    .bl-dashboard {
+      background: url("../images/icons/dashboard.png");
+    }
+    .bl-order {
+      background: url("../images/icons/order.png");
+    }
+    .bl-shipping {
+      background: url("../images/icons/shipping.png");
+    }
+    .bl-product {
+      background: url("../images/icons/product.png");
+    }
+    .bl-customer {
+      background: url("../images/icons/customer.png");
+    }
+    .bl-invoice {
+      background: url("../images/icons/invoice.png");
+    }
+    .bl-store-setting {
+      background: url("../images/icons/store-settings.png");
+    }
+    .bl-logout {
+      background: url("../images/icons/logout.png");
+    }
+    .bl-notification {
+      width: 21px;
+      height: 21px;
+      display: inline-block;
+      background: url("../images/icons/notification.png");
+    }
+    .bl-msg {
+      width: 21px;
+      height: 21px;
+      display: inline-block;
+      background: url("../images/icons/massege.png");
+    }
+    .userName {
+      width: 100px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      color: #404040;
+    }
+    .rolename {
+      color: #565656;
+      font-size: 12px;
+    }
+    .vertical-line:before {
+      content: " ";
+      width: 1px;
+      background-color: #ccc;
+      position: absolute;
+      height: 128%;
+      top: -9px;
+    }
+    //.vertical-line {
+    //  > .dropdown-toggle::after {
+    //    width: 19px;
+    //    height: 21px;
+    //    background: url("../images/icons/more.png") no-repeat;
+    //    border: none;
+    //  }
+    //}
+  }
+}
+.search-input.form-control {
+  padding-left: 30px;
+  background-color: transparent;
+  border: none;
 }

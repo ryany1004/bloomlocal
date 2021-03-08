@@ -1,0 +1,110 @@
+{% extends "master_base.html" %}
+{% load static i18n %}
+
+{% block main %}
+  <div id="app">
+    <div class="d-flex business">
+      <div class="b-side-menu">
+        <div class="d-flex justify-content-center align-items-center" style="height: 90px">
+          <a href="{% url 'home' %}"><img src="{% static 'images/logo.png' %}"></a>
+        </div>
+
+        <ul class="menu-items">
+          <li class="active">
+            <a href="{% url 'home' %}"> <i class="bl-icon bl-dashboard"></i>Dashboard</a>
+          </li>
+          <li>
+            <a href="{% url 'shop:orders_page' %}"> <i class="bl-icon bl-order"></i>Orders</a>
+          </li>
+          <li>
+            <a href="{% url 'home' %}"> <i class="bl-icon bl-shipping"></i>Shipping & Returns</a>
+          </li>
+          <li>
+            <a href="{% url 'home' %}"> <i class="bl-icon bl-product"></i>Products</a>
+          </li>
+          <li>
+            <a href="{% url 'home' %}"> <i class="bl-icon bl-customer"></i>Customer</a>
+          </li>
+          <li>
+            <a href="{% url 'home' %}"> <i class="bl-icon bl-invoice"></i>Invoice</a>
+          </li>
+          <li>
+            <a href="{% url 'home' %}"> <i class="bl-icon bl-store-setting"></i>Store Settings</a>
+          </li>
+          <li>
+            <a href="{% url 'account_logout' %}"> <i class="bl-icon bl-logout"></i>Log Out</a>
+          </li>
+        </ul>
+      </div>
+      <div class="flex-grow-1 h-100">
+        <nav class="navbar navbar-expand-md navbar-light">
+        <div class="container">
+          <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <div class="w-100">
+              <div class="w-50">
+                <form method="get" action="/search/" class="mb-0 position-relative">
+                  <img src="{% static 'images/icons/search.png' %}" style="position: absolute;top: 12px;left: 5px">
+                  <input type="search" name="query" class="form-control search-input" placeholder="Search...">
+                </form>
+              </div>
+            </div>
+
+            <ul class="navbar-nav flex-shrink-1">
+              {% if request.user.is_authenticated %}
+              <li class="nav-item">
+                <a href="javascript:void(0)" class="nav-link mr-3"><i class="bl-notification"></i></a>
+              </li>
+              <li class="nav-item">
+                <a href="javascript:void(0)" class="nav-link mr-3"><i class="bl-msg"></i></a>
+              </li>
+              <li class="nav-item dropdown">
+                <a style="color: #646464" class="nav-link dropdown-toggle mr-3" href="#" id="navbarScrollingDropdown" role="button" data-toggle="dropdown" aria-expanded="false">
+                  English
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarScrollingDropdown">
+                  <li><a class="dropdown-item" href="#">French</a></li>
+                </ul>
+              </li>
+              <li class="nav-item dropdown vertical-line">
+                <a class="nav-link dropdown-toggle user-avatar d-flex align-items-center" href="javascript:void(0)" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <div class="ml-3" style="height: 48px;width: 48px">
+                  <avatar username="{{ user.username }}" :size="48"></avatar>
+                  </div>
+                  <div class="d-flex align-items-center ml-3">
+                    <div>
+                      <p class="userName mb-0">{{ user.first_name }} {{ user.last_name }}</p>
+                      <p class="rolename mb-0">Admin</p>
+                    </div>
+                  </div>
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                  <a class="dropdown-item" href="{% url 'users:detail' %}">Settings</a>
+                  <a class="dropdown-item" href="{% url 'account_logout' %}">{% trans "Sign Out" %}</a>
+                </div>
+              </li>
+              {% endif %}
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+        <div class="container">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert mt-3 {% if message.tags %}alert-{{ message.tags }}{% endif %}">{{ message }}<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+            {% endfor %}
+        {% endif %}
+      </div>
+
+      {% block content %}
+      {% endblock %}
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+

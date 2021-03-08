@@ -87,6 +87,7 @@ import ProductsUpload from "@/components/business/ProductsUpload";
 import ProductsFileImport from "@/components/business/ProductsFileImport";
 import InternationalPhoneInput from "@/components/common/InternationalPhoneInput";
 import ProductsWordpressImport from "@/components/business/ProductsWordpressImport";
+import SignUpContainer from "@/components/signup/SignUpContainer";
 
 Vue.config.productionTip = false
 
@@ -142,7 +143,8 @@ const Components = {
     ProductsUpload,
     ProductsFileImport,
     InternationalPhoneInput,
-    ProductsWordpressImport
+    ProductsWordpressImport,
+    SignUpContainer,
 }
 Object.keys(Components).forEach(name => {
     // console.info('name: '+ name);

@@ -1,6 +1,12 @@
 <template>
-  <div v-loading="loading" style="padding: 10px;overflow: auto">
-    <line-chart :chart-data="chartData" :options="options" style="height: 270px"></line-chart>
+  <div>
+    <div class="d-flex justify-content-between">
+      <p class="bolder font-14" style="margin: 0px 0 0 15px">Product Views by Day</p>
+      <time-filter v-model="filter_time"></time-filter>
+    </div>
+    <div v-loading="loading" style="padding: 10px;">
+      <line-chart :chart-data="chartData" :options="options" style="height: 270px"></line-chart>
+    </div>
   </div>
 </template>
 
@@ -8,12 +14,14 @@
 import LineChart from "@/components/charts/LineChart";
 import moment from "moment";
 import axios from "axios";
+import TimeFilter from "@/components/business/dashboard/TimeFilter";
 
 let timeFormat = 'MMM D';
 
 export default {
   name: "ProductsViewByDay",
   components: {
+    TimeFilter,
     LineChart
   },
   data() {
@@ -35,6 +43,7 @@ export default {
         }
       },
       loading: false,
+      filter_time: "today"
     }
   },
   computed: {
@@ -45,11 +54,18 @@ export default {
   created() {
     this.get_data();
   },
+  watch: {
+    filter_time: {
+      handler: function () {
+        this.get_data()
+      }
+    }
+  },
   methods: {
     get_data() {
       let that = this;
       that.loading = true
-      axios.get('/api/analytics/product-view/').then(res => {
+      axios.get(`/api/analytics/product-view/?type=${this.filter_time}`).then(res => {
         let labels = []
         let dataset = {
           label: 'Product Views by Day',

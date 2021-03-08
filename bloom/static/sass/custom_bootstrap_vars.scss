@@ -1,9 +1,23 @@
 $body-bg: #fefcff;
 $body-color: #000;
-$font-family-sans-serif: Comfortaa, cursive !default;
-$font-family-serif:      Comfortaa, cursive, serif !default;
-$font-family-monospace:  Comfortaa, cursive, monospace !default;
+$font-family-sans-serif: "Roboto", sans-serif !default;
+$font-family-serif:      "Roboto", sans-serif, serif !default;
+$font-family-monospace:  "Roboto", sans-serif, monospace !default;
 $font-family-base:       $font-family-sans-serif !default;
 $theme-colors: (
-  "primary": #4FC5E9,
+  "primary": #00AEEF,
 );
+
+//// Google Font Import /////
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400&display=swap');
+
+$white: #fff;
+$mint-green: #d6e9c6;
+$black: #000;
+$pink: #f2dede;
+$dark-pink: #eed3d7;
+$red: #b94a48;
+$icon-color: #4f4f4f;
+$dark-light: #454F5B;
+$gray4: #BDBDBD;

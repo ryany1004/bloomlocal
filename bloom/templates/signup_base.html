@@ -5,6 +5,7 @@
 
 {% block signup %}
   <div id="app">
+    {% block nav %}
     <div class="">
       <nav class="navbar navbar-expand-md navbar-light bg-light">
         <div class="container">
@@ -28,8 +29,9 @@
         </div>
       </nav>
     </div>
+    {% endblock %}
 
-    <div class="container">
+    <div class="signup">
       {% block content %}
       {% endblock content %}
     </div> <!-- /container -->
