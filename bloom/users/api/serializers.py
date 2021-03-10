@@ -52,12 +52,12 @@ class ShopperSignUpSerializer(serializers.ModelSerializer):
 class BusinessSignUpSerializer(serializers.ModelSerializer):
     confirm_password = serializers.CharField(write_only=True)
     categories = serializers.ListField(write_only=True)
-    apartment = serializers.CharField(write_only=True)
+    apartment = serializers.CharField(write_only=True, allow_blank=True)
 
     class Meta:
         model = User
         fields = ['first_name', 'last_name', 'phone_number', 'email', 'password', 'confirm_password',
-                  'business_phone', 'business_address', 'categories', 'apartment']
+                  'business_phone', 'business_address', 'categories', 'apartment', 'username']
         write_only_fields = ('password',)
 
     def create(self, validated_data):
@@ -82,6 +82,8 @@ class BusinessSignUpSerializer(serializers.ModelSerializer):
 
         shop.categories.add(*validated_data['categories'])
 
+        self.context['request'].session['register_user'] = user.id
+        self.context['request'].session['isSignUpSteps'] = '1'
         if settings.ACCOUNT_EMAIL_VERIFICATION:
             send_email_confirmation(self.context['request'], user, signup=True, email=validated_data['email'])
         return user

@@ -188,7 +188,8 @@ class ShopSerializer(serializers.ModelSerializer):
     class Meta:
         model = Shop
         fields = ['id', 'uuid', 'name', 'slug', 'logo', 'owner', 'business_address', 'business_phone',
-                  'categories', 'locality', 'category_names', 'url']
+                  'categories', 'locality', 'category_names', 'url', 'description', 'tags', 'delivery_type',
+                  'business_email', 'state', 'zipcode', 'business_website']
 
     def to_representation(self, instance):
         response = super(ShopSerializer, self).to_representation(instance)

@@ -6,8 +6,8 @@ from django.conf import settings
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 from django.db.models.aggregates import Sum, Count, Avg
-from django.db.models.expressions import F, OuterRef, Subquery
-from django.db.models.functions import Trunc
+from django.db.models.expressions import F, OuterRef, Subquery, Value
+from django.db.models.functions import Trunc, ExtractWeek, Concat, ExtractYear, ExtractMonth
 from django.utils.dateformat import format
 from rest_framework import status
 from rest_framework.generics import CreateAPIView, get_object_or_404, ListAPIView
@@ -62,13 +62,17 @@ class StorefrontViewData(APIView):
         shop = request.user.get_shop()
 
         if request.GET.get('type') == 'month':
-            data = self.get_views_by_month(shop)
+            data = self.get_month_data(shop)
+        if request.GET.get('type') == 'by_week':
+            data = self.get_data_by_week(shop)
+        elif request.GET.get('type') == 'by_month':
+            data = self.get_data_by_month(shop)
         else:
-            data = self.get_views_by_days(shop)
+            data = self.get_data_by_day(shop)
 
         return Response(data=data, status=status.HTTP_200_OK)
 
-    def get_views_by_month(self, shop):
+    def get_month_data(self, shop):
         this_month = datetime.date.today()
         last_month = this_month - relativedelta(months=1)
 
@@ -95,20 +99,68 @@ class StorefrontViewData(APIView):
             'last_month': last_month_count
         }
 
-    def get_views_by_days(self, shop):
-        this_month = datetime.date.today()
-        last_month = this_month - relativedelta(months=1) - relativedelta(days=this_month.day) + relativedelta(days=1)
-        objs = StorefrontView.objects.filter(shop=shop,
-                                             viewed_date__gte=last_month) \
-            .values('viewed_date', 'count')
+    def get_data_by_day(self, shop):
+        objs = StorefrontView.objects.filter(shop=shop) \
+            .annotate(total_view=F('count')) \
+            .values('viewed_date', 'total_view')
 
         if settings.ENABLE_DUMMY_DATA:
-            data = [{"viewed_date": "2021-02-10", "count": 9}, {"viewed_date": "2021-02-10", "count": 7},
-                    {"viewed_date": "2021-02-10", "count": 4}, {"viewed_date": "2021-02-09", "count": 1},
-                    {"viewed_date": "2021-02-17", "count": 1}]
+            data = [{"viewed_date": "2021-02-10", "total_view": 9}, {"viewed_date": "2021-02-10", "total_view": 7},
+                    {"viewed_date": "2021-02-10", "total_view": 4}, {"viewed_date": "2021-02-09", "total_view": 1},
+                    {"viewed_date": "2021-02-17", "total_view": 1}]
             today = datetime.date.today()
+            count = 0
             for i in range(len(data), 0, -1):
-                data[i - 1]['viewed_date'] = format("Y-m-d", today - relativedelta(days=i))
+                data[count]['viewed_date'] = format("Y-m-d", today - relativedelta(days=i))
+                count += 1
+            return data
+
+        return list(objs)
+
+    def get_data_by_week(self, shop):
+        objs = StorefrontView.objects.filter(shop=shop) \
+            .annotate(
+                day_year=ExtractYear('viewed_date'),
+                day_week=ExtractWeek('viewed_date')) \
+            .values('day_year', 'day_week') \
+            .annotate(total_view=Sum("count")) \
+            .values('day_year', 'day_week', 'total_view').order_by('day_year', 'day_week')
+
+        if settings.ENABLE_DUMMY_DATA:
+            data = [{"day_year": "2021-02-10", "total_view": 9}, {"day_year": "2021-02-10", "total_view": 7},
+                    {"day_year": "2021-02-10", "total_view": 4}, {"day_year": "2021-02-09", "total_view": 1},
+                    {"day_year": "2021-02-17", "total_view": 1}]
+            today = datetime.date.today()
+            count = 0
+            for i in range(len(data), 0, -1):
+                day = today - relativedelta(weeks=i)
+                data[count]['day_year'] = day.year
+                data[count]['day_week'] = day.isocalendar()[1]
+                count += 1
+            return data
+
+        return list(objs)
+
+    def get_data_by_month(self, shop):
+        objs = StorefrontView.objects.filter(shop=shop) \
+            .annotate(
+                day_year=ExtractYear('viewed_date'),
+                day_month=ExtractMonth('viewed_date')) \
+            .values('day_year', 'day_month') \
+            .annotate(total_view=Sum("count")) \
+            .values('day_year', 'day_month', 'total_view').order_by('day_year', 'day_month')
+
+        if settings.ENABLE_DUMMY_DATA:
+            data = [{"day_year": "2021-02-10", "total_view": 9}, {"day_year": "2021-02-10", "total_view": 7},
+                    {"day_year": "2021-02-10", "total_view": 4}, {"day_year": "2021-02-09", "total_view": 1},
+                    {"day_year": "2021-02-17", "total_view": 1}]
+            today = datetime.date.today()
+            count = 0
+            for i in range(len(data), 0, -1):
+                day = today - relativedelta(months=i)
+                data[count]['day_year'] = day.year
+                data[count]['day_month'] = day.month
+                count += 1
             return data
 
         return list(objs)
@@ -120,13 +172,17 @@ class ProductViewData(APIView):
         shop = request.user.get_shop()
 
         if request.GET.get('type') == 'month':
-            data = self.get_views_by_month(shop)
+            data = self.get_month_data(shop)
+        if request.GET.get('type') == 'by_week':
+            data = self.get_data_by_week(shop)
+        elif request.GET.get('type') == 'by_month':
+            data = self.get_data_by_month(shop)
         else:
-            data = self.get_views_by_days(shop)
+            data = self.get_data_by_day(shop)
 
         return Response(data=data, status=status.HTTP_200_OK)
 
-    def get_views_by_month(self, shop):
+    def get_month_data(self, shop):
         this_month = datetime.date.today()
         last_month = this_month - relativedelta(months=1)
 
@@ -155,12 +211,9 @@ class ProductViewData(APIView):
             'last_month': last_month_count
         }
 
-    def get_views_by_days(self, shop):
-        this_month = datetime.date.today()
-        last_month = this_month - relativedelta(months=1) - relativedelta(days=this_month.day) + relativedelta(days=1)
+    def get_data_by_day(self, shop):
         objs = ProductView.objects.filter(
-            product__shop=shop,
-            viewed_date__gte=last_month).values('viewed_date') \
+                product__shop=shop).values('viewed_date') \
             .annotate(total_view=Sum('count')) \
             .values('viewed_date', 'total_view')
 
@@ -168,8 +221,60 @@ class ProductViewData(APIView):
             data = [{"viewed_date": "2021-02-11", "total_view": 5}, {"viewed_date": "2021-02-12", "total_view": 3},
                     {"viewed_date": "2021-02-10", "total_view": 6}, {"viewed_date": "2021-02-09", "total_view": 2}]
             today = datetime.date.today()
+            count = 0
             for i in range(len(data), 0, -1):
-                data[i - 1]['viewed_date'] = format("Y-m-d", today - relativedelta(days=i))
+                data[count]['viewed_date'] = format("Y-m-d", today - relativedelta(days=i))
+                count += 1
+            return data
+
+        return list(objs)
+
+    def get_data_by_week(self, shop):
+        objs = ProductView.objects.filter(
+                product__shop=shop) \
+            .annotate(
+                day_year=ExtractYear('viewed_date'),
+                day_week=ExtractWeek('viewed_date')) \
+            .values('day_year', 'day_week') \
+            .annotate(total_view=Sum('count')) \
+            .values('day_year', 'day_week', 'total_view').order_by('day_year', 'day_week')
+
+        if settings.ENABLE_DUMMY_DATA:
+            data = [{"day_year": "2021-02-11", "total_view": 5}, {"day_year": "2021-02-12", "total_view": 3},
+                    {"day_year": "2021-02-11", "total_view": 8}, {"day_year": "2021-02-12", "total_view": 6},
+                    {"day_year": "2021-02-10", "total_view": 6}, {"day_year": "2021-02-09", "total_view": 2}]
+            today = datetime.date.today()
+            count = 0
+            for i in range(len(data), 0, -1):
+                day = today - relativedelta(weeks=i)
+                data[count]['day_year'] = day.year
+                data[count]['day_week'] = day.isocalendar()[1]
+                count += 1
+            return data
+
+        return list(objs)
+
+    def get_data_by_month(self, shop):
+        objs = ProductView.objects.filter(
+                product__shop=shop) \
+            .annotate(
+                day_year=ExtractYear('viewed_date'),
+                day_month=ExtractMonth('viewed_date')) \
+            .values('day_year', 'day_month') \
+            .annotate(total_view=Sum('count')) \
+            .values('day_year', 'day_month', 'total_view').order_by('day_year', 'day_month')
+
+        if settings.ENABLE_DUMMY_DATA:
+            data = [{"day_year": "2021-02-11", "total_view": 5}, {"day_year": "2021-02-12", "total_view": 3},
+                    {"day_year": "2021-02-11", "total_view": 8}, {"day_year": "2021-02-12", "total_view": 6},
+                    {"day_year": "2021-02-10", "total_view": 6}, {"day_year": "2021-02-09", "total_view": 2}]
+            today = datetime.date.today()
+            count = 0
+            for i in range(len(data), 0, -1):
+                day = today - relativedelta(months=i)
+                data[count]['day_year'] = day.year
+                data[count]['day_month'] = day.month
+                count += 1
             return data
 
         return list(objs)
@@ -181,13 +286,17 @@ class ProductViewChannelsData(APIView):
         shop = request.user.get_shop()
 
         if request.GET.get('type') == 'month':
-            data = self.get_views_by_month(shop)
+            data = self.get_month_data(shop)
+        if request.GET.get('type') == 'by_week':
+            data = self.get_data_by_week(shop)
+        elif request.GET.get('type') == 'by_month':
+            data = self.get_data_by_month(shop)
         else:
-            data = self.get_views_by_days(shop)
+            data = self.get_data_by_day(shop)
 
         return Response(data=data, status=status.HTTP_200_OK)
 
-    def get_views_by_month(self, shop):
+    def get_month_data(self, shop):
         this_month = datetime.date.today()
         last_month = this_month - relativedelta(months=1)
 
@@ -216,12 +325,10 @@ class ProductViewChannelsData(APIView):
             'last_month': last_month_count
         }
 
-    def get_views_by_days(self, shop):
-        this_month = datetime.date.today()
-        last_month = this_month - relativedelta(months=1) - relativedelta(days=this_month.day) + relativedelta(days=1)
+    def get_data_by_day(self, shop):
         objs = ProductView.objects.filter(
-            product__shop=shop,
-            viewed_date__gte=last_month).values('viewed_date').exclude(channel='website') \
+            product__shop=shop) \
+            .values('viewed_date').exclude(channel='website') \
             .annotate(total_view=Sum('count')) \
             .values('viewed_date', 'total_view')
 
@@ -229,8 +336,59 @@ class ProductViewChannelsData(APIView):
             data = [{"viewed_date": "2021-02-11", "total_view": 3}, {"viewed_date": "2021-02-12", "total_view": 7},
                     {"viewed_date": "2021-02-10", "total_view": 1}, {"viewed_date": "2021-02-09", "total_view": 2}]
             today = datetime.date.today()
+            count = 0
             for i in range(len(data), 0, -1):
-                data[i - 1]['viewed_date'] = format("Y-m-d", today - relativedelta(days=i))
+                data[count]['viewed_date'] = format("Y-m-d", today - relativedelta(days=i))
+                count += 1
+            return data
+
+        return list(objs)
+
+    def get_data_by_week(self, shop):
+        objs = ProductView.objects.filter(
+            product__shop=shop) \
+            .annotate(
+                day_year=ExtractYear('viewed_date'),
+                day_week=ExtractWeek('viewed_date')) \
+            .values('day_year', 'day_week').exclude(channel='website') \
+            .annotate(total_view=Sum('count')) \
+            .values('day_year', 'day_week', 'total_view').order_by('day_year', 'day_week')
+
+        if settings.ENABLE_DUMMY_DATA:
+            data = [{"viewed_date": "2021-02-11", "total_view": 3}, {"viewed_date": "2021-02-12", "total_view": 7},
+                    {"viewed_date": "2021-02-10", "total_view": 1}, {"viewed_date": "2021-02-09", "total_view": 2}]
+            today = datetime.date.today()
+            count = 0
+            for i in range(len(data), 0, -1):
+                day = today - relativedelta(weeks=i)
+                data[count]['day_year'] = day.year
+                data[count]['day_week'] = day.isocalendar()[1]
+                count += 1
+            return data
+
+        return list(objs)
+
+    def get_data_by_month(self, shop):
+        objs = ProductView.objects.filter(
+            product__shop=shop) \
+            .annotate(
+                day_year=ExtractYear('viewed_date'),
+                day_month=ExtractMonth('viewed_date')) \
+            .values('day_year', 'day_month').exclude(channel='website') \
+            .annotate(total_view=Sum('count')) \
+            .values('day_year', 'day_month', 'total_view').order_by('day_year', 'day_month')
+
+        if settings.ENABLE_DUMMY_DATA:
+            data = [{"day_year": "2021-02-11", "total_view": 3}, {"day_year": "2021-02-12", "total_view": 7},
+                    {"day_year": "2021-02-11", "total_view": 6}, {"day_year": "2021-02-12", "total_view": 7},
+                    {"day_year": "2021-02-10", "total_view": 1}, {"day_year": "2021-02-09", "total_view": 2}]
+            today = datetime.date.today()
+            count = 0
+            for i in range(len(data), 0, -1):
+                day = today - relativedelta(months=i)
+                data[count]['day_year'] = day.year
+                data[count]['day_month'] = day.month
+                count += 1
             return data
 
         return list(objs)
@@ -242,13 +400,17 @@ class ProductAddedToCartData(APIView):
         shop = request.user.get_shop()
 
         if request.GET.get('type') == 'month':
-            data = self.get_views_by_month(shop)
+            data = self.get_month_data(shop)
+        if request.GET.get('type') == 'by_week':
+            data = self.get_data_by_week(shop)
+        elif request.GET.get('type') == 'by_month':
+            data = self.get_data_by_month(shop)
         else:
-            data = self.get_views_by_days(shop)
+            data = self.get_data_by_day(shop)
 
         return Response(data=data, status=status.HTTP_200_OK)
 
-    def get_views_by_month(self, shop):
+    def get_month_data(self, shop):
         this_month = datetime.date.today()
         last_month = this_month - relativedelta(months=1)
 
@@ -273,26 +435,74 @@ class ProductAddedToCartData(APIView):
             'last_month': last_month_count
         }
 
-    def get_views_by_days(self, shop):
-        this_month = datetime.date.today()
-        last_month = this_month - relativedelta(months=1) - relativedelta(days=this_month.day) + relativedelta(days=1)
+    def get_data_by_day(self, shop):
         objs = ProductAddedToCart.objects.filter(
-            product__shop=shop,
-            added_date__gte=last_month).values('added_date') \
+            product__shop=shop).values('added_date') \
             .annotate(total_view=Sum('count')) \
-            .values('added_date', 'total_view')
+            .values('added_date', 'total_view').order_by('added_date')
 
         if settings.ENABLE_DUMMY_DATA:
             data = [{"added_date": "2021-02-11", "total_view": 2}, {"added_date": "2021-02-13", "total_view": 2},
                     {"added_date": "2021-02-12", "total_view": 4}, {"added_date": "2021-02-10", "total_view": 3},
                     {"added_date": "2021-02-09", "total_view": 3}, {"added_date": "2021-02-17", "total_view": 3}]
             today = datetime.date.today()
+            count = 0
             for i in range(len(data), 0, -1):
-                data[i - 1]['added_date'] = format("Y-m-d", today - relativedelta(days=i))
+                data[count]['added_date'] = format("Y-m-d", today - relativedelta(days=i))
+                count += 1
             return data
 
         return list(objs)
 
+    def get_data_by_week(self, shop):
+        objs = ProductAddedToCart.objects.filter(
+            product__shop=shop) \
+            .annotate(
+                day_year=ExtractYear('added_date'),
+                day_week=ExtractWeek('added_date')) \
+            .values('day_year', 'day_week') \
+            .annotate(total_view=Sum('count')) \
+            .values('day_year', 'day_week', 'total_view').order_by('day_year', 'day_week')
+
+        if settings.ENABLE_DUMMY_DATA:
+            data = [{"day_year": "2021-02-11", "total_view": 2}, {"day_year": "2021-02-13", "total_view": 2},
+                    {"day_year": "2021-02-12", "total_view": 4}, {"day_year": "2021-02-10", "total_view": 3},
+                    {"day_year": "2021-02-09", "total_view": 3}, {"day_year": "2021-02-17", "total_view": 3}]
+            today = datetime.date.today()
+            count = 0
+            for i in range(len(data), 0, -1):
+                day = today - relativedelta(weeks=i)
+                data[count]['day_year'] = day.year
+                data[count]['day_week'] = day.isocalendar()[1]
+                count += 1
+            return data
+
+        return list(objs)
+
+    def get_data_by_month(self, shop):
+        objs = ProductAddedToCart.objects.filter(
+            product__shop=shop) \
+            .annotate(
+                day_year=ExtractYear('added_date'),
+                day_month=ExtractMonth('added_date')) \
+            .values('day_year', 'day_month') \
+            .annotate(total_view=Sum('count')) \
+            .values('day_year', 'day_month', 'total_view').order_by('day_year', 'day_month')
+
+        if settings.ENABLE_DUMMY_DATA:
+            data = [{"day_year": "2021-02-11", "total_view": 2}, {"day_year": "2021-02-13", "total_view": 2},
+                    {"day_year": "2021-02-12", "total_view": 4}, {"day_year": "2021-02-10", "total_view": 3},
+                    {"day_year": "2021-02-09", "total_view": 3}, {"day_year": "2021-02-17", "total_view": 3}]
+            today = datetime.date.today()
+            count = 0
+            for i in range(len(data), 0, -1):
+                day = today - relativedelta(months=i)
+                data[count]['day_year'] = day.year
+                data[count]['day_month'] = day.month
+                count += 1
+            return data
+
+        return list(objs)
 
 class ShopRevenueData(APIView):
 
@@ -300,13 +510,17 @@ class ShopRevenueData(APIView):
         shop = request.user.get_shop()
 
         if request.GET.get('type') == 'month':
+            data = self.get_month_data(request, shop)
+        if request.GET.get('type') == 'by_week':
+            data = self.get_data_by_week(request, shop)
+        elif request.GET.get('type') == 'by_month':
             data = self.get_data_by_month(request, shop)
         else:
-            data = self.get_data_by_days(request, shop)
+            data = self.get_data_by_day(request, shop)
 
         return Response(data=data, status=status.HTTP_200_OK)
 
-    def get_data_by_month(self, request, shop):
+    def get_month_data(self, request, shop):
         this_month = datetime.date.today()
         last_month = this_month - relativedelta(months=1)
 
@@ -340,18 +554,14 @@ class ShopRevenueData(APIView):
             'last_month': revenue_last_month
         }
 
-    def get_data_by_days(self, request, shop):
-        this_month = datetime.date.today()
-        last_month = this_month - relativedelta(months=1) - relativedelta(days=this_month.day) + relativedelta(days=1)
-
+    def get_data_by_day(self, request, shop):
         statuses = [
             Order.Status.SHIPPED,
             Order.Status.AWAITING_SHIPMENT,
             Order.Status.ON_HOLD,
         ]
         items = OrderItem.objects.filter(order__status__in=statuses,
-                                         product__shop__owner=request.user,
-                                         created_at__gte=last_month) \
+                                         product__shop__owner=request.user) \
             .annotate(day=Trunc('order__created_at', 'day', output_field=models.DateField())) \
             .values('day').annotate(total=Sum(F("price") * F('quantity'), output_field=models.FloatField())) \
             .values('day', 'total').order_by('day')
@@ -362,8 +572,74 @@ class ShopRevenueData(APIView):
                     {"day": "2021-01-15", "total": 80.0}, {"day": "2021-01-22", "total": 22.0},
                     {"day": "2021-02-17", "total": 25.0}]
             today = datetime.date.today()
+            count = 0
             for i in range(len(data), 0, -1):
-                data[i - 1]['day'] = format("Y-m-d", today - relativedelta(days=i))
+                data[count]['day'] = format("Y-m-d", today - relativedelta(days=i))
+                count += 1
+            return data
+
+        return list(items)
+
+    def get_data_by_week(self, request, shop):
+        statuses = [
+            Order.Status.SHIPPED,
+            Order.Status.AWAITING_SHIPMENT,
+            Order.Status.ON_HOLD,
+        ]
+        items = OrderItem.objects.filter(order__status__in=statuses,
+                                         product__shop__owner=request.user) \
+            .annotate(
+                day_year=ExtractYear('order__created_at'),
+                day_week=ExtractWeek('order__created_at')) \
+            .values('day_year', 'day_week') \
+            .annotate(total=Sum(F("price") * F('quantity'), output_field=models.FloatField())) \
+            .values('day_year', 'day_week', 'total').order_by('day_year', 'day_week')
+
+        if settings.ENABLE_DUMMY_DATA:
+            data = [{"day_year": "2021-01-06", "total": 50.0}, {"day_year": "2021-01-09", "total": 10.0},
+                    {"day_year": "2021-01-12", "total": 90.0}, {"day_year": "2021-01-13", "total": 70.0},
+                    {"day_year": "2021-01-15", "total": 80.0}, {"day_year": "2021-01-22", "total": 22.0},
+                    {"day_year": "2021-02-17", "total": 25.0}]
+
+            today = datetime.date.today()
+            count = 0
+            for i in range(len(data), 0, -1):
+                day = today - relativedelta(weeks=i)
+                data[count]['day_year'] = day.year
+                data[count]['day_week'] = day.isocalendar()[1]
+                count += 1
+            return data
+
+        return list(items)
+
+    def get_data_by_month(self, request, shop):
+        statuses = [
+            Order.Status.SHIPPED,
+            Order.Status.AWAITING_SHIPMENT,
+            Order.Status.ON_HOLD,
+        ]
+        items = OrderItem.objects.filter(order__status__in=statuses,
+                                         product__shop__owner=request.user) \
+            .annotate(
+                day_year=ExtractYear('order__created_at'),
+                day_month=ExtractMonth('order__created_at')) \
+            .values('day_year', 'day_month').annotate(
+            total=Sum(F("price") * F('quantity'), output_field=models.FloatField())) \
+            .values('day_year', 'day_month', 'total').order_by('day_year', 'day_month')
+
+        if settings.ENABLE_DUMMY_DATA:
+            data = [{"day_year": "2021-01-06", "total": 50.0}, {"day_year": "2021-01-09", "total": 10.0},
+                    {"day_year": "2021-01-12", "total": 90.0}, {"day_year": "2021-01-13", "total": 70.0},
+                    {"day_year": "2021-01-15", "total": 80.0}, {"day_year": "2021-01-22", "total": 22.0},
+                    {"day_year": "2021-02-17", "total": 25.0}]
+
+            today = datetime.date.today()
+            count = 0
+            for i in range(len(data), 0, -1):
+                day = today - relativedelta(months=i)
+                data[count]['day_year'] = day.year
+                data[count]['day_month'] = day.month
+                count += 1
             return data
 
         return list(items)
@@ -375,13 +651,17 @@ class ShopOrderData(APIView):
         shop = request.user.get_shop()
 
         if request.GET.get('type') == 'month':
+            data = self.get_month_data(request, shop)
+        if request.GET.get('type') == 'by_week':
+            data = self.get_data_by_week(request, shop)
+        elif request.GET.get('type') == 'by_month':
             data = self.get_data_by_month(request, shop)
         else:
-            data = self.get_data_by_days(request, shop)
+            data = self.get_data_by_day(request, shop)
 
         return Response(data=data, status=status.HTTP_200_OK)
 
-    def get_data_by_month(self, request, shop):
+    def get_month_data(self, request, shop):
         this_month = datetime.date.today()
         last_month = this_month - relativedelta(months=1)
 
@@ -412,18 +692,14 @@ class ShopOrderData(APIView):
             'last_month': total_orders_last_month
         }
 
-    def get_data_by_days(self, request, shop):
-        this_month = datetime.date.today()
-        last_month = this_month - relativedelta(months=1) - relativedelta(days=this_month.day) + relativedelta(days=1)
-
+    def get_data_by_day(self, request, shop):
         statuses = [
             Order.Status.SHIPPED,
             Order.Status.AWAITING_SHIPMENT,
             Order.Status.ON_HOLD,
         ]
         items = OrderItem.objects.filter(order__status__in=statuses,
-                                         product__shop__owner=request.user,
-                                         created_at__gte=last_month) \
+                                         product__shop__owner=request.user) \
             .annotate(day=Trunc('order__created_at', 'day', output_field=models.DateField())) \
             .values('day').annotate(total=Count('order', distinct=True)) \
             .values('day', 'total').order_by('day')
@@ -432,8 +708,71 @@ class ShopOrderData(APIView):
             data = [{"day": "", "total": 1}, {"day": "", "total": 1}, {"day": "", "total": 1}, {"day": "", "total": 1},
                     {"day": "", "total": 2}, {"day": "", "total": 9}, {"day": "", "total": 1}]
             today = datetime.date.today()
+            count = 0
             for i in range(len(data), 0, -1):
-                data[i - 1]['day'] = format("Y-m-d", today - relativedelta(days=i))
+                data[count]['day'] = format("Y-m-d", today - relativedelta(days=i))
+                count += 1
+            return data
+
+        return list(items)
+
+    def get_data_by_week(self, request, shop):
+        statuses = [
+            Order.Status.SHIPPED,
+            Order.Status.AWAITING_SHIPMENT,
+            Order.Status.ON_HOLD,
+        ]
+        items = OrderItem.objects.filter(order__status__in=statuses,
+                                         product__shop__owner=request.user) \
+            .annotate(
+                day_year=ExtractYear('order__created_at'),
+                day_week=ExtractWeek('order__created_at')) \
+            .values('day_year', 'day_week').annotate(total=Count('order', distinct=True)) \
+            .values('day_year', 'day_week', 'total').order_by('day_year', 'day_week')
+
+        if settings.ENABLE_DUMMY_DATA:
+            data = [{"day_year": "", "total": 1}, {"day_year": "", "total": 1},
+                    {"day_year": "", "total": 1}, {"day_year": "", "total": 1},
+                    {"day_year": "", "total": 2}, {"day_year": "", "total": 9},
+                    {"day_year": "", "total": 1}]
+            today = datetime.date.today()
+            count = 0
+            for i in range(len(data), 0, -1):
+                day = today - relativedelta(weeks=i)
+                data[count]['day_year'] = day.year
+                data[count]['day_week'] = day.isocalendar()[1]
+                count += 1
+
+            return data
+
+        return list(items)
+
+    def get_data_by_month(self, request, shop):
+        statuses = [
+            Order.Status.SHIPPED,
+            Order.Status.AWAITING_SHIPMENT,
+            Order.Status.ON_HOLD,
+        ]
+        items = OrderItem.objects.filter(order__status__in=statuses,
+                                         product__shop__owner=request.user) \
+            .annotate(
+                day_year=ExtractYear('order__created_at'),
+                day_month=ExtractMonth('order__created_at')) \
+            .values('day_year', 'day_month').annotate(total=Count('order', distinct=True)) \
+            .values('day_year', 'day_month', 'total').order_by('day_year', 'day_month')
+
+        if settings.ENABLE_DUMMY_DATA:
+            data = [{"day_year": "", "total": 1}, {"day_year": "", "total": 1},
+                    {"day_year": "", "total": 1}, {"day_year": "", "total": 1},
+                    {"day_year": "", "total": 2}, {"day_year": "", "total": 9},
+                    {"day_year": "", "total": 1}]
+            today = datetime.date.today()
+            count = 0
+            for i in range(len(data), 0, -1):
+                day = today - relativedelta(months=i)
+                data[count]['day_year'] = day.year
+                data[count]['day_month'] = day.month
+                count += 1
             return data
 
         return list(items)
@@ -449,19 +788,34 @@ class ShopPopularProductsData(ListAPIView):
             Order.Status.AWAITING_SHIPMENT,
             Order.Status.ON_HOLD,
         ]
+
+        type = self.request.GET.get('type')
+        today = datetime.date.today()
+        if type == 'this_week':
+            day = today - relativedelta(weekday=today.weekday())
+        elif type == 'this_month':
+            day = datetime.date(today.year, today.month, 1)
+        else:
+            day = today
+
         view_product_ids = ProductView.objects.filter(product__shop=shop) \
+                               .filter(viewed_date__gte=day) \
                                .values('product').annotate(total=Sum('count')) \
                                .order_by('-total').values_list('product', flat=True)[:10]
 
         sale_product_id = OrderItem.objects.filter(product__shop=shop, order__status__in=statuses) \
+                              .filter(created_at__gte=day) \
                               .values('product').annotate(total=Sum("quantity")) \
                               .order_by('-total').values_list('product', flat=True)[:10]
 
+        print(day)
         query_views = Subquery(
             ProductView.objects.filter(product=OuterRef('pk')) \
+                .filter(viewed_date__gte=day) \
                 .values('product').annotate(views_total=Sum('count')).values('views_total'))
         query_sales = Subquery(
             OrderItem.objects.filter(product=OuterRef('pk'), order__status__in=statuses) \
+                .filter(created_at__gte=day) \
                 .values('product').annotate(sales_total=Sum('quantity')).values('sales_total'))
         product_ids = list(view_product_ids) + list(sale_product_id)
 
@@ -617,7 +971,7 @@ class ProductViewCount(APIView):
     def get_data_by_day(self, request, shop):
         today = datetime.date.today()
 
-        count = ProductView.objects.filter(shop=shop,
+        count = ProductView.objects.filter(product__shop=shop,
                                            viewed_date=today) \
            .aggregate(this_month_count=Sum('count'))['this_month_count'] or 0
 
@@ -627,7 +981,7 @@ class ProductViewCount(APIView):
         today = datetime.date.today()
         this_week = today - datetime.timedelta(days=today.weekday())
 
-        count = ProductView.objects.filter(shop=shop,
+        count = ProductView.objects.filter(product__shop=shop,
                                            viewed_date__gte=this_week) \
            .aggregate(this_month_count=Sum('count'))['this_month_count'] or 0
 
@@ -636,7 +990,7 @@ class ProductViewCount(APIView):
     def get_data_by_month(self, request, shop):
         today = datetime.date.today()
 
-        count = ProductView.objects.filter(shop=shop,
+        count = ProductView.objects.filter(product__shop=shop,
                                            viewed_date__year__gte=today.year,
                                            viewed_date__month__gte=today.month,) \
            .aggregate(this_month_count=Sum('count'))['this_month_count'] or 0

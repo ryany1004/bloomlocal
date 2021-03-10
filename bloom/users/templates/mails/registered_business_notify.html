@@ -1,0 +1,52 @@
+<p>Hi,</p>
+<p>There is a new registered business:</p>
+
+<p>User information:</p>
+<ul>
+  <li>
+    Name: <strong>{{ user.first_name }} {{ user.last_name }}</strong>
+  </li>
+  <li>
+    Username: <strong>{{ user.username }}</strong>
+  </li>
+  <li>
+    Email: <strong>{{ user.email }}</strong>
+  </li>
+  <li>
+    Phone: <strong>{{ user.phone_number }}</strong>
+  </li>
+</ul>
+
+<p>Store information:</p>
+<ul>
+  <li>
+    Business name: <strong>{{ shop.name }}</strong>
+  </li>
+  <li>
+    Business email: <strong>{{ shop.business_email }}</strong>
+  </li>
+  <li>
+    Business website: <strong>{{ shop.business_website }}</strong>
+  </li>
+  <li>
+    Business address: <strong>{{ shop.business_address }}</strong>
+  </li>
+  <li>
+    <div>About the business:</div>
+    <div style="white-space: pre-line;color: #8c5252">{{ shop.description }}</div>
+  </li>
+  <li>
+    Province: <strong>{{ shop.state }}</strong>
+  </li>
+  <li>
+    Postal code: <strong>{{ shop.zipcode }}</strong>
+  </li>
+  <li>
+    Tags: <strong>{% for tag in shop.tags %}{{ tag }}{% if not forloop.last %}, {% endif %}{% endfor %}</strong>
+  </li>
+  <li>
+    Delivery type: <strong>{% for tag in shop.delivery_type %}{{ tag }}{% if not forloop.last %}, {% endif %}{% endfor %}</strong>
+  </li>
+</ul>
+
+<p>Best regards.</p>

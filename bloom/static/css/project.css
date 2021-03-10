@@ -15638,12 +15638,36 @@ readers do not read off random characters that represent icons */
 
 .signup {
   overflow-x: hidden; }
+  .signup .signup_section h3 {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 40px; }
+  .signup .social-login {
+    margin-top: 10px; }
+    .signup .social-login a {
+      border-radius: 10px; }
   .signup p {
     color: #454F5B;
     font-size: 20px;
     line-height: 32px;
     font-weight: 400;
     font-style: normal; }
+  .signup .terms-checkbox {
+    margin-top: 16px;
+    margin-top: 1rem; }
+    .signup .terms-checkbox label {
+      font-size: 16px;
+      line-height: 24px;
+      color: #212B36; }
+      .signup .terms-checkbox label a {
+        color: "Roboto", sans-serif; }
+  .signup .signup-btn {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 20px;
+    font-weight: bold;
+    border-radius: 12px;
+    padding: 12px; }
   .signup .form-group {
     margin-bottom: 32px;
     margin-bottom: 2rem; }
@@ -15659,68 +15683,22 @@ readers do not read off random characters that represent icons */
         -ms-flex: 0 0 83.33333%;
             flex: 0 0 83.33333%;
     max-width: 83.33333%; }
-  .signup .signup__image .img-fluid {
+  .signup .signup_image img {
     height: 100vh;
-    width: 90%;
     -o-object-fit: cover;
        object-fit: cover; }
     @media screen and (max-width: 767px) {
-      .signup .signup__image .img-fluid {
+      .signup .signup_image img {
         width: 100%;
         height: 50vh; } }
-  .signup .signup__form .signup__form--logo {
-    margin-bottom: 20px; }
-  .signup .signup__form .signup__form--title {
-    font-family: 'Open Sans', sans-serif;
-    font-size: 32px;
-    font-weight: 700;
-    line-height: 40px; }
-  .signup .signup__form .signup-role label {
-    font-size: 18px;
-    line-height: 24px;
-    letter-spacing: 0.4px;
-    font-weight: 400; }
-  .signup .signup__form .signup-role input.form-check-input[type="radio"], .signup .signup__form .signup-role input[type="checkbox"] {
-    width: 20px;
-    height: 20px;
-    margin-right: 13px; }
-  .signup .signup__form .socialaccount_ballot .btn {
-    display: -webkit-box;
-    display: -ms-flexbox;
-    display: flex;
-    -webkit-box-align: center;
-        -ms-flex-align: center;
-            align-items: center;
-    -webkit-box-pack: center;
-        -ms-flex-pack: center;
-            justify-content: center;
-    border-radius: 10px;
-    padding: 12px 25px; }
-    .signup .signup__form .socialaccount_ballot .btn .fab {
-      font-size: 18px;
-      margin-right: 20px; }
-  .signup .signup__form hr {
-    border-top: 2px solid #BDBDBD; }
-  .signup .signup__form .or-cls {
-    color: #BDBDBD; }
-  .signup .signup__form .signup-btn {
-    font-family: 'Open Sans', sans-serif;
-    font-size: 20px;
-    font-weight: bold;
-    border-radius: 12px;
-    padding: 12px; }
-  .signup .signup__form .terms-checkbox label {
-    font-size: 16px;
-    line-height: 24px;
-    color: #212B36; }
-    .signup .signup__form .terms-checkbox label a {
-      color: "Roboto", sans-serif; }
-  .signup .signup__form .signin-noti {
+  .signup .signin-noti {
     font-size: 16px;
     font-family: 'Open Sans', sans-serif;
     font-weight: 400;
-    color: #626264; }
-    .signup .signup__form .signin-noti a {
+    color: #626264;
+    margin: auto;
+    margin-top: 20px; }
+    .signup .signin-noti a {
       font-weight: 700;
       color: #f74747; }
 

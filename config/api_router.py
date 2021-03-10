@@ -21,6 +21,7 @@ urlpatterns = router.urls
 urlpatterns += [
     path('accounts/shopper/signup/', views.ShopperSignUpAPIView.as_view(), name="shopper-signup"),
     path('accounts/vendor/signup/', views.VendorSignUpAPIView.as_view(), name="vendor-signup"),
+    path('accounts/vendor/signup-complete/', views.VendorSignUpCompleteAPIView.as_view(), name="vendor-signup-complete"),
     path('accounts/signup/initial/', views.SignUpInitialAPIView.as_view(), name="signup-initial"),
     path('product/attribute/<code>/', shop_views.AttributeValueAPIView.as_view(), name="attribute-values"),
     path('product/categories/', shop_views.CategoryAPIView.as_view(), name="product-categories"),
@@ -67,6 +68,9 @@ urlpatterns += [
          name="spreadsheet-permission-url"),
     path('statistic/order-revenue/by-month/', order_views.OrderRevenueMonthAPI.as_view(), name="order-revenue-month"),
     path('statistic/order-revenue/by-year/', order_views.OrderRevenueYearAPI.as_view(), name="order-revenue-year"),
+    path('business/shop/update/', shop_views.ShopUpdateView.as_view(), name="shop-update-view"),
+    path('business/shopify-url/update/', shop_views.ShopifyURLUpdateView.as_view(), name="shopify-url-update-view"),
+    path('business/woo-url/update/', shop_views.WooURLUpdateView.as_view(), name="woo-url-update-view"),
 ]
 
 # Analytics API

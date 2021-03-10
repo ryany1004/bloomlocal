@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block content %}
-  <Sign-Up-Container></Sign-Up-Container>
+  <sign-up-container :already-signup="isSignUpSteps" google-maps-api-key="{{ GOOGLE_MAPS_API_KEY }}"></sign-up-container>
 
 
   {% comment %}
@@ -262,7 +262,8 @@
       ],
       errors: {},
       errors1: {},
-      loading: false
+      loading: false,
+      isSignUpSteps: {% if request.session.isSignUpSteps == '1' %}true{% else %}false{% endif %}
     },
     watch: {
       role_type: function (val) {
@@ -285,10 +286,6 @@
       vendor_password_invalid: function () {
         return this.vendor.password !== this.vendor.confirm_password && this.vendor.confirm_password !== '' && this.vendor.password !== '';
       },
-    },
-    created: function () {
-      this.initRole(this.role_type);
-      this.$store.dispatch('get_shop_categories');
     },
     methods: {
       initRole: function (val) {

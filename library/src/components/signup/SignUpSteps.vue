@@ -18,16 +18,16 @@
                         <div class="wizard">
                             <div class="wizard-inner">
                                 <ul class="nav nav-tabs" role="tablist">
-                                    <li role="presentation" class="" v-bind:class="{active:steps == 1}" @click="formSteps(1)">
+                                    <li role="presentation" class="" v-bind:class="{active: steps == 1 }" @click="formSteps(1)">
                                         <a href="javascript:void(0)" data-href="#step1" data-toggle="tab" aria-controls="step1" role="tab" aria-expanded="true"><span class="round-tab">1 </span> <i>Store Information</i></a>
                                     </li>
-                                    <li role="presentation" class="disabled" v-bind:class="{active:steps == 2}" @click="formSteps(2)">
+                                    <li role="presentation" class="" v-bind:class="{active:steps == 2, disabled: steps < 2}" @click="formSteps(2)">
                                         <a href="javascript:void(0)" data-href="#step2" data-toggle="tab" aria-controls="step2" role="tab" aria-expanded="false"><span class="round-tab">2</span> <i>Contact Details</i></a>
                                     </li>
-                                    <li role="presentation" class="disabled" v-bind:class="{active:steps == 3}" @click="formSteps(3)">
+                                    <li role="presentation" class="" v-bind:class="{active:steps == 3, disabled: steps < 3}" @click="formSteps(3)">
                                         <a href="javascript:void(0)" data-href="#step3" data-toggle="tab" aria-controls="step3" role="tab"><span class="round-tab">3</span> <i>Import Products</i></a>
                                     </li>
-                                    <li role="presentation" class="disabled step4" v-bind:class="{active:steps == 4}" @click="formSteps(4)">
+                                    <li role="presentation" class="step4" v-bind:class="{active:steps == 4, disabled: steps < 4}" @click="formSteps(4)">
                                         <a href="javascript:void(0)" data-href="#step4" data-toggle="tab" aria-controls="step4" role="tab"><span class="round-tab">4</span> <i>Confirmation</i></a>
                                     </li>
                                 </ul>
@@ -39,44 +39,11 @@
                                     </div>
                                     <!-- Steps 2 -->
                                     <div class="tab-pane" role="tabpanel" id="step2" v-if="steps == 2" v-bind:class="{active:steps == 2}">
-                                        <contact-detail></contact-detail>
+                                        <contact-detail :google-maps-api-key="googleMapsApiKey"></contact-detail>
                                     </div>
                                     <!-- Steps 3 -->
                                     <div class="tab-pane" role="tabpanel" id="step3" v-if="steps == 3" v-bind:class="{active:steps == 3}">
-                                        <div class="step_3">
-                                            <h3>
-                                                Import your products from <br />
-                                                Shopify, WooCommerce Or Big Commerce
-                                            </h3>
-                                            <h4>Select Your Platform</h4>
-                                            <div class="clearfix"></div>
-                                            <div class="d-flex align-items-center justify-content-center">
-                                                <div class="p-2 bd-highlight col-example box_div">
-                                                    <a href="#"><img src="../../assets/images/shopify.png" alt="" /></a>
-                                                </div>
-                                                <div class="p-2 bd-highlight col-example box_div">
-                                                    <a href="#"><img src="../../assets/images/bigcommorce.png" alt="" /></a>
-                                                </div>
-                                                <div class="p-2 bd-highlight col-example box_div">
-                                                    <a href="#"><img src="../../assets/images/woocommerce.png" alt="" /></a>
-                                                </div>
-                                                <div class="p-2 bd-highlight col-example box_div">
-                                                    <a href="#"><img src="../../assets/images/csv.png" alt="" /></a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <ul class="list-inline next_btn_div">
-                                                    <li><button type="button" class="default-btn import_btn" v-on:click="nextStep">Import Now</button></li>
-                                                </ul>
-                                            </div>
-                                            <div class="col-md-12">
-                                                <ul class="list-inline next_btn_div">
-                                                    <li><a href="#" class="default-btn next-step skip_btn" v-on:click="nextStep">Skip for now and create my e-commerce store</a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
+                                      <import-data :next-step="nextStep"></import-data>
                                     </div>
                                     <!-- Steps 4 -->
                                     <div class="tab-pane" role="tabpanel" id="step4" v-if="steps == 4" v-bind:class="{active:steps == 4}">
@@ -92,7 +59,7 @@
                                                         We are building your store and <br />
                                                         we will notify you once it is ready.
                                                     </p>
-                                                    <button class="gotohomepage">Bloom Homepage</button>
+                                                    <button @click="goToLogin()" class="gotohomepage">Bloom Homepage</button>
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
@@ -115,12 +82,20 @@
 // import $ from 'jquery'
 import StoreInfo from './StoreInfo.vue'
 import ContactDetail from './ContactDetail.vue'
+import ImportData from "@/components/signup/ImportData";
+import axios from "axios";
 
 export default {
     name: 'SignUpSteps',
     components: {
+      ImportData,
         'store-information': StoreInfo,
         'contact-detail': ContactDetail
+    },
+    props: {
+      googleMapsApiKey: {
+        type: String
+      }
     },
     computed: {
         steps() {
@@ -131,6 +106,9 @@ export default {
 
     },
     methods: {
+        goToLogin() {
+          window.location.href = 'https://www.bloomlocal.ca/';
+        },
         formSteps (step) {
             // let checkFormFiled = this.$store.getters.
             this.$store.dispatch('nextProcess', step)
@@ -140,9 +118,15 @@ export default {
             // let step = this.$store.getters.formSteps;
             if( step >= 1 ||  step <= 4 ) {
                 step +=1;
+                if (step == 4) {
+                  this.signUpComplete();
+                }
                 this.$store.dispatch('nextProcess', step)
             }
             // let form = this.$refs.stepsFormSubmit1;
+        },
+        signUpComplete() {
+          axios.get("/api/accounts/vendor/signup-complete/")
         },
         stepsFormSubmit(event) {
             event.preventDefault();

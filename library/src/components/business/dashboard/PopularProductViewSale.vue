@@ -16,7 +16,7 @@
         <a class="ml-auto" style="color: #333" :href="product.url"><i class="far fa-chevron-right"></i></a>
       </li>
     </ul>
-    <p v-else class="font-14 mt-2">{{ loading ? "Loading...": "No data"}}</p>
+    <p v-if="products.length == 0" class="font-14 mt-2">{{ loading ? "Loading...": "No data"}}</p>
   </div>
 </template>
 

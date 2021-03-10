@@ -3,7 +3,7 @@
     <p class="welcome-text">Welcome to your Bloom dashboard.</p>
     <div class="row pt-2">
       <div class="col-6 manage">
-        <a href="javascript:void(0)" class=" btn-manage">
+        <a href="/business/my-orders/" class=" btn-manage">
           <i class="m-icon m-orders"></i>
           <span class="m-btn-text">
             <span class="m-text">Manage Orders</span>

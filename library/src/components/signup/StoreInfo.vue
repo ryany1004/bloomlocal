@@ -3,28 +3,27 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="form-group">
-                    <input type="text" 
-                        name="uname" 
-                        placeholder="Username" 
-                        class="form-control"  
-                        v-bind:class="{'is-invalid': (errors ==true && (username == ''))}"
-                        v-model="username"
-                        @change="removeWhiteSpace"
+                    <input type="text"
+                        name="uname"
+                        placeholder="Business Official Name"
+                        class="form-control"
+                        v-bind:class="{'is-invalid': (errors ==true && (name == ''))}"
+                        v-model="name"
                         required/>
-                    <div class="invalid-feedback">username is required</div>
+                    <div class="invalid-feedback">Business Official Name is required</div>
                 </div>
             </div>
         </div>
         <div class="row">
             <div class="col-md-12">
                 <div class="form-group">
-                    <textarea name="aboutBusiness" 
-                        placeholder="About the Business" 
+                    <textarea name="description"
+                        placeholder="About the Business"
                         class="form-control"
-                        v-bind:class="{'is-invalid': (errors ==true && (aboutBusiness == ''))}" 
-                        v-model="aboutBusiness"
+                        v-bind:class="{'is-invalid': (errors ==true && (description == ''))}"
+                        v-model="description"
                         required></textarea>
-                    <div class="invalid-feedback">username is required</div>
+                    <div class="invalid-feedback">About the Business is required</div>
                 </div>
             </div>
         </div>
@@ -40,13 +39,14 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="form-group">
-                    <label class="Delivery_label">Delivery Type </label> <label class="Delivery_label"> <input type="checkbox" name="Delivery" value="delivery" v-model="deliveryType" /> Delivery </label>
-                    <label class="Delivery_label"> <input type="checkbox" name="Takeout" value="takeout" v-model="deliveryType" /> Takeout </label> 
-                    <label class="Delivery_label"> <input type="checkbox" name="Instore pickup" value="instorePickup" v-model="deliveryType"/>Instore pickup </label>
+                    <label class="Delivery_label">Delivery Type </label>
+                    <label class="Delivery_label"> <input class="mr-2" type="checkbox" name="Delivery" value="delivery" v-model="delivery_type" /> Delivery </label>
+<!--                    <label class="Delivery_label"> <input class="mr-2" type="checkbox" name="Takeout" value="takeout" v-model="delivery_type" /> Takeout </label>-->
+                    <label class="Delivery_label"> <input class="mr-2" type="checkbox" name="Pickup" value="pickup" v-model="delivery_type"/>Pickup </label>
                 </div>
             </div>
             <div class="col-md-12">
-                <div class="invalid-feedback" v-if="( errors && deliveryType.length < 1)" style="display:block">Delivery type is required</div>
+                <div class="invalid-feedback" v-if="( errors && delivery_type.length < 1)" style="display:block">Delivery type is required</div>
             </div>
         </div>
         <div class="row">
@@ -60,52 +60,47 @@
 </template>
 
 <script>
-import $ from 'jquery' 
-// import select2 from 'select2'
-// window.select2 =select2;
+import $ from 'jquery'
 import TagInput from './TagInput.vue';
 
 export default {
     name: 'StoreInfo',
     data(){
         return {
-            errors: false,
-            username: '',
-            aboutBusiness:'',
+            errors: {},
+            name: '',
+            description:'',
             tags: [],
-            deliveryType: []
+            delivery_type: []
         }
     },
     components: {
         TagInput
     },
     created() {
-        // Get Store Values
-        let formFields = this.$store.getters.getStoreInfo;
-        
-        this.username = (formFields.username) ? formFields.username : ''
-        this.aboutBusiness = (formFields.aboutBusiness) ? formFields.aboutBusiness : ''
-        this.tags = (formFields.tags) ? formFields.tags : []
-        this.deliveryType = (formFields.deliveryType) ? formFields.deliveryType : []
-    }, 
+      // Get Store Values
+      let formFields = this.$store.getters.getStoreInfo;
+
+      this.name = (formFields.name) ? formFields.name : ''
+      this.description = (formFields.description) ? formFields.description : ''
+      this.tags = (formFields.tags) ? formFields.tags : []
+      this.delivery_type = (formFields.delivery_type) ? formFields.delivery_type : []
+    },
     methods: {
-        removeWhiteSpace(){
-            this.username = this.username.replace(/\s/g, '');
-        },
         validate() {
-            if(this.username == '') {
+            if(this.name == '') {
                 this.errors = true;
             }
-            if(this.aboutBusiness == '') {
+            if(this.description == '') {
                 this.errors = true;
             }
             if(this.tags.length < 1) {
                 this.errors = true
             }
-            if(this.deliveryType.length < 1) {
+            if(this.delivery_type.length < 1) {
                 this.errors = true
             }
-            if(this.username && this.aboutBusiness && this.tags.length && this.deliveryType.length) {
+            if(this.name && this.description && this.tags.length && this.delivery_type.length) {
                 this.errors = false;
             }
         },
@@ -113,10 +108,10 @@ export default {
             this.validate();
             if(this.errors == false) {
                  let fields = {
-                    "username": this.username,
-                    "aboutBusiness": this.aboutBusiness,
-                    "tags": this.tags,
-                    "deliveryType": this.deliveryType
+                    name: this.name,
+                    description: this.description,
+                    tags: this.tags,
+                    delivery_type: this.delivery_type
                 }
                 // Process next Step
                 let step = this.$store.getters.formSteps;
@@ -124,7 +119,7 @@ export default {
                     step +=1;
                     this.$store.dispatch('nextProcess', step)
                     this.$store.dispatch('storeInfoFields', fields)
-                } 
+                }
             }
         },
         tagChanged(event) {

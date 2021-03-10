@@ -10,6 +10,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.gis.db.models.fields import PointField
 from django.contrib.gis.geos.point import Point
+from django.contrib.postgres.fields import ArrayField
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models.fields.json import JSONField
@@ -45,6 +46,10 @@ class Shop(BaseModelMixin, models.Model):
         ('clothes', 'Clothes'),
         ('electronics', 'Electronics'),
     )
+    DELIVERY_TYPE_CHOICES = (
+        ('delivery', 'Delivery'),
+        ('pickup', 'Pickup'),
+    )
     uuid = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     name = models.CharField(max_length=255)
     logo = models.ImageField(upload_to=get_shop_path, max_length=500, blank=True)
@@ -52,7 +57,14 @@ class Shop(BaseModelMixin, models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='shop_set')
     business_address = models.CharField(max_length=255, blank=True)
     business_phone = models.CharField(max_length=20, blank=True)
+    business_website = models.URLField(max_length=500, blank=True,)
+    business_email = models.EmailField(max_length=255, blank=True)
+    state = models.CharField(max_length=255, blank=True)
+    zipcode = models.CharField(max_length=255, blank=True)
     apartment = models.CharField(max_length=50, blank=True)
+    description = models.TextField(blank=True)
+    tags = ArrayField(models.CharField(max_length=255), default=list, blank=True)
+    delivery_type = ArrayField(models.CharField(max_length=20, choices=DELIVERY_TYPE_CHOICES), default=list, blank=True)
     store_type = models.CharField(max_length=20, blank=True, choices=STORE_TYPES)
     categories = models.ManyToManyField(ShopCategory, blank=True)
     tax_id = models.CharField(max_length=20, blank=True)

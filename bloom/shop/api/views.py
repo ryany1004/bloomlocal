@@ -4,6 +4,7 @@ import urllib.request
 
 import django
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.contrib.gis.geos.point import Point
 from django.contrib.gis.measure import D
 from django.contrib.postgres.search import SearchVector
@@ -20,11 +21,12 @@ from google.cloud.storage import Bucket, Blob
 from google_auth_oauthlib.flow import InstalledAppFlow
 from rest_framework import status
 from rest_framework.generics import ListAPIView, get_object_or_404, \
-    RetrieveUpdateAPIView
+    RetrieveUpdateAPIView, UpdateAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from bloom.order.models import OrderItem, Order
+from bloom.users.models import ShopifyShop, WordpressShop
 from bloom.utils.pagination import StandardResultsSetPagination
 from bloom.shop.api.serializers import CategorySerializer, ProductSerializer, \
     ProductModelSerializer, ShopSerializer, ShopCategorySerializer, ProductSearchSerializer, ShopSearchSerializer
@@ -39,6 +41,7 @@ from bloom.utils.shopping import save_product_data
 URLSAFE_CHARACTERS = string.ascii_letters + string.digits + "-._~"
 REQUIRED_PARAMS = ['filename', 'content_type']
 signer = django.core.signing.Signer()
+User = get_user_model()
 
 
 class BaseAPIView(APIView):
@@ -303,14 +306,20 @@ class WordpressImportProduct(APIView):
 
 
 class FileImportProductStorefront(APIView):
+    permission_classes = []
 
     @method_decorator(transaction.atomic)
     def post(self, request, *args, **kwargs):
         data = request.data
         p = Product()
-        p.shop = request.user.get_shop()
-        save_product_data(p, data)
+        if request.user.is_authenticated:
+            p.shop = request.user.get_shop()
+        else:
+            user_id = request.session.get('register_user')
+            user = get_object_or_404(User, pk=user_id)
+            p.shop = user.get_shop()
 
+        save_product_data(p, data)
         return Response(status=status.HTTP_200_OK)
 
 
@@ -329,3 +338,42 @@ class SpreadsheetPermissionURL(APIView):
             credentials_path, SCOPES, redirect_uri=redirect_uri)
         auth_url, _ = flow.authorization_url(prompt='consent')
         return Response(data={'auth_url': auth_url}, status=status.HTTP_200_OK)
+
+
+class ShopUpdateView(UpdateAPIView):
+    serializer_class = ShopSerializer
+    permission_classes = []
+
+    def get_object(self):
+        user_id = self.request.session.get('register_user')
+        user = get_object_or_404(User, pk=user_id)
+        shop = user.get_shop()
+        return shop
+
+
+class ShopifyURLUpdateView(APIView):
+    permission_classes = []
+
+    def post(self, request, *args, **kwargs):
+        shop_url = request.data['shop_url']
+        user_id = request.session.get('register_user')
+        user = get_object_or_404(User, pk=user_id)
+        shop = ShopifyShop.objects.get_or_create(user=user)[0]
+        shop.shop_url = shop_url
+        shop.save()
+
+        return Response(status=status.HTTP_200_OK)
+
+
+class WooURLUpdateView(APIView):
+    permission_classes = []
+
+    def post(self, request, *args, **kwargs):
+        shop_url = request.data['shop_url']
+        user_id = request.session.get('register_user')
+        user = get_object_or_404(User, pk=user_id)
+        shop = WordpressShop.objects.get_or_create(user=user)[0]
+        shop.shop_url = shop_url
+        shop.save()
+
+        return Response(status=status.HTTP_200_OK)
