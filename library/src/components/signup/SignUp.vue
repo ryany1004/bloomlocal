@@ -129,7 +129,7 @@
                 </div>
                 <input type="submit" value="Create an account" class="btn btn-block btn-primary submit signup-btn" :disabled="!agree_terms">
                 <div class="d-flex mb-5 align-items-center">
-                  <p class="signin-noti">Already have an account? <a href="/accounts/login/">Sign In</a></p>
+                  <!-- <p class="signin-noti">Already have an account? <a href="/login/">Sign In</a></p> -->
                 </div>
               </form>
             </div>

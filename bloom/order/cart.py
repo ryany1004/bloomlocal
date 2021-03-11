@@ -188,7 +188,7 @@ class Cart(object):
         # session = self.create_session(checkout_items, order)
         intent = stripe.PaymentIntent.create(
             amount=int(order.total_price * 100),
-            currency="usd",
+            currency="cad",
             transfer_group=order.get_order_id(),
             description="Payment for the order #{}".format(order.id),
             shipping={

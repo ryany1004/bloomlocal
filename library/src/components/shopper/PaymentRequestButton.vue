@@ -15,6 +15,9 @@
       <div class="sr-result hidden">
         <p>Payment completed<br /></p>
       </div>
+      <div>
+        <img src="../../assets/images/powered-by-stripe.png" width="100%"/>
+      </div>
     </div>
   </div>
 </template>

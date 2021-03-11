@@ -74,6 +74,11 @@
 
 {% block main_vue %}
   <script>
+    if (!localStorage.getItem("allowLogin")) {
+      location.href = '/'
+    }
+  </script>
+  <script>
   var app = new Vue({
     el: '#app',
     delimiters: ["[{", "}]"],

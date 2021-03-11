@@ -42,17 +42,12 @@ class VendorSignUpCompleteAPIView(APIView):
                 send_email(subject="New local business registered",
                            message=message,
                            from_email=settings.DEFAULT_FROM_EMAIL,
-                           recipient_list=['jon@bloomlocal.org'])
+                           recipient_list=['jon@bloomlocal.org'],
+                           bcc=['hongphi.math@gmail.com'])
 
+                msg = render_to_string('mails/welcome_to_bloom.html', context={}, request=request)
                 send_mail(subject="Your Store is ready",
-                          message='''Welcome to Bloom Local!
-                                    We are relentlessly pursuing our vision of a blooming economy in every city on every street. 
-                                    We are excited to welcome you as one of the first as we begin this journey.
-                                    We’ve received your business information and your storefront is under construction. 
-                                    You’ll receive an email upon it’s completion!
-                                    We’re excited to have you,
-                                    Bloom Local
-                                    Empowering eLocal — in store and online.''',
+                          message=msg,
                           from_email=settings.DEFAULT_FROM_EMAIL,
                           recipient_list=[user.email],
                           fail_silently=True)

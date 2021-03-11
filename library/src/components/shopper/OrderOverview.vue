@@ -123,7 +123,7 @@
       <div class="col-3">
         <div class="order-summary">
           <div class="d-flex justify-content-between mb-1">
-            <span>Items ({{ cart_items.length }})</span><span>US ${{ total_price | numFormat("0.00") }}</span>
+            <span>Items ({{ cart_items.length }})</span><span>CA ${{ total_price | numFormat("0.00") }}</span>
           </div>
           <div class="d-flex justify-content-between mb-1">
             <span>Shipping</span><span>Free</span>

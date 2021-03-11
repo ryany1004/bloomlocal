@@ -62,7 +62,10 @@
                       v-model="business_address" placeholder="Business address" class=""
                       @change="checkValidation()"
                       :class="{'is-invalid': (errors ==true && (business_address == '' || errorMsg.business_address))}"
-                      name="business_address" :api-key="googleMapsApiKey"></place-autocomplete-field>
+                      name="business_address" :api-key="googleMapsApiKey"
+                      v-place-autofill:street="business_address"
+                      v-place-autofill:state="state"
+                      v-place-autofill:zipcode="zipcode"></place-autocomplete-field>
                     <div class="invalid-feedback">{{ errorMsg.business_address }}</div>
                 </div>
             </div>
