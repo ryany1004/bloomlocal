@@ -15982,3 +15982,61 @@ readers do not read off random characters that represent icons */
   padding-left: 30px;
   background-color: transparent;
   border: none; }
+
+.business .el-table {
+  font-size: 12px; }
+  .business .el-table .cell {
+    word-break: break-word; }
+
+.business .el-table thead tr th {
+  background-color: #fff !important; }
+
+.business .el-table--striped .el-table__body tr td {
+  background: #F4F6F8; }
+
+.business .el-table--striped .el-table__body tr.el-table__row--striped td {
+  background: #fff; }
+
+.business .product-thumb {
+  width: 35px;
+  height: 35px; }
+
+.business .el-table th {
+  padding: 0;
+  color: #919EAB; }
+
+.business .el-table th.is-leaf > .cell {
+  padding-left: 14px; }
+
+.business .el-pagination.is-background {
+  border: 1px solid #d8dce6;
+  border-radius: 4px;
+  padding: 4px 0; }
+  .business .el-pagination.is-background .btn-next, .business .el-pagination.is-background .btn-prev {
+    margin: 0px;
+    background-color: #fff; }
+  .business .el-pagination.is-background .btn-next {
+    border-left: 1px solid #EAEDF3; }
+  .business .el-pagination.is-background .btn-prev {
+    border-right: 1px solid #EAEDF3; }
+  .business .el-pagination.is-background .el-pager li {
+    margin: 0;
+    background-color: #fff;
+    color: #3E3F42;
+    font-size: 14px; }
+
+.business .btn.bloom-btn-light {
+  background: -webkit-gradient(linear, left bottom, left top, from(#F6F7F9), to(#FFFFFF));
+  background: linear-gradient(0deg, #F6F7F9 0%, #FFFFFF 100%);
+  border: 1px solid #D8DCE6;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  -webkit-box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.08);
+          box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.08);
+  border-radius: 4px;
+  color: #212B36;
+  padding: 8px 15px; }
+
+.business .business-title {
+  font-size: 24px;
+  font-family: Comfortaa; }

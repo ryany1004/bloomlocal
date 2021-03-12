@@ -1,9 +1,9 @@
-{% extends "base.html" %}
+{% extends "business_base.html" %}
 
 {% block content %}
-  {% include 'pages/includes/bis_menu.html' %}
-
-  <my-orders :media-url="media_url"></my-orders>
+  <div class="container px-lg-3 py-4 bg-white h-100">
+    <my-orders :media-url="media_url"></my-orders>
+  </div>
 {% endblock %}
 
 {% block main_vue %}

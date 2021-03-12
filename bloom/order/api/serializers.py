@@ -82,20 +82,27 @@ class BusinessOrderSerializer(serializers.ModelSerializer):
 
 
 class BusinessOrderItemSerializer(serializers.ModelSerializer):
-    product_title = serializers.SerializerMethodField()
+    product = serializers.SerializerMethodField()
     order_uuid = serializers.SerializerMethodField()
     order_no = serializers.SerializerMethodField()
+    order_status = serializers.SerializerMethodField()
 
     class Meta:
         model = OrderItem
         fields = ['id', 'product', 'price', 'color', 'size', 'quantity', 'commission_rate', 'order_id',
-                  'product_title', 'order_uuid', 'order_no']
+                  'product', 'order_uuid', 'order_no', 'order_status']
 
-    def get_product_title(self, obj):
-        return obj.product.title
+    def get_product(self, obj):
+        return {
+            "title": obj.product.title,
+            "thumbnail": str(obj.product.thumbnail)
+        }
 
     def get_order_uuid(self, obj):
         return obj.order.uuid
+
+    def get_order_status(self, obj):
+        return obj.order.get_status_display()
 
     def get_order_no(self, obj):
         return "{}-{}".format(obj.order.get_order_no(), obj.get_merchant_no())

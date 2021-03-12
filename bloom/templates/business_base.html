@@ -10,33 +10,33 @@
         </div>
 
         <ul class="menu-items">
-          <li class="active">
+          <li {% if page == 'home' %}class="active"{% endif %}>
             <a href="{% url 'home' %}"> <i class="bl-icon bl-dashboard"></i>Dashboard</a>
           </li>
-          <li>
+          <li {% if page == 'my_order' %}class="active"{% endif %}>
             <a href="{% url 'shop:orders_page' %}"> <i class="bl-icon bl-order"></i>Orders</a>
           </li>
-          <li>
-            <a href="{% url 'home' %}"> <i class="bl-icon bl-shipping"></i>Shipping & Returns</a>
+{#          <li>#}
+{#            <a href="{% url 'home' %}"> <i class="bl-icon bl-shipping"></i>Shipping & Returns</a>#}
+{#          </li>#}
+          <li {% if page == 'products' %}class="active"{% endif %}>
+            <a href="{% url 'shop:products_page' %}"> <i class="bl-icon bl-product"></i>Products</a>
           </li>
-          <li>
-            <a href="{% url 'home' %}"> <i class="bl-icon bl-product"></i>Products</a>
-          </li>
-          <li>
-            <a href="{% url 'home' %}"> <i class="bl-icon bl-customer"></i>Customer</a>
-          </li>
-          <li>
-            <a href="{% url 'home' %}"> <i class="bl-icon bl-invoice"></i>Invoice</a>
-          </li>
-          <li>
-            <a href="{% url 'home' %}"> <i class="bl-icon bl-store-setting"></i>Store Settings</a>
-          </li>
+{#          <li>#}
+{#            <a href="{% url 'home' %}"> <i class="bl-icon bl-customer"></i>Customer</a>#}
+{#          </li>#}
+{#          <li>#}
+{#            <a href="{% url 'home' %}"> <i class="bl-icon bl-invoice"></i>Invoice</a>#}
+{#          </li>#}
+{#          <li>#}
+{#            <a href="{% url 'home' %}"> <i class="bl-icon bl-store-setting"></i>Store Settings</a>#}
+{#          </li>#}
           <li>
             <a href="{% url 'account_logout' %}"> <i class="bl-icon bl-logout"></i>Log Out</a>
           </li>
         </ul>
       </div>
-      <div class="flex-grow-1 h-100">
+      <div class="flex-grow-1 h-100" style="min-height: 700px">
         <nav class="navbar navbar-expand-md navbar-light">
         <div class="container">
           <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">

@@ -32,10 +32,10 @@ class HomePage(View):
         return render(request, 'pages/home.html', {'page': 'home'})
 
 
-class InventoryPage(View):
+class ProductsPage(View):
 
     def get(self, request, *args, **kwargs):
-        return render(request, 'pages/business/products.html', {"page": 'inventory'})
+        return render(request, 'pages/business/products.html', {"page": 'products'})
 
 
 class MyOrderPage(View):

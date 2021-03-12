@@ -1,22 +1,48 @@
 <template>
-  <div v-loading.fullscreen="loading" class="my-orders container">
+  <div v-loading.fullscreen="loading" class="business my-orders">
+    <h3 class="business-title">Store Orders</h3>
+
+    <div class="form-row align-items-center my-3 ml-2">
+      <div class="col-auto my-1">
+        <div class="form-check form-check-inline mr-0">
+          <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+        </div>
+      </div>
+      <div class="col-auto my-1">
+        <select class="custom-select mr-sm-2" id="inlineFormCustomSelect">
+          <option disabled selected>Manage Orders</option>
+        </select>
+      </div>
+      <div class="col-auto my-1">
+        <select class="custom-select mr-sm-2" id="inlineFormCustomSelect2">
+          <option disabled selected>Filter Orders</option>
+        </select>
+      </div>
+    </div>
+
     <el-table
       :data="pagingTableData"
+      stripe
       class="orders-table"
       style="width: 100%">
       <el-table-column
-        prop="product_title"
-        label="Product">
+      type="selection"
+      width="43">
+      </el-table-column>
+      <el-table-column width="40">
+        <template slot-scope="scope">
+          <img :src="`${mediaUrl}${scope.row.product.thumbnail}`" class="product-thumb">
+        </template>
       </el-table-column>
       <el-table-column
-        prop="quantity"
-        label="Quantity"
-        class-name="text-center"
-        width="80">
+        label="PRODUCT">
+        <template slot-scope="scope">
+          {{ scope.row.product.title }}
+        </template>
       </el-table-column>
       <el-table-column
         width="100"
-        label="Order Number">
+        label="ORDER #">
         <template slot-scope="scope">
           #{{ scope.row.order_no }}
         </template>
@@ -24,55 +50,65 @@
       <el-table-column
           width="80"
           class-name="text-center"
-          label="Purchase Price">
+          label="PRICE">
         <template slot-scope="scope">
           ${{ scope.row.price }}
         </template>
       </el-table-column>
       <el-table-column
           class-name="text-center"
-        label="Total Price">
+        label="TOTAL PRICE">
         <template slot-scope="scope">
           ${{ scope.row.price *  scope.row.quantity | numFormat("0.00") }}
         </template>
       </el-table-column>
       <el-table-column
+        prop="quantity"
+        label="QTY SOLD"
+        class-name="text-center"
+        width="80">
+      </el-table-column>
+      <el-table-column
           width="100"
           class-name="text-center"
-        label="Commission Rate">
+        label="RATE">
         <template slot-scope="scope">
           {{ scope.row.commission_rate }}%
         </template>
       </el-table-column>
       <el-table-column
-          class-name="text-center"
-        label="Total Commission Fee">
+        class-name="text-center"
+        width="100"
+        label="FEE">
         <template slot-scope="scope">
           ${{ (scope.row.commission_rate * scope.row.price *  scope.row.quantity / 100) | numFormat("0.00") }}
         </template>
       </el-table-column>
       <el-table-column
-          width="100"
-          class-name="text-center"
-        label="Shopper Information">
-        <template slot-scope="scope">
-          <a href="javascript:void(0)" @click="showShopperDialog(scope.row)"><img src="../../../assets/contact-book.svg"></a>
-        </template>
-      </el-table-column>
-      <el-table-column
-        label="Receipt"
+        width="100"
+        prop="order_status"
         class-name="text-center"
-        width="100">
+        label="STATUS">
+      </el-table-column>
+<!--      <el-table-column-->
+<!--          width="100"-->
+<!--          class-name="text-center"-->
+<!--        label="Shopper Information">-->
+<!--        <template slot-scope="scope">-->
+<!--          <a href="javascript:void(0)" @click="showShopperDialog(scope.row)"><img src="../../../assets/contact-book.svg"></a>-->
+<!--        </template>-->
+<!--      </el-table-column>-->
+      <el-table-column
+        class-name="text-center"
+        width="120">
         <template slot-scope="scope">
-          <a href="javascript:void(0)" @click="showReceiptDialog(scope.row)" class="btn btn-primary btn-sm font-12 white">
-            Receipt <svg width="7" height="9" viewBox="0 0 7 9" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M6.67097 2.52084C6.6499 2.46934 6.61873 2.42259 6.5793 2.38334L4.65013 0.454171C4.57206 0.376567 4.46646 0.333008 4.35638 0.333008C4.2463 0.333008 4.1407 0.376567 4.06263 0.454171C4.02358 0.492906 3.99258 0.53899 3.97143 0.589765C3.95027 0.640539 3.93938 0.695 3.93938 0.750005C3.93938 0.80501 3.95027 0.85947 3.97143 0.910245C3.99258 0.96102 4.02358 1.0071 4.06263 1.04584L5.2793 2.2625H1.94596C1.50394 2.2625 1.08001 2.4381 0.767452 2.75066C0.454892 3.06322 0.279297 3.48714 0.279297 3.92917V8.25C0.279297 8.36051 0.323196 8.46649 0.401336 8.54463C0.479476 8.62277 0.585457 8.66667 0.695964 8.66667C0.806471 8.66667 0.912451 8.62277 0.990591 8.54463C1.06873 8.46649 1.11263 8.36051 1.11263 8.25V3.92917C1.11263 3.70816 1.20043 3.4962 1.35671 3.33992C1.51299 3.18364 1.72495 3.09584 1.94596 3.09584H5.2793L4.06263 4.3125C4.00387 4.37078 3.96379 4.44524 3.94751 4.52639C3.93124 4.60753 3.93949 4.69169 3.97123 4.76812C4.00296 4.84456 4.05674 4.90981 4.12571 4.95556C4.19468 5.00131 4.2757 5.02549 4.35847 5.025C4.46837 5.02344 4.5732 4.97851 4.65013 4.9L6.5793 2.975C6.61772 2.93337 6.64873 2.88545 6.67097 2.83334C6.71151 2.73312 6.71151 2.62106 6.67097 2.52084Z" fill="#FEFEFE"/>
-            </svg>
+          <a href="javascript:void(0)" @click="showReceiptDialog(scope.row)" class="btn bloom-btn-light btn-sm font-14">
+            Manage
           </a>
         </template>
       </el-table-column>
     </el-table>
-    <div class="d-flex justify-content-center my-3">
+    <div class="d-flex my-3">
       <el-pagination
         background
         layout="prev, pager, next"
@@ -161,18 +197,5 @@ export default {
 </script>
 
 <style lang="scss">
-.my-orders {
-  .el-table {
-    font-size: 12px;
-    .cell {
-      word-break: break-word;
-    }
-  }
-  .el-table thead tr th {
-    background-color: #ecf5fc !important;
-  }
-  .orders-table {
 
-  }
-}
 </style>
