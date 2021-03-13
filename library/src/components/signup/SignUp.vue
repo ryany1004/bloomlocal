@@ -121,7 +121,7 @@
                       <div class="form-check terms-checkbox">
                         <input class="form-check-input custom-input" type="checkbox" v-model="agree_terms" id="defaultCheck1">
                         <label class="form-check-label ml-2" for="defaultCheck1" style="display: inline-block !important;">
-                          I have read and accepted Bloom Local <a href="https://www.bloomlocal.ca/terms-and-conditions/">terms and conditions.</a>
+                          I have read and accept the <a href="https://www.bloomlocal.ca/terms-and-conditions/">Bloom Local, Inc Terms and Conditions.</a>
                         </label>
                       </div>
                     </div>

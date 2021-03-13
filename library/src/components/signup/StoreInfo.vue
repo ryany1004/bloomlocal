@@ -30,7 +30,7 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="form-group">
-                    <label>Add up to 8 tags that relates to your business</label>
+                    <label>Add up to 8 keywords that relate to your business</label>
                     <TagInput @inputTags="updateInputTags" :inputTag="tags"/>
                     <div class="invalid-feedback" v-if="( errors && tags.length < 1)" style="display:block">Tags is required</div>
                 </div>

@@ -46,11 +46,10 @@ class VendorSignUpCompleteAPIView(APIView):
                            bcc=['hongphi.math@gmail.com'])
 
                 msg = render_to_string('mails/welcome_to_bloom.html', context={}, request=request)
-                send_mail(subject="Your Store is ready",
-                          message=msg,
-                          from_email=settings.DEFAULT_FROM_EMAIL,
-                          recipient_list=[user.email],
-                          fail_silently=True)
+                send_email(subject="Your Store is Almost Ready",
+                           message=msg,
+                           from_email=settings.DEFAULT_FROM_EMAIL,
+                           recipient_list=[user.email])
 
         if 'isSignUpSteps' in request.session:
             del request.session['isSignUpSteps']

@@ -6,7 +6,7 @@
     </div>
     <input 
       type='text' 
-      placeholder="Enter a Tag" 
+      placeholder="Type keyword and press enter" 
       class='tag-input__text' 
       @keydown.enter='addTag' 
       @keydown.188='addTag' 

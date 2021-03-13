@@ -20,7 +20,7 @@
                 <div class="form-group">
                     <input type="text"
                         name="business_phone"
-                        placeholder="Business Phone Number"
+                        placeholder="Business Phone Number(Numbers Only)"
                         class="form-control"
                         v-model="business_phone"
                         @input="checkValidation"

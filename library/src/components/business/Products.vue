@@ -17,12 +17,12 @@
           </select>
         </div>
         <div class="col-auto my-1">
-          <div class="btn-group btn-group-toggle btn-group-sm" data-toggle="buttons" style="height: 31px">
-            <label class="btn btn-light" :class="{active: view_mode == 'cards'}" @click="changeViewMode('cards')">
-              <input type="radio" name="options" id="option1" value="cards"> <i class="fas fa-grip-horizontal"></i>
+          <div class="btn-group btn-group-toggle btn-group-sm" data-toggle="buttons">
+            <label class="btn btn-primary" :class="{active: view_mode == 'cards'}" @click="changeViewMode('cards')">
+              <input type="radio" name="options" id="option1" value="cards"> <i class="fas fa-th"></i>
             </label>
-            <label class="btn btn-light" :class="{active: view_mode == 'table'}" @click="changeViewMode('table')">
-              <input type="radio" name="options" id="option2" value="table"> <i class="fas fa-list-alt"></i>
+            <label class="btn btn-primary ml-1" :class="{active: view_mode == 'table'}" @click="changeViewMode('table')">
+              <input type="radio" name="options" id="option2" value="table"> <i class="fal fa-bars"></i>
             </label>
           </div>
         </div>
@@ -90,4 +90,29 @@ export default {
 </script>
 
 <style lang="scss">
+.products {
+  .icon-b-card {
+    background: url('../../assets/icons/icon-card-14.png') no-repeat;
+  }
+  .icon-b-list {
+    background: url('../../assets/icons/icon-list-14.png') no-repeat;
+  }
+  .btn-group-toggle {
+    border: 1px solid #D8DCE6;
+    border-radius: 4px;
+    padding: 4px;
+    .btn-primary {
+      background-color: #FFFFFF;
+      border: none;
+      border-radius: 4px !important;
+      color: #2E2E2E;
+    }
+    .btn-primary:focus, .btn-primary.focus {
+      box-shadow: none !important;
+    }
+    .btn-primary.active {
+      background-color: #00AEEF;
+    }
+  }
+}
 </style>

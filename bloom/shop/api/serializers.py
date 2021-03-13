@@ -47,13 +47,14 @@ class ProductModelSerializer(ProductModelSimpleSerializer):
     variants = serializers.SerializerMethodField()
     images = serializers.SerializerMethodField()
     category_names = serializers.SerializerMethodField()
+    shop_data = serializers.SerializerMethodField()
 
     class Meta:
         model = Product
         fields = ['id', 'uuid', 'title', 'thumbnail', 'price', 'description', 'length', 'width', 'height', 'status',
                   'weight', 'weight_unit', 'stock', 'delivery_type', 'enable_color', 'enable_size', 'shop_id',
                   'archived', 'slug', 'variants', 'images', 'created_at', 'updated_at', 'categories',
-                  'category_names', 'dimension_unit', 'url']
+                  'category_names', 'dimension_unit', 'url', 'shop_data']
 
     def get_variants(self, obj):
         variants = obj.productvariant_set.all()
@@ -77,6 +78,11 @@ class ProductModelSerializer(ProductModelSimpleSerializer):
             validated_data['description'] = validated_data['description'].strip()
             print (validated_data['description'])
         return super(ProductModelSerializer, self).update(instance, validated_data)
+
+    def get_shop_data(self, obj):
+        return {
+            'name': obj.shop.name
+        }
 
 
 class ProductSearchSerializer(ProductModelSerializer):
@@ -116,6 +122,7 @@ class ProductSerializer(serializers.Serializer):
     categories = serializers.ListField()
     variants = serializers.ListField()
     images = serializers.ListField()
+    status = serializers.ChoiceField(choices=Product.STATUS_CHOICES)
 
     def create(self, validated_data):
         p = Product()
@@ -134,6 +141,7 @@ class ProductSerializer(serializers.Serializer):
         p.enable_color = validated_data['enable_color']
         p.enable_size = validated_data['enable_size']
         p.shop_id = validated_data['shop']
+        p.status = validated_data['status']
         p.save()
 
         if validated_data['variants']:

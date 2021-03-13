@@ -16040,3 +16040,33 @@ readers do not read off random characters that represent icons */
 .business .business-title {
   font-size: 24px;
   font-family: Comfortaa; }
+
+.business .icon-16 {
+  width: 16px;
+  height: 16px;
+  display: inline-block; }
+
+.business .icon-14 {
+  width: 14px;
+  height: 14px;
+  display: inline-block; }
+
+.business input.form-control:not(.search-input), .business textarea.form-control, .business .el-input__inner {
+  background: #FFFFFF;
+  border: 1px solid #D8DCE6;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  -webkit-box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.08);
+          box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.08);
+  border-radius: 4px; }
+
+.business .was-validated .form-control:invalid, .business .form-control.is-invalid {
+  border-color: #b94a48;
+  padding-right: calc(1.5em + 0.75rem);
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%23b94a48' viewBox='-2 -2 7 7'%3e%3cpath stroke='%23b94a48' d='M0 0l3 3m0-3L0 3'/%3e%3ccircle r='.5'/%3e%3ccircle cx='3' r='.5'/%3e%3ccircle cy='3' r='.5'/%3e%3ccircle cx='3' cy='3' r='.5'/%3e%3c/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center right calc(0.375em + 0.1875rem);
+  background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem); }
+
+.business .display-block {
+  display: block; }
