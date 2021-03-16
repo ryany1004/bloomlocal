@@ -1,7 +1,7 @@
 <template>
   <div class="wbox earning" v-loading="loading">
     <p class="head1 text-center mb-0">Your earning this month</p>
-    <p class="earning-num text-center mb-1">{{ total | numFormat("0.00") }}</p>
+    <p class="earning-num text-center mb-1">{{ total | numFormat("0.0") }}</p>
     <p class="head2 text-center">Update your payout method in Settings</p>
     <div class="d-flex justify-content-center">
       <button class="btn btn-withdraw">Withdraw All Earning</button>

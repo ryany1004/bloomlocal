@@ -783,13 +783,8 @@ class ShopPopularProductsData(ListAPIView):
 
     def get_queryset(self):
         shop = self.request.user.get_shop()
-        statuses = [
-            Order.Status.SHIPPED,
-            Order.Status.AWAITING_SHIPMENT,
-            Order.Status.ON_HOLD,
-        ]
-
         type = self.request.GET.get('type')
+
         today = datetime.date.today()
         if type == 'this_week':
             day = today - relativedelta(weekday=today.weekday())
@@ -798,30 +793,18 @@ class ShopPopularProductsData(ListAPIView):
         else:
             day = today
 
-        view_product_ids = ProductView.objects.filter(product__shop=shop) \
-                               .filter(viewed_date__gte=day) \
-                               .values('product').annotate(total=Sum('count')) \
-                               .order_by('-total').values_list('product', flat=True)[:10]
+        product_ids = ProductView.objects.filter(product__shop=shop) \
+           .filter(viewed_date__gte=day) \
+           .values('product').annotate(total=Sum('count')) \
+           .order_by('-total').values_list('product', flat=True)[:10]
 
-        sale_product_id = OrderItem.objects.filter(product__shop=shop, order__status__in=statuses) \
-                              .filter(created_at__gte=day) \
-                              .values('product').annotate(total=Sum("quantity")) \
-                              .order_by('-total').values_list('product', flat=True)[:10]
-
-        print(day)
         query_views = Subquery(
             ProductView.objects.filter(product=OuterRef('pk')) \
                 .filter(viewed_date__gte=day) \
                 .values('product').annotate(views_total=Sum('count')).values('views_total'))
-        query_sales = Subquery(
-            OrderItem.objects.filter(product=OuterRef('pk'), order__status__in=statuses) \
-                .filter(created_at__gte=day) \
-                .values('product').annotate(sales_total=Sum('quantity')).values('sales_total'))
-        product_ids = list(view_product_ids) + list(sale_product_id)
 
         return Product.objects.filter(id__in=product_ids) \
-            .annotate(views_count=query_views,
-                      sales_count=query_sales).order_by('-sales_count', '-views_count')
+            .annotate(views_count=query_views).order_by('-views_count')
 
 
 class SalePieChartData(APIView):
@@ -1122,3 +1105,29 @@ class RevenueTotalView(APIView):
                 total=Sum(F("price") * F('quantity'), output_field=models.FloatField()))['total'] or 0
 
         return {"total": total}
+
+
+class TopProductsAddToCart(ListAPIView):
+    serializer_class = ProductModelSimpleSerializer
+
+    def get_queryset(self):
+        shop = self.request.user.get_shop()
+        type = self.request.GET.get('type')
+
+        today = datetime.date.today()
+        if type == 'this_week':
+            day = today - relativedelta(weekday=today.weekday())
+        elif type == 'this_month':
+            day = datetime.date(today.year, today.month, 1)
+        else:
+            day = today
+
+        product_ids = ProductAddedToCart.objects.filter(
+            product__shop=shop, added_date__gte=day).values_list('product', flat=True)
+
+        query = Subquery(
+            ProductAddedToCart.objects.filter(product=OuterRef('pk')) \
+                .filter(added_date__gte=day) \
+                .values('product').annotate(total=Sum('count')).values('total'))
+        return Product.objects.filter(id__in=product_ids) \
+            .annotate(product_add_to_cart_count=query).order_by('-product_add_to_cart_count')

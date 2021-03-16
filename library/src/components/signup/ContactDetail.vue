@@ -149,7 +149,10 @@ export default {
           }
         },
         checkValidation() {
-            this.validate()
+          let that = this;
+          setTimeout(() => {
+            that.validate();
+          }, 100)
         },
         validate() {
             let errors = [];

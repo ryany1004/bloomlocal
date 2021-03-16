@@ -4,13 +4,14 @@
       {{ tag }}
       <span @click='removeTag(index)'>x</span>
     </div>
-    <input 
-      type='text' 
-      placeholder="Type keyword and press enter" 
-      class='tag-input__text' 
-      @keydown.enter='addTag' 
-      @keydown.188='addTag' 
+    <input
+      type='text'
+      placeholder="Type keyword and press enter"
+      class='tag-input__text'
+      @keydown.enter='addTag'
+      @keydown.188='addTag'
       @keydown.delete='removeLastTag'
+      :disabled="tags.length >= 8"
     />
   </div>
 </template>
@@ -80,6 +81,8 @@ export default {
   font-size: 0.9em;
   line-height: 50px;
   background: none;
+  box-shadow: none;
+  min-width: 220px;
 }
 .tag-input__tag {
   background: #00aeef;
@@ -103,6 +106,9 @@ export default {
   opacity: 1;
   text-align: center;
   color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .tag-input__tag > span:hover {
   color: #000;

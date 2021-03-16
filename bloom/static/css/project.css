@@ -16070,3 +16070,8 @@ readers do not read off random characters that represent icons */
 
 .business .display-block {
   display: block; }
+
+.business .chart-title {
+  font-size: 18px;
+  color: #212B36;
+  font-weight: bold; }

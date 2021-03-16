@@ -22,6 +22,14 @@
         <revenue></revenue>
       </div>
     </div>
+    <div class="row mb-4">
+      <div class="col-md-6 col-sm-12">
+        <popular-product-view-sale :media-url="mediaUrl"></popular-product-view-sale>
+      </div>
+      <div class="col-md-6 col-sm-12">
+        <top-products-add-to-cart :media-url="mediaUrl"></top-products-add-to-cart>
+      </div>
+    </div>
     <div class="row">
       <div class="col-md-4 col-sm-12 mb-4">
         <sale-pie-chart></sale-pie-chart>
@@ -57,38 +65,35 @@
       </div>
     </div>
 
-    <div class="row widget-list mt-4">
-      <div class="col-md-4 col-sm-12">
+    <div class="row widget-list mb-4">
+      <div class="col-md-6 col-sm-12">
         <div class="charts">
           <order-by-day></order-by-day>
         </div>
       </div>
-      <div class="col-md-4 col-sm-12">
+      <div class="col-md-6 col-sm-12">
         <div class="charts">
           <revenue-by-day></revenue-by-day>
         </div>
       </div>
-      <div class="col-md-4 col-sm-12">
-        <popular-product-view-sale :media-url="mediaUrl"></popular-product-view-sale>
-      </div>
 
-      <div class="col-md-4 col-sm-12">
+      <div class="col-md-6 col-sm-12">
         <div class="charts">
           <products-added-to-cart-by-day></products-added-to-cart-by-day>
         </div>
       </div>
-      <div class="col-md-4 col-sm-12">
+      <div class="col-md-6 col-sm-12">
         <div class="charts">
           <products-view-by-day></products-view-by-day>
         </div>
       </div>
-      <div class="col-md-4 col-sm-12">
+      <div class="col-md-6 col-sm-12">
         <div class="charts">
           <storefront-view-by-day></storefront-view-by-day>
         </div>
       </div>
 
-      <div class="col-md-4 col-sm-12">
+      <div class="col-md-6 col-sm-12">
         <div class="charts">
           <products-view-channels-by-day></products-view-channels-by-day>
         </div>
@@ -119,10 +124,12 @@ import StoreVisit from "@/components/business/dashboard/StoreVisit";
 import ProductViews from "@/components/business/dashboard/ProductViews";
 import Orders from "@/components/business/dashboard/Orders";
 import Revenue from "@/components/business/dashboard/Revenue";
+import TopProductsAddToCart from "@/components/business/dashboard/TopProductsAddToCart";
 
 export default {
   name: "Dashboard",
   components: {
+    TopProductsAddToCart,
     Revenue,
     Orders,
     ProductViews,

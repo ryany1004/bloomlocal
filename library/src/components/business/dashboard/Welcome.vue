@@ -12,7 +12,7 @@
         </a>
       </div>
       <div class="col-6 manage">
-        <a href="javascript:void(0)" class=" btn-manage">
+        <a href="/business/products/" class=" btn-manage">
           <i class="m-icon m-products"></i>
           <span class="m-btn-text">
             <span class="m-text">Manage Products</span>

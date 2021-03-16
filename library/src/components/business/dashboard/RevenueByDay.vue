@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="d-flex justify-content-between">
-      <p class="bolder font-14" style="margin: 0px 0 0 15px">Revenue by Day</p>
+      <p class="chart-title" style="margin: 0px">Revenue by Day</p>
       <chart-time-filter v-model="filter_time"></chart-time-filter>
     </div>
     <div v-loading="loading" style="padding: 10px;">
@@ -32,8 +32,20 @@ export default {
         },
         scales: {
           yAxes: [{
+            gridLines: {
+                drawOnChartArea: false
+            },
             ticks: {
-              beginAtZero: true
+              beginAtZero: true,
+              fontColor: "rgba(43, 48, 52, 0.4)",
+            }
+          }],
+          xAxes: [{
+            gridLines: {
+                drawOnChartArea: false
+            },
+            ticks: {
+              fontColor: "rgba(43, 48, 52, 0.4)",
             }
           }]
         }
